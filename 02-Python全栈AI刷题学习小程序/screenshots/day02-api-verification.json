@@ -1,0 +1,60 @@
+{
+  "date": "2026-07-06",
+  "backend": "http://127.0.0.1:8000",
+  "checks": [
+    {
+      "url": "/health",
+      "result": {
+        "code": 0,
+        "message": "ok",
+        "data": {
+          "service": "ai-quiz-miniapp-backend",
+          "status": "running",
+          "databaseUrl": "sqlite:///dev.db",
+          "aiModel": "not-configured"
+        }
+      }
+    },
+    {
+      "url": "/api/levels",
+      "result": {
+        "code": 0,
+        "message": "ok",
+        "data": [
+          {
+            "id": "level-1",
+            "title": "AI 入门概念",
+            "description": "理解模型、Prompt、API Key 和后端接口。",
+            "status": "unlocked"
+          },
+          {
+            "id": "level-2",
+            "title": "Python 后端基础",
+            "description": "理解入口文件、路由和 JSON 响应。",
+            "status": "locked"
+          }
+        ]
+      }
+    },
+    {
+      "url": "/api/questions?levelId=level-1",
+      "result": {
+        "code": 0,
+        "message": "ok",
+        "data": [
+          {
+            "id": "q-1",
+            "type": "single-choice",
+            "title": "小程序为什么不应该直接保存 AI API Key？",
+            "options": [
+              "因为小程序页面不支持按钮",
+              "因为前端代码可能被看到，密钥会泄露",
+              "因为 API Key 只能写在 README",
+              "因为数据库不能保存文字"
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

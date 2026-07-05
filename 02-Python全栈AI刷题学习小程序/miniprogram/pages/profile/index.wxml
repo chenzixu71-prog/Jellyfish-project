@@ -1,0 +1,7 @@
+<view class="page">
+  <view class="card">
+    <view>{{nickname}}</view>
+    <view>{{progressText}}</view>
+  </view>
+</view>
+

@@ -1,0 +1,11 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="card">题目加载中...</view>
+  <view wx:else>
+    <view wx:for="{{questions}}" wx:key="id" class="card">
+      <view>{{item.title}}</view>
+      <view wx:for="{{item.options}}" wx:for-item="option" wx:key="*this">{{option}}</view>
+    </view>
+    <view class="button" bindtap="finish">提交答案</view>
+  </view>
+</view>
+

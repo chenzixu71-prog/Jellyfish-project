@@ -1,0 +1,13 @@
+{
+  "pages": [
+    "pages/levels/index",
+    "pages/quiz/index",
+    "pages/result/index",
+    "pages/profile/index"
+  ],
+  "window": {
+    "navigationBarTitleText": "水母diy学习助手",
+    "navigationBarBackgroundColor": "#1f2937",
+    "navigationBarTextStyle": "white"
+  }
+}

@@ -1,0 +1,12 @@
+<view class="page">
+  <view wx:if="{{loading}}" class="card">加载中...</view>
+  <view wx:elif="{{error}}" class="card">{{error}}</view>
+  <view wx:else>
+    <view wx:for="{{levels}}" wx:key="id" class="card">
+      <view>{{item.title}}</view>
+      <view>{{item.description}}</view>
+      <view class="button" data-id="{{item.id}}" bindtap="openQuiz">开始练习</view>
+    </view>
+  </view>
+</view>
+

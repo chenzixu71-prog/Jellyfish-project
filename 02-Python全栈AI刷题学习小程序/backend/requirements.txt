@@ -1,0 +1,3 @@
+# Day 02 uses only Python standard library.
+# Later we can add FastAPI, Flask, SQLAlchemy, or database drivers here.
+

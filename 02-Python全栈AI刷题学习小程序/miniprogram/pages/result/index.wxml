@@ -1,0 +1,7 @@
+<view class="page">
+  <view class="card">
+    <view>本次得分：{{score}}</view>
+    <view>Day 02 先跑通页面和接口链路，后续再接入真实判分。</view>
+  </view>
+</view>
+
