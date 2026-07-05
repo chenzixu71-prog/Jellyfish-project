@@ -1,0 +1,17 @@
+.env
+.env.*
+!.env.example
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+node_modules/
+dist/
+build/
+
+02-Python全栈AI刷题学习小程序/backend/data/
+02-Python全栈AI刷题学习小程序/frontend/dist/
+02-Python全栈AI刷题学习小程序/frontend/node_modules/

@@ -1,3 +1,4 @@
-# Day 02 uses only Python standard library.
-# Later we can add FastAPI, Flask, SQLAlchemy, or database drivers here.
-
+fastapi==0.128.0
+uvicorn[standard]==0.38.0
+pytest==9.0.2
+httpx==0.28.1

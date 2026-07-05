@@ -4,6 +4,7 @@ import os
 HOST = os.getenv("APP_HOST", "127.0.0.1")
 PORT = int(os.getenv("APP_PORT", "8000"))
 
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///dev.db")
-AI_MODEL = os.getenv("AI_MODEL", "not-configured")
-
+DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
+DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")
+AI_MODEL = os.getenv("AI_MODEL", "deepseek-v4-flash")
+AI_REPORT_MODEL = os.getenv("AI_REPORT_MODEL", "deepseek-v4-pro")

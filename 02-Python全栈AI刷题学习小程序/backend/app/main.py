@@ -1,37 +1,27 @@
-from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
-from urllib.parse import parse_qs, urlparse
+import uvicorn
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.config import HOST, PORT
-from app.routes import route_request
+from app.routes import router
 
 
-class AppHandler(BaseHTTPRequestHandler):
-    def do_GET(self):
-        parsed = urlparse(self.path)
-        query = parse_qs(parsed.query)
-        status, payload = route_request("GET", parsed.path, query)
-        self.send_json(status, payload)
+app = FastAPI(title="水母diy学习助手 API", version="0.1.0")
 
-    def send_json(self, status, payload):
-        body = payload.encode("utf-8")
-        self.send_response(status)
-        self.send_header("Content-Type", "application/json; charset=utf-8")
-        self.send_header("Content-Length", str(len(body)))
-        self.send_header("Access-Control-Allow-Origin", "*")
-        self.end_headers()
-        self.wfile.write(body)
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
-    def log_message(self, format, *args):
-        print("%s - %s" % (self.address_string(), format % args))
+app.include_router(router)
 
 
 def main():
-    server = ThreadingHTTPServer((HOST, PORT), AppHandler)
-    print(f"Backend running at http://{HOST}:{PORT}")
-    print("Press Ctrl+C to stop.")
-    server.serve_forever()
+    uvicorn.run("app.main:app", host=HOST, port=PORT, reload=True)
 
 
 if __name__ == "__main__":
     main()
-

@@ -1,6 +1,13 @@
-import json
+from fastapi import APIRouter
 
-from app.config import AI_MODEL, DATABASE_URL
+from app.config import AI_MODEL
+from app.schemas import (
+    ApiResponse,
+    GenerateQuizRequest,
+    GenerateReportRequest,
+    SubmitAnswerRequest,
+)
+from app.services.quiz_service import create_quiz, generate_report, submit_answer
 
 
 LEVELS = [
@@ -35,38 +42,53 @@ QUESTIONS = {
 }
 
 
-def json_response(status, data=None, message="ok"):
-    return status, json.dumps(
+router = APIRouter()
+
+
+def ok(data=None, message="ok") -> ApiResponse:
+    return ApiResponse(code=0, message=message, data=data)
+
+
+@router.get("/health", response_model=ApiResponse)
+def health():
+    return ok(
         {
-            "code": 0 if status < 400 else status,
-            "message": message,
-            "data": data,
-        },
-        ensure_ascii=False,
+            "service": "ai-quiz-miniapp-backend",
+            "product": "水母diy学习助手",
+            "status": "running",
+            "aiModel": AI_MODEL,
+        }
     )
 
 
-def route_request(method, path, query):
-    if method != "GET":
-        return json_response(405, None, "method not allowed")
+@router.get("/api/levels", response_model=ApiResponse)
+def list_levels():
+    return ok(LEVELS)
 
-    if path == "/health":
-        return json_response(
-            200,
-            {
-                "service": "ai-quiz-miniapp-backend",
-                "product": "水母diy学习助手",
-                "status": "running",
-                "databaseUrl": DATABASE_URL,
-                "aiModel": AI_MODEL,
-            },
-        )
 
-    if path == "/api/levels":
-        return json_response(200, LEVELS)
+@router.get("/api/questions", response_model=ApiResponse)
+def list_questions(levelId: str = "level-1"):
+    return ok(QUESTIONS.get(levelId, []))
 
-    if path == "/api/questions":
-        level_id = query.get("levelId", ["level-1"])[0]
-        return json_response(200, QUESTIONS.get(level_id, []))
 
-    return json_response(404, None, "route not found")
+@router.post("/api/generate-quiz", response_model=ApiResponse)
+def generate_quiz(payload: GenerateQuizRequest):
+    quiz = create_quiz(payload.sessionId, payload.content)
+    return ok(quiz.model_dump())
+
+
+@router.post("/api/submit-answer", response_model=ApiResponse)
+def answer_question(payload: SubmitAnswerRequest):
+    result = submit_answer(
+        payload.sessionId,
+        payload.quizId,
+        payload.questionId,
+        payload.answer,
+    )
+    return ok(result.model_dump())
+
+
+@router.post("/api/generate-report", response_model=ApiResponse)
+def report(payload: GenerateReportRequest):
+    generated_report = generate_report(payload.sessionId, payload.quizId)
+    return ok(generated_report.model_dump())
