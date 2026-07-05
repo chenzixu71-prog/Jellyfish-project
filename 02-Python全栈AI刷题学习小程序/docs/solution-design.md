@@ -203,7 +203,37 @@ AI 只做三件事：
 - 排行榜结果。
 - 数据库写入是否合法。
 
-### 5.2 Prompt 输出格式
+### 5.2 DeepSeek 模型策略
+
+第一版确认使用 DeepSeek API，但小程序前端不能直接请求 DeepSeek。调用链必须是：
+
+```text
+Taro 微信小程序 -> Python FastAPI 后端 -> DeepSeek API
+```
+
+原因：
+
+- DeepSeek API Key 属于真实密钥，不能放在小程序包里，否则用户可以反编译拿到。
+- 后端可以统一做 prompt、JSON 校验、失败重试、额度控制和日志记录。
+- 未来如果切换模型供应商，只需要改后端 `ai_service.py`，前端接口不变。
+
+MVP 模型配置：
+
+| 用途 | 默认模型 | 说明 |
+| --- | --- | --- |
+| 生成单选题 | `deepseek-v4-flash` | 默认使用，速度和成本更适合 MVP |
+| 生成即时讲解 | `deepseek-v4-flash` | 单题讲解不需要复杂推理 |
+| 生成复盘报告 | `deepseek-v4-flash` | 第一版报告先控制复杂度 |
+| 高质量报告备选 | `deepseek-v4-pro` | 后台配置保留切换能力，不作为默认 |
+
+配置原则：
+
+- 默认模型写入环境变量 `AI_MODEL=deepseek-v4-flash`。
+- 不在代码里写死模型名，统一从 `app/config.py` 读取。
+- 预留 `AI_REPORT_MODEL=deepseek-v4-pro`，后续需要更高质量报告时再启用。
+- `deepseek-chat`、`deepseek-reasoner` 作为旧模型名，不作为新项目绑定目标。
+
+### 5.3 Prompt 输出格式
 
 AI 生成题目时必须输出结构化 JSON：
 
@@ -234,7 +264,7 @@ AI 生成题目时必须输出结构化 JSON：
 
 校验失败时不能直接保存，要提示用户重新生成。
 
-### 5.3 AI 失败处理
+### 5.4 AI 失败处理
 
 | 场景 | 处理 |
 | --- | --- |
@@ -514,12 +544,13 @@ P3 多用户: MySQL/PostgreSQL
 
 ### 10.3 第三步：接入真实 AI
 
-目标：把 mock 生成换成真实模型调用。
+目标：把 mock 生成换成 DeepSeek API 调用。
 
 任务：
 
-- AI service 封装。
-- `.env` 配置 API Key。
+- AI service 封装，统一从后端调用 DeepSeek。
+- `.env` 配置 `DEEPSEEK_API_KEY`、`DEEPSEEK_BASE_URL`、`AI_MODEL`。
+- 默认使用 `deepseek-v4-flash`，保留切换到 `deepseek-v4-pro` 的配置位。
 - JSON 输出校验。
 - 失败重试 1 次。
 
@@ -550,9 +581,10 @@ P3 多用户: MySQL/PostgreSQL
 真实密钥只放 `.env`：
 
 ```text
-AI_API_KEY=
-AI_BASE_URL=
-AI_MODEL=
+DEEPSEEK_API_KEY=
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+AI_MODEL=deepseek-v4-flash
+AI_REPORT_MODEL=deepseek-v4-pro
 APP_PORT=8000
 ```
 
@@ -663,11 +695,17 @@ Taro 4.x dev:weapp + 微信开发者工具 + 本地 Python 后端
 
 以下问题不阻塞方案设计，但会影响后续实现：
 
-1. 第一版是否确认只支持文本输入，不做 URL 解析？
-2. AI 模型优先用哪个供应商？
-3. 复盘报告第一版只做文本，还是必须做图片海报？
-4. 是否已经有微信小程序 AppID？
-5. 后端线上部署优先用 Render/Railway，还是国内云服务器？
+1. 复盘报告第一版只做文本，还是必须做图片海报？
+2. 是否已经有微信小程序 AppID？
+3. 后端线上部署优先用 Render/Railway，还是国内云服务器？
+
+已确认决策：
+
+- 第一版只做微信小程序。
+- 第一版输入只支持文本，不做 URL/文档/视频解析。
+- 第一版不做登录注册。
+- 第一版题型只做单选题。
+- 第一版 AI 供应商使用 DeepSeek，默认模型为 `deepseek-v4-flash`，保留 `deepseek-v4-pro` 切换能力。
 
 ## 16. 推荐下一步
 
