@@ -1,0 +1,6 @@
+interface:
+  display_name: "AI Short Drama Studio"
+  short_description: "AI短剧剧本、角色、图像、视频与字幕工作流。"
+  default_prompt: "Use $ai-short-drama-studio to create an AI short drama package with consistent live-action characters, subtle expression prompts, image/video prompts, voice, subtitles, and QA."
+policy:
+  allow_implicit_invocation: true
