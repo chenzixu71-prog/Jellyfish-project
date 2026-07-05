@@ -1,7 +1,7 @@
 from fastapi import HTTPException
 
 from app.schemas import AnswerResult, Quiz, Report
-from app.services.mock_ai_service import generate_mock_quiz
+from app.services.ai_service import generate_quiz
 from app.storage.memory_store import store
 
 
@@ -9,7 +9,7 @@ def create_quiz(session_id: str, content: str) -> Quiz:
     if not content.strip():
         raise HTTPException(status_code=422, detail="content is required")
 
-    quiz = generate_mock_quiz(content)
+    quiz = generate_quiz(content)
     store.save_quiz(session_id, quiz)
     return quiz
 
