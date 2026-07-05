@@ -36,9 +36,9 @@ python -m app.main
 启动后访问：
 
 ```text
-http://127.0.0.1:8000/health
-http://127.0.0.1:8000/api/generate-quiz
-http://127.0.0.1:8000/api/generate-report
+http://127.0.0.1:8010/health
+http://127.0.0.1:8010/api/generate-quiz
+http://127.0.0.1:8010/api/generate-report
 ```
 
 ### 小程序前端

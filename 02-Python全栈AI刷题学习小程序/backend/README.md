@@ -34,9 +34,9 @@ python -m app.main
 启动后访问：
 
 ```text
-http://127.0.0.1:8000/health
-http://127.0.0.1:8000/api/levels
-http://127.0.0.1:8000/api/questions?levelId=level-1
+http://127.0.0.1:8010/health
+http://127.0.0.1:8010/api/levels
+http://127.0.0.1:8010/api/questions?levelId=level-1
 ```
 
 核心接口：

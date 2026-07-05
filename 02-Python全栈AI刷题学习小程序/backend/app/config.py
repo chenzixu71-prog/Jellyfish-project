@@ -6,7 +6,7 @@ from dotenv import load_dotenv
 load_dotenv()
 
 HOST = os.getenv("APP_HOST", "127.0.0.1")
-PORT = int(os.getenv("APP_PORT", "8000"))
+PORT = int(os.getenv("APP_PORT", "8010"))
 
 DEEPSEEK_API_KEY = os.getenv("DEEPSEEK_API_KEY", "")
 DEEPSEEK_BASE_URL = os.getenv("DEEPSEEK_BASE_URL", "https://api.deepseek.com")

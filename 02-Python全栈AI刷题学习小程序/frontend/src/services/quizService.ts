@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro'
 
-const API_BASE_URL = 'http://127.0.0.1:8000'
+const API_BASE_URL = 'http://127.0.0.1:8010'
 
 export type QuestionType = 'single' | 'multiple' | 'judge'
 export type Difficulty = 'easy' | 'medium' | 'hard'
