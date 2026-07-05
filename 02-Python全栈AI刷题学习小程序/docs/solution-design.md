@@ -49,7 +49,7 @@
 ### 2.1 推荐架构
 
 ```text
-微信小程序前端
+Taro 4.x 小程序前端
   -> Python HTTP API 后端
     -> AI 模型服务
     -> 本地 JSON / SQLite 临时存储
@@ -69,10 +69,10 @@
 
 | 阶段 | 目标 | 前端 | 后端 | 存储 | AI |
 | --- | --- | --- | --- | --- | --- |
-| P0 工程骨架 | 能启动、能请求接口 | 原生小程序页面 | Python 标准库/轻量 HTTP | 无持久化或 JSON | mock 数据 |
-| P1 核心闭环 | 输入、生成、答题、报告 | 原生小程序 | FastAPI | SQLite | 大模型 API |
-| P2 可复盘 | 学习记录、错题、报告历史 | 原生小程序 | FastAPI | SQLite/MySQL | 题目生成 + 报告生成 |
-| P3 增强版 | URL/文档解析、分享、勋章 | 原生或框架化 | FastAPI | MySQL/PostgreSQL | AI + 搜索/解析 |
+| P0 工程骨架 | 能启动、能请求接口 | Taro 4.x + React + TypeScript | Python 标准库/轻量 HTTP | 无持久化或 JSON | mock 数据 |
+| P1 核心闭环 | 输入、生成、答题、报告 | Taro 4.x + React + TypeScript | FastAPI | SQLite | 大模型 API |
+| P2 可复盘 | 学习记录、错题、报告历史 | Taro 4.x + React + TypeScript | FastAPI | SQLite/MySQL | 题目生成 + 报告生成 |
+| P3 增强版 | URL/文档解析、分享、勋章 | Taro 4.x，可扩展 H5/多端 | FastAPI | MySQL/PostgreSQL | AI + 搜索/解析 |
 | P4 商业化 | 登录、VIP、额度、排行榜 | 小程序 + 管理后台 | FastAPI/Spring Boot | PostgreSQL/MySQL + Redis | 多模型路由 |
 
 ## 3. 小程序技术选型对比
@@ -83,8 +83,8 @@
 
 | 方案 | 技术形态 | 优点 | 缺点 | 适合本项目吗 |
 | --- | --- | --- | --- | --- |
-| 原生微信小程序 | WXML + WXSS + JS | 官方能力最直接，调试链路短，微信组件/接口兼容最好，上手路径清晰 | 组件化和工程化弱于现代前端框架，多端复用差 | 推荐用于 MVP |
-| Taro | React/Vue/Nerv 等多端框架 | React 生态友好，可多端编译，适合后续扩展 H5/其他小程序 | 抽象层增加调试成本，小问题要分清是框架还是小程序本身 | 第二阶段再考虑 |
+| Taro 4.x | React + TypeScript，编译到微信小程序等多端 | 开源、工程化好、组件化清晰、后续可扩展 H5/其他小程序；适合把复杂业务拆成页面、组件、service、store | 比原生多一层编译抽象，调试时要区分 Taro 层和微信小程序运行时问题 | 推荐用于 MVP 主线 |
+| 原生微信小程序 | WXML + WXSS + JS | 官方能力最直接，调试链路短，微信组件/接口兼容最好，上手路径清晰 | 组件化和工程化弱于现代前端框架，多端复用差；后续页面多了维护成本高 | 仅作为学习占位或兜底方案 |
 | uni-app | Vue 语法，多端发布 | Vue 使用门槛较低，多端生态成熟，HBuilderX 支持强 | 平台差异和编译层可能带来额外问题 | 如果目标多端，可以考虑 |
 | 微信云开发 | 小程序 + 云函数 + 云数据库 | 少维护服务器，适合轻后端和快速上线 | AI 调用、复杂业务、供应商迁移会受平台约束 | 可做备选，不作为当前主线 |
 
@@ -93,29 +93,63 @@
 MVP 推荐使用：
 
 ```text
-原生微信小程序 + Python FastAPI 后端
+Taro 4.x + React + TypeScript + Python FastAPI 后端
 ```
 
 原因：
 
-- 当前只目标微信小程序，不需要多端。
-- 需求重点是业务闭环，不是跨端 UI 复用。
-- 原生小程序最接近微信官方能力，调试更直接。
-- 你是非科班学习路径，先理解页面、事件、请求、接口，比先学习跨端框架更稳。
+- 本项目后续页面会逐步增加：输入页、关卡页、答题页、结果页、报告页、个人中心页，Taro 的组件化和工程化更适合长期维护。
+- Taro 4.x 可使用 React + TypeScript，把页面状态、接口请求、AI 生成流程拆得更清楚，利于后续交给 Codex 迭代。
+- 现在已经安装 Node.js，具备 Taro 前端工程的基础环境。
+- 当前虽然先做微信小程序，但后续如果要扩展 H5、其他小程序或运营页，Taro 比原生小程序迁移成本低。
+- 第一版仍然严格收敛业务范围，只用 Taro 做工程框架，不提前做复杂状态管理、登录注册或多端适配。
 
-### 3.3 什么时候升级到 Taro 或 uni-app
+### 3.3 Taro 4.x 使用边界
 
-满足以下任一条件时再考虑：
+第一版 Taro 使用方式：
 
-- 明确要同时做 H5、App、支付宝/抖音小程序。
-- 小程序页面数量超过 20 个，组件复用变复杂。
-- 前端需要系统化状态管理、工程化构建、组件库。
-- 有 React/Vue 熟练开发者参与。
+- 使用 React + TypeScript。
+- 使用 Taro 官方 CLI 初始化前端工程。
+- 只编译微信小程序端，不同时维护 H5/App。
+- 不引入 Redux、MobX 等重状态管理，先用页面 state + service 层。
+- 不引入复杂 UI 组件库，先用 Taro 基础组件和少量自定义样式。
+
+建议初始化命令：
+
+```bash
+npx.cmd -y @tarojs/cli@latest init frontend
+```
+
+初始化时建议选择：
+
+```text
+框架：React
+语言：TypeScript
+CSS：Sass 或普通 CSS 均可，MVP 可先选 CSS
+模板：默认模板
+```
+
+微信小程序开发命令以实际生成的 `package.json` 为准，通常会是：
+
+```bash
+npm.cmd install
+npm.cmd run dev:weapp
+```
+
+构建产物导入微信开发者工具：
+
+```text
+frontend/dist
+```
+
+当前仓库里的 `miniprogram/` 是 Day 02 原生小程序学习骨架，后续正式实现核心闭环时应迁移为 `frontend/` Taro 工程。
 
 ### 3.4 参考依据
 
-- 微信小程序官方提供原生框架、视图层、逻辑层、API 与开发者工具能力，适合微信生态内的直接开发。
 - Taro 官方定位是开放式跨端跨框架解决方案，可以用 React/Vue 等语法编译到多端。
+- Taro 官方文档支持通过 `npx @tarojs/cli@latest init <projectName>` 初始化项目。
+- Taro React 项目通过 `app.config` 管理页面、窗口和 tabBar 等小程序配置。
+- 微信小程序官方提供原生框架、视图层、逻辑层、API 与开发者工具能力，Taro 最终仍需要编译到微信小程序运行时。
 - uni-app 官方定位是使用 Vue 语法开发多端应用。
 - 微信云开发官方提供云函数、数据库、存储等后端能力，但会带来云开发平台绑定。
 
@@ -265,18 +299,31 @@ sessionId = 小程序本地生成的随机 ID
 ### 7.2 前端模块
 
 ```text
-miniprogram/
-  app.js
-  app.json
-  utils/request.js
-  services/quizService.js
-  pages/create/
-  pages/levels/
-  pages/quiz/
-  pages/result/
-  pages/report/
-  pages/profile/
+frontend/
+  package.json
+  config/
+  src/
+    app.config.ts
+    app.tsx
+    app.scss
+    utils/request.ts
+    services/quizService.ts
+    pages/create/index.tsx
+    pages/levels/index.tsx
+    pages/quiz/index.tsx
+    pages/result/index.tsx
+    pages/report/index.tsx
+    pages/profile/index.tsx
+    components/
 ```
+
+说明：
+
+- `frontend/` 是后续正式 Taro 4.x 前端工程目录。
+- `src/app.config.ts` 负责配置小程序页面、窗口标题和 tabBar。
+- `src/services/quizService.ts` 只封装业务接口，不在页面里直接拼请求。
+- `src/utils/request.ts` 统一处理 baseUrl、错误提示和 loading。
+- 当前 `miniprogram/` 目录保留为 Day 02 原生小程序学习骨架，不作为 P1 主线继续扩展。
 
 ### 7.3 后端模块
 
@@ -446,20 +493,24 @@ P3 多用户: MySQL/PostgreSQL
 
 - 浏览器或 Postman 能完成完整流程。
 
-### 10.2 第二步：前端核心页面
+### 10.2 第二步：Taro 4.x 前端核心页面
 
 目标：小程序页面能走完整链路。
 
 任务：
 
+- 初始化 Taro 4.x 工程到 `frontend/`。
+- 使用 React + TypeScript。
 - 新增输入页。
 - 答题页支持选择答案。
 - 结果页展示得分。
 - 报告页展示复盘。
+- 把接口请求集中到 `services/quizService.ts`。
 
 验收：
 
 - 用户不用登录，也能完整完成一轮学习。
+- `npm.cmd run dev:weapp` 能生成微信小程序开发者工具可导入的 `dist/`。
 
 ### 10.3 第三步：接入真实 AI
 
@@ -545,13 +596,14 @@ git push
 
 ### 12.2 前端测试
 
-用微信开发者工具验证：
+用 Taro + 微信开发者工具验证：
 
 - 输入为空时不能生成。
 - 生成中按钮不可重复点击。
 - 接口失败时有错误提示。
 - 答题后能看到讲解。
 - 完成后能进入报告页。
+- `frontend/dist/` 能被微信开发者工具打开。
 
 ### 12.3 AI 输出测试
 
@@ -568,7 +620,7 @@ git push
 ### 13.1 MVP 本地演示
 
 ```text
-小程序开发者工具 + 本地 Python 后端
+Taro 4.x dev:weapp + 微信开发者工具 + 本地 Python 后端
 ```
 
 适合 Day 02-Day 10。
@@ -627,7 +679,8 @@ git push
 实现 POST /api/generate-quiz
 实现 POST /api/submit-answer
 实现 POST /api/generate-report
-新增小程序 pages/create 和 pages/report
+初始化 Taro 4.x frontend 工程
+新增 Taro 页面 pages/create 和 pages/report
 用 mock AI 跑通完整闭环
 ```
 
