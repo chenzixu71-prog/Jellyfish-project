@@ -1,0 +1,140 @@
+.create-page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.hero {
+  position: relative;
+  padding-top: 18px;
+}
+
+.hand-logo {
+  width: 156px;
+  color: #1767c8;
+  font-size: 28px;
+  font-weight: 900;
+  line-height: 1;
+  transform: rotate(-2deg);
+}
+
+.hero-title {
+  display: block;
+  margin-top: 22px;
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1.15;
+}
+
+.hero-subtitle {
+  display: block;
+  margin-top: 12px;
+  color: #4b5563;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.input-card {
+  position: relative;
+  padding: 24px;
+}
+
+.section-title {
+  display: block;
+  margin-bottom: 14px;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.learning-input {
+  width: 100%;
+  min-height: 190px;
+  padding: 18px;
+  border: 2px solid #111111;
+  border-radius: 18px;
+  box-sizing: border-box;
+  background: #fffdf4;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.generate-button {
+  margin-top: 20px;
+}
+
+.boy-illustration {
+  position: absolute;
+  top: -34px;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.face {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  border: 2px solid #111111;
+  border-radius: 50%;
+  background: #ffe142;
+  animation: nod 2.4s ease-in-out infinite;
+}
+
+.face-boy::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 10px;
+  width: 34px;
+  height: 16px;
+  border-radius: 50% 50% 0 0;
+  background: #111111;
+}
+
+.eye {
+  position: absolute;
+  top: 25px;
+  width: 6px;
+  height: 8px;
+  border-radius: 50%;
+  background: #111111;
+}
+
+.left-eye {
+  left: 19px;
+}
+
+.right-eye {
+  right: 19px;
+}
+
+.smile {
+  position: absolute;
+  left: 20px;
+  bottom: 14px;
+  width: 18px;
+  height: 9px;
+  border-bottom: 3px solid #111111;
+  border-radius: 0 0 18px 18px;
+}
+
+.speech-bubble {
+  padding: 6px 10px;
+  border: 2px solid #111111;
+  border-radius: 16px;
+  background: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@keyframes nod {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-3deg);
+  }
+
+  50% {
+    transform: translateY(4px) rotate(3deg);
+  }
+}

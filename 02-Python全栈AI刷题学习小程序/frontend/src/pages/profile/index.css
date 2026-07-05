@@ -1,0 +1,51 @@
+.profile-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 22px;
+}
+
+.profile-title {
+  font-size: 30px;
+  font-weight: 900;
+}
+
+.compact-button {
+  width: 110px;
+  height: 44px;
+  line-height: 44px;
+  font-size: 14px;
+}
+
+.empty-card,
+.history-card {
+  padding: 22px;
+}
+
+.empty-title,
+.history-title {
+  display: block;
+  font-size: 21px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.report-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.history-summary {
+  display: block;
+  margin-top: 10px;
+  color: #4b5563;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.history-meta {
+  display: flex;
+  gap: 8px;
+  margin-top: 16px;
+}
