@@ -314,6 +314,59 @@ def test_report_history_and_detail_return_saved_report():
     assert detail["completedAt"] == report["completedAt"]
 
 
+def test_wrong_book_uses_authenticated_identity_and_regenerates_quiz():
+    login = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "wrong-book-code", "sessionId": "wrong-book-guest"},
+    ).json()["data"]
+    headers = {"Authorization": f"Bearer {login['token']}"}
+    session_id = "wrong-book-session"
+
+    generated = client.post(
+        "/api/generate-quiz",
+        headers=headers,
+        json={
+            "sessionId": session_id,
+            "inputType": "text",
+            "content": "learn wrong book",
+            "questionCount": 5,
+        },
+    ).json()["data"]
+    first_question = generated["questions"][0]
+    wrong_answer = ["B"] if first_question["answer"] != ["B"] else ["A"]
+
+    client.post(
+        "/api/submit-answer",
+        headers=headers,
+        json={
+            "sessionId": session_id,
+            "quizId": generated["quizId"],
+            "questionId": first_question["id"],
+            "answer": wrong_answer,
+        },
+    )
+
+    wrong_questions = client.get(
+        "/api/wrong-questions",
+        headers=headers,
+        params={"sessionId": session_id},
+    ).json()["data"]
+    assert len(wrong_questions) == 1
+    assert wrong_questions[0]["stem"]
+    assert wrong_questions[0]["selectedAnswer"] == wrong_answer
+    assert wrong_questions[0]["correctAnswer"] == first_question["answer"]
+    assert wrong_questions[0]["explanation"]
+    assert wrong_questions[0]["knowledge_point"]
+
+    regenerated = client.post(
+        "/api/regenerate-weak-quiz",
+        headers=headers,
+        json={"sessionId": session_id, "quizId": generated["quizId"]},
+    ).json()["data"]
+    assert regenerated["quizId"]
+    assert len(regenerated["questions"]) == 5
+
+
 def test_generate_quiz_returns_five_mixed_questions():
     response = client.post(
         "/api/generate-quiz",
