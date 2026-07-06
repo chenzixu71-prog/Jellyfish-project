@@ -80,11 +80,13 @@ def test_me_returns_current_user_profile_with_valid_token():
     assert profile["loginType"] == "wechat"
     assert profile["level"] == 1
     assert profile["exp"] == 0
+    assert profile["nextLevelExp"] == 100
     assert profile["streakDays"] == 1
     assert profile["totalAnswered"] == 0
     assert profile["totalCorrect"] == 0
     assert profile["totalSessions"] == 0
     assert profile["accuracy"] == 0
+    assert len(profile["badges"]) >= 3
 
 
 def test_me_returns_business_error_without_token():
@@ -365,6 +367,52 @@ def test_wrong_book_uses_authenticated_identity_and_regenerates_quiz():
     ).json()["data"]
     assert regenerated["quizId"]
     assert len(regenerated["questions"]) == 5
+
+
+def test_growth_profile_updates_exp_level_and_badges_after_learning():
+    login = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "growth-code", "sessionId": "growth-guest"},
+    ).json()["data"]
+    headers = {"Authorization": f"Bearer {login['token']}"}
+    session_id = "growth-session"
+
+    generated = client.post(
+        "/api/generate-quiz",
+        headers=headers,
+        json={
+            "sessionId": session_id,
+            "inputType": "text",
+            "content": "learn growth system",
+            "questionCount": 5,
+        },
+    ).json()["data"]
+
+    for question in generated["questions"]:
+        client.post(
+            "/api/submit-answer",
+            headers=headers,
+            json={
+                "sessionId": session_id,
+                "quizId": generated["quizId"],
+                "questionId": question["id"],
+                "answer": question["answer"],
+            },
+        )
+
+    client.post(
+        "/api/generate-report",
+        headers=headers,
+        json={"sessionId": session_id, "quizId": generated["quizId"]},
+    )
+
+    profile = client.get("/api/me", headers=headers).json()["data"]
+    assert profile["exp"] == 60
+    assert profile["level"] == 1
+    assert profile["nextLevelExp"] == 100
+    assert profile["streakDays"] == 1
+    assert any(item["id"] == "first-quiz" and item["unlocked"] for item in profile["badges"])
+    assert any(item["id"] == "perfect-run" and item["unlocked"] for item in profile["badges"])
 
 
 def test_generate_quiz_returns_five_mixed_questions():

@@ -14,11 +14,18 @@ export interface LoginUser {
 export interface CurrentUserProfile extends LoginUser {
   level: number
   exp: number
+  nextLevelExp: number
   streakDays: number
   totalAnswered: number
   totalCorrect: number
   totalSessions: number
   accuracy: number
+  badges: Array<{
+    id: string
+    name: string
+    description: string
+    unlocked: boolean
+  }>
 }
 
 export interface AuthSession {

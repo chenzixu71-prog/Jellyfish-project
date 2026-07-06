@@ -85,11 +85,13 @@ class MemoryStore:
             loginType=user.loginType,
             level=profile.level,
             exp=profile.exp,
+            nextLevelExp=profile.level * 100,
             streakDays=profile.streakDays,
             totalAnswered=profile.totalAnswered,
             totalCorrect=profile.totalCorrect,
             totalSessions=len(reports),
             accuracy=accuracy,
+            badges=profile.badges,
         )
 
     def merge_guest_session_into_user(self, session_id: str, user_id: str) -> MergedGuestData:

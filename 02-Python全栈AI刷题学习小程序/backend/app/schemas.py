@@ -64,11 +64,13 @@ class WechatLoginResponse(BaseModel):
 class CurrentUserProfile(LoginUser):
     level: int
     exp: int
+    nextLevelExp: int
     streakDays: int
     totalAnswered: int
     totalCorrect: int
     totalSessions: int
     accuracy: int
+    badges: list["Badge"]
 
 
 class Quiz(BaseModel):

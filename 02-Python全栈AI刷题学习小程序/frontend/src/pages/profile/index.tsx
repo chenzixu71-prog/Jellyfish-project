@@ -162,6 +162,36 @@ export default function ProfilePage() {
         </View>
       )}
 
+      {auth && (
+        <View className='growth-card'>
+          <View className='growth-header'>
+            <View>
+              <Text className='growth-title'>水母成长值</Text>
+              <Text className='growth-copy'>连续学习、答题和满分闯关都会推动成长。</Text>
+            </View>
+            <Text className='growth-level'>Lv.{profile?.level ?? 1}</Text>
+          </View>
+          <View className='growth-track'>
+            <View
+              className='growth-progress'
+              style={{
+                width: `${Math.min(100, Math.round(((profile?.exp ?? 0) % 100) / 100 * 100))}%`
+              }}
+            />
+          </View>
+          <Text className='growth-copy'>当前 {profile?.exp ?? 0} EXP，下一等级需要 {profile?.nextLevelExp ?? 100} EXP。</Text>
+
+          <View className='badge-list'>
+            {(profile?.badges || []).map((badge) => (
+              <View key={badge.id} className={`badge-item ${badge.unlocked ? 'badge-unlocked' : 'badge-locked'}`}>
+                <Text className='badge-name'>{badge.name}</Text>
+                <Text className='badge-desc'>{badge.description}</Text>
+              </View>
+            ))}
+          </View>
+        </View>
+      )}
+
       <View className='history-section-header'>
         <Text className='history-section-title'>闯关历史</Text>
         <Text className='history-section-status'>{historyLoading ? '同步中' : auth ? '账号记录' : '本地记录'}</Text>
