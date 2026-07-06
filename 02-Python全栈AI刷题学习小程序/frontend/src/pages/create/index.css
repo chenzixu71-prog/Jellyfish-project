@@ -890,3 +890,89 @@
   bottom: -14px;
   transform: translateX(-50%) rotate(0deg);
 }
+
+.create-page {
+  padding-left: 18px;
+  padding-right: 18px;
+  background:
+    radial-gradient(circle at 76% 12%, rgba(255, 255, 255, 0.18) 0 86px, transparent 87px),
+    radial-gradient(circle at 19% 20%, rgba(255, 255, 255, 0.1) 0 136px, transparent 138px),
+    linear-gradient(180deg, #634cf0 0 332px, #fbfaff 332px 100%);
+}
+
+.brand-hero {
+  min-height: 342px;
+}
+
+.brand-row {
+  min-height: 56px;
+  border-radius: 28px;
+  backdrop-filter: blur(8px);
+}
+
+.brand-main {
+  font-size: 30px;
+}
+
+.brand-quest {
+  font-size: 17px;
+}
+
+.ocean-stage {
+  top: 118px;
+  width: 156px;
+  height: 148px;
+}
+
+.jelly-label {
+  min-width: 150px;
+  bottom: -18px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+}
+
+.home-board {
+  margin-left: -18px;
+  margin-right: -18px;
+  margin-top: -48px;
+  padding: 20px 24px 28px;
+  border-radius: 40px 40px 0 0;
+}
+
+.challenge-card {
+  padding: 8px 0 18px;
+}
+
+.challenge-title {
+  font-size: 25px;
+}
+
+.challenge-copy {
+  margin-top: 14px;
+  font-size: 15px;
+  line-height: 1.72;
+}
+
+.tag-row {
+  gap: 14px;
+}
+
+.topic-tag {
+  min-width: 72px;
+  height: 38px;
+  background: #f2ecff;
+}
+
+.progress-card {
+  border: 0;
+  border-radius: 28px;
+  background: #f3efff;
+  box-shadow: inset 0 0 0 2px #e4d9ff;
+}
+
+.input-panel {
+  margin-top: 18px;
+  padding: 24px 18px 20px;
+  border-radius: 32px;
+}

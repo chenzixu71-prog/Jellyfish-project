@@ -322,3 +322,51 @@
 .share-button-wechat {
   background: linear-gradient(135deg, #6246f2, #7d62ff);
 }
+
+.report-page {
+  padding-left: 18px;
+  padding-right: 18px;
+  background:
+    radial-gradient(circle at 78% 8%, rgba(255, 255, 255, 0.18) 0 82px, transparent 83px),
+    radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.1) 0 128px, transparent 130px),
+    linear-gradient(180deg, #634cf0 0 236px, #fbfaff 236px 100%);
+}
+
+.report-cover {
+  margin-left: -18px;
+  margin-right: -18px;
+  height: 218px;
+}
+
+.cover-label {
+  border-radius: 28px;
+  font-size: 23px;
+}
+
+.report-card {
+  margin-top: -72px;
+  border-radius: 38px 38px 0 0;
+  padding: 26px 20px 24px;
+}
+
+.report-title {
+  font-size: 29px;
+}
+
+.score-row {
+  gap: 14px;
+}
+
+.score-box {
+  border-radius: 26px;
+}
+
+.report-section {
+  border-radius: 28px;
+  box-shadow: none;
+}
+
+.share-button {
+  height: 58px;
+  line-height: 54px;
+}

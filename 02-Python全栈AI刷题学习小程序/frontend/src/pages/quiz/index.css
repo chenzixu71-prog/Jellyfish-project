@@ -494,3 +494,68 @@
   background: linear-gradient(135deg, #6246f2, #7d62ff);
   box-shadow: 0 14px 28px rgba(98, 70, 242, 0.28);
 }
+
+.quiz-page,
+.complete-page {
+  background:
+    radial-gradient(circle at 78% 10%, rgba(255, 255, 255, 0.18) 0 82px, transparent 83px),
+    radial-gradient(circle at 20% 18%, rgba(255, 255, 255, 0.1) 0 130px, transparent 132px),
+    linear-gradient(180deg, #634cf0 0 36%, #fbfaff 36% 100%);
+}
+
+.stage-title {
+  font-size: 32px;
+  letter-spacing: 0;
+}
+
+.pill {
+  min-width: 72px;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.16);
+  color: #ffffff;
+}
+
+.quiz-title {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.question-card {
+  margin-top: 28px;
+  border-radius: 34px;
+  padding: 24px 22px;
+}
+
+.question-stem {
+  font-size: 21px;
+}
+
+.option-item {
+  border-radius: 24px;
+  background: #f8f6ff;
+  box-shadow: none;
+}
+
+.option-active,
+.option-correct {
+  background: #f8df63;
+}
+
+.option-wrong {
+  background: #ffe1e7;
+}
+
+.feedback {
+  border-radius: 28px;
+}
+
+.knowledge-sheet {
+  border-radius: 34px 34px 0 0;
+}
+
+.complete-card {
+  border-radius: 0 0 40px 40px;
+}
+
+.complete-card::before {
+  border-radius: 40px 40px 0 0;
+}

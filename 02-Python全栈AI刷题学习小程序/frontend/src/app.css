@@ -53,3 +53,12 @@ page {
   font-size: 12px;
   font-weight: 900;
 }
+
+button::after {
+  border: 0;
+}
+
+.primary-button,
+.secondary-button {
+  letter-spacing: 0;
+}

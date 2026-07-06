@@ -250,3 +250,34 @@
   background: #ffffff;
   box-shadow: 0 18px 40px rgba(80, 61, 176, 0.12);
 }
+
+.profile-page {
+  padding-left: 18px;
+  padding-right: 18px;
+  background:
+    radial-gradient(circle at 78% 8%, rgba(255, 255, 255, 0.18) 0 82px, transparent 83px),
+    radial-gradient(circle at 18% 14%, rgba(255, 255, 255, 0.1) 0 128px, transparent 130px),
+    linear-gradient(180deg, #634cf0 0%, #6f55f4 34%, #fbfaff 34%, #fbfaff 100%);
+}
+
+.profile-hero {
+  border-radius: 36px;
+}
+
+.profile-title {
+  font-size: 38px;
+}
+
+.profile-action {
+  background: #f8df63;
+  color: #4a36c9;
+}
+
+.empty-card,
+.history-card {
+  border-radius: 32px;
+}
+
+.history-pill {
+  border-radius: 999px;
+}
