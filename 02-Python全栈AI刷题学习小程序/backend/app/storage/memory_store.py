@@ -1,4 +1,9 @@
-from app.schemas import AnswerResult, LearningProfile, Quiz, Report, WrongQuestion
+import hashlib
+import secrets
+from datetime import datetime, timedelta, timezone
+
+from app.config import AUTH_TOKEN_TTL_DAYS
+from app.schemas import AnswerResult, LearningProfile, LoginUser, Quiz, Report, WrongQuestion
 
 
 class MemoryStore:
@@ -8,6 +13,32 @@ class MemoryStore:
         self.wrong_questions: dict[str, list[WrongQuestion]] = {}
         self.reports: dict[str, list[Report]] = {}
         self.profile_stats: dict[str, dict[str, object]] = {}
+        self.wechat_users: dict[str, LoginUser] = {}
+        self.auth_sessions: dict[str, dict[str, object]] = {}
+
+    def get_or_create_wechat_user(self, openid: str) -> LoginUser:
+        existing = self.wechat_users.get(openid)
+        if existing:
+            return existing
+
+        user = LoginUser(
+            id=f"user-{hashlib.sha256(openid.encode('utf-8')).hexdigest()[:16]}",
+            displayName="水母学员",
+            avatarUrl="",
+            loginType="wechat",
+        )
+        self.wechat_users[openid] = user
+        return user
+
+    def create_auth_token(self, user_id: str) -> str:
+        token = secrets.token_urlsafe(32)
+        token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        self.auth_sessions[token_hash] = {
+            "user_id": user_id,
+            "expires_at": datetime.now(timezone.utc)
+            + timedelta(days=AUTH_TOKEN_TTL_DAYS),
+        }
+        return token
 
     def save_quiz(self, session_id: str, quiz: Quiz) -> None:
         self.quizzes[quiz.quizId] = quiz

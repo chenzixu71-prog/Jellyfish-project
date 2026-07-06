@@ -1,18 +1,39 @@
 import { useState } from 'react'
 import Taro, { useDidShow } from '@tarojs/taro'
 import { Button, Text, View } from '@tarojs/components'
+import { AuthSession, getStoredAuth, loginWithWechat } from '../../services/authService'
 import { Report } from '../../services/quizService'
 import './index.css'
 
 export default function ProfilePage() {
   const [reports, setReports] = useState<Report[]>([])
+  const [auth, setAuth] = useState<AuthSession | null>(null)
+  const [loggingIn, setLoggingIn] = useState(false)
+  const [loginError, setLoginError] = useState('')
 
   useDidShow(() => {
     setReports(Taro.getStorageSync<Report[]>('learningReports') || [])
+    setAuth(getStoredAuth())
   })
 
   function startNew() {
     Taro.switchTab({ url: '/pages/create/index' })
+  }
+
+  async function handleLogin() {
+    if (loggingIn) return
+
+    setLoggingIn(true)
+    setLoginError('')
+    try {
+      const nextAuth = await loginWithWechat()
+      setAuth(nextAuth)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '登录失败，请稍后重试'
+      setLoginError(message)
+    } finally {
+      setLoggingIn(false)
+    }
   }
 
   return (
@@ -25,6 +46,27 @@ export default function ProfilePage() {
         </View>
         <View className='profile-jelly' />
         <Button className='profile-action' onClick={startNew}>新练习</Button>
+      </View>
+
+      <View className='login-card'>
+        <View className='login-avatar'>水</View>
+        <View className='login-copy'>
+          <Text className='login-title'>{auth ? auth.user.displayName : '水母学员'}</Text>
+          <Text className='login-subtitle'>
+            {auth ? '已登录，后续学习记录会归档到你的水母身份。' : '登录后保存你的水母学习记录。'}
+          </Text>
+          {loginError && <Text className='login-error'>{loginError}</Text>}
+        </View>
+        {!auth && (
+          <Button
+            className='login-button'
+            loading={loggingIn}
+            disabled={loggingIn}
+            onClick={handleLogin}
+          >
+            微信一键登录
+          </Button>
+        )}
       </View>
 
       {reports.length === 0 && (

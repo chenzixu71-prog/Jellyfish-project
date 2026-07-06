@@ -16,6 +16,49 @@ def test_health_returns_service_status():
     assert body["data"]["product"] == "水母diy学习助手"
 
 
+def test_wechat_login_creates_user_and_token():
+    response = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "test-login-code", "sessionId": "guest-session"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["code"] == 0
+    assert body["data"]["token"]
+    assert body["data"]["user"]["id"]
+    assert body["data"]["user"]["displayName"] == "水母学员"
+    assert body["data"]["user"]["avatarUrl"] == ""
+    assert body["data"]["user"]["loginType"] == "wechat"
+
+
+def test_wechat_login_reuses_existing_user():
+    first = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "same-login-code", "sessionId": "guest-session-a"},
+    ).json()["data"]
+    second = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "same-login-code", "sessionId": "guest-session-b"},
+    ).json()["data"]
+
+    assert first["user"]["id"] == second["user"]["id"]
+    assert first["token"] != second["token"]
+
+
+def test_wechat_login_returns_business_error_when_code_exchange_fails():
+    response = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "fail-code", "sessionId": "guest-session"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["code"] == 1001
+    assert "登录失败" in body["message"]
+    assert body["data"] is None
+
+
 def test_generate_quiz_returns_five_mixed_questions():
     response = client.post(
         "/api/generate-quiz",

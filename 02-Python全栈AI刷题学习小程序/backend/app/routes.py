@@ -7,8 +7,10 @@ from app.schemas import (
     GenerateReportRequest,
     RegenerateWeakQuizRequest,
     SubmitAnswerRequest,
+    WechatLoginRequest,
 )
 from app.services.asset_parser import parse_learning_assets
+from app.services.auth_service import AuthError, login_with_wechat
 from app.services.quiz_service import (
     create_quiz,
     generate_report,
@@ -80,6 +82,15 @@ def list_levels():
 @router.get("/api/questions", response_model=ApiResponse)
 def list_questions(levelId: str = "level-1"):
     return ok(QUESTIONS.get(levelId, []))
+
+
+@router.post("/api/auth/wechat-login", response_model=ApiResponse)
+def wechat_login(payload: WechatLoginRequest):
+    try:
+        result = login_with_wechat(payload.code, payload.sessionId)
+        return ok(result.model_dump())
+    except AuthError:
+        return ApiResponse(code=1001, message="登录失败，请稍后重试", data=None)
 
 
 @router.post("/api/generate-quiz", response_model=ApiResponse)

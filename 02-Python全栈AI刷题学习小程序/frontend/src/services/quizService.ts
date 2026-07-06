@@ -98,7 +98,7 @@ interface ApiResponse<T> {
   data: T
 }
 
-async function request<T>(url: string, method: 'GET' | 'POST', data?: unknown): Promise<T> {
+export async function request<T>(url: string, method: 'GET' | 'POST', data?: unknown): Promise<T> {
   let lastError: unknown
 
   for (const baseUrl of API_BASE_URLS) {

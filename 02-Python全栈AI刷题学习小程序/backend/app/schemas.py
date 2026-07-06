@@ -36,6 +36,23 @@ class GenerateQuizRequest(BaseModel):
     questionCount: int = Field(default=5, ge=5, le=5)
 
 
+class WechatLoginRequest(BaseModel):
+    code: str = Field(min_length=1)
+    sessionId: str = Field(min_length=1)
+
+
+class LoginUser(BaseModel):
+    id: str
+    displayName: str
+    avatarUrl: str = ""
+    loginType: Literal["wechat"] = "wechat"
+
+
+class WechatLoginResponse(BaseModel):
+    token: str
+    user: LoginUser
+
+
 class Quiz(BaseModel):
     quizId: str
     title: str
