@@ -279,6 +279,38 @@
   animation: softLift 3.2s ease-in-out infinite;
 }
 
+.history-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin: 26px 4px 14px;
+}
+
+.history-section-title {
+  color: #15151f;
+  font-size: 26px;
+  font-weight: 950;
+}
+
+.history-section-status {
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: #f3efff;
+  color: #6246f2;
+  font-size: 14px;
+  font-weight: 950;
+}
+
+.history-error {
+  display: block;
+  margin: 0 4px 12px;
+  color: #d95d64;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.5;
+}
+
 .history-card:nth-child(2n) {
   animation-delay: 0.25s;
 }

@@ -4,6 +4,7 @@ from fastapi import HTTPException
 
 from app.schemas import (
     AnswerResult,
+    ChallengeHistoryItem,
     DailyChallenge,
     LearningProfile,
     Quiz,
@@ -111,6 +112,20 @@ def get_report_history(session_id: str) -> list[ReportHistoryItem]:
             total=report.total,
             mastery=report.mastery,
             weakPoints=report.weakPoints,
+        )
+        for report in store.get_reports(session_id)
+    ]
+
+
+def get_challenge_history(session_id: str) -> list[ChallengeHistoryItem]:
+    return [
+        ChallengeHistoryItem(
+            quizId=report.quizId,
+            title=report.title,
+            score=report.score,
+            total=report.total,
+            mastery=report.mastery,
+            completedAt=store.get_report_time(session_id, report.quizId),
         )
         for report in store.get_reports(session_id)
     ]

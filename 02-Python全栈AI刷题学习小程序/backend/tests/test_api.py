@@ -206,6 +206,58 @@ def test_learning_endpoints_use_authenticated_user_identity():
     assert profile["totalCorrect"] == 1
 
 
+def test_challenge_history_returns_authenticated_reports():
+    login = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "history-code", "sessionId": "history-guest-session"},
+    ).json()["data"]
+    headers = {"Authorization": f"Bearer {login['token']}"}
+    session_id = "history-local-session"
+
+    generated = client.post(
+        "/api/generate-quiz",
+        headers=headers,
+        json={
+            "sessionId": session_id,
+            "inputType": "text",
+            "content": "learn MySQL basics",
+            "questionCount": 5,
+        },
+    ).json()["data"]
+
+    for question in generated["questions"]:
+        client.post(
+            "/api/submit-answer",
+            headers=headers,
+            json={
+                "sessionId": session_id,
+                "quizId": generated["quizId"],
+                "questionId": question["id"],
+                "answer": question["answer"],
+            },
+        )
+
+    client.post(
+        "/api/generate-report",
+        headers=headers,
+        json={"sessionId": session_id, "quizId": generated["quizId"]},
+    )
+
+    history = client.get(
+        "/api/challenge-history",
+        headers=headers,
+        params={"sessionId": session_id},
+    ).json()["data"]
+
+    assert len(history) == 1
+    assert history[0]["quizId"] == generated["quizId"]
+    assert history[0]["title"]
+    assert history[0]["score"] == 5
+    assert history[0]["total"] == 5
+    assert history[0]["mastery"] == 100
+    assert history[0]["completedAt"]
+
+
 def test_generate_quiz_returns_five_mixed_questions():
     response = client.post(
         "/api/generate-quiz",

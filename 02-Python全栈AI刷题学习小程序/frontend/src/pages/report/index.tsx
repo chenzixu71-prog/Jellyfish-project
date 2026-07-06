@@ -16,7 +16,11 @@ export default function ReportPage() {
 
   useDidShow(async () => {
     const storedQuiz = Taro.getStorageSync<Quiz>('currentQuiz')
-    const quizId = router.params.quizId || storedQuiz?.quizId
+    const historyQuizId = Taro.getStorageSync<string>('historyReportQuizId')
+    const quizId = router.params.quizId || historyQuizId || storedQuiz?.quizId
+    if (historyQuizId) {
+      Taro.removeStorageSync('historyReportQuizId')
+    }
     if (!quizId) {
       setReport(null)
       setLoading(false)

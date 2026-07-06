@@ -14,6 +14,7 @@ from app.services.auth_service import AuthError, get_bearer_token, login_with_we
 from app.services.quiz_service import (
     create_quiz,
     generate_report,
+    get_challenge_history,
     get_daily_challenge,
     get_learning_profile,
     get_report_history,
@@ -180,6 +181,12 @@ def weak_quiz(payload: RegenerateWeakQuizRequest, authorization: str | None = He
 def report_history(sessionId: str, authorization: str | None = Header(default=None)):
     owner_id = resolve_learning_owner(sessionId, authorization)
     return ok([item.model_dump() for item in get_report_history(owner_id)])
+
+
+@router.get("/api/challenge-history", response_model=ApiResponse)
+def challenge_history(sessionId: str, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    return ok([item.model_dump() for item in get_challenge_history(owner_id)])
 
 
 @router.get("/api/daily-challenge", response_model=ApiResponse)

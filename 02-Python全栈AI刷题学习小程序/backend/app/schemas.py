@@ -134,6 +134,15 @@ class ReportHistoryItem(BaseModel):
     weakPoints: list[str]
 
 
+class ChallengeHistoryItem(BaseModel):
+    quizId: str
+    title: str
+    score: int
+    total: int
+    mastery: int
+    completedAt: str
+
+
 class DailyChallenge(BaseModel):
     date: str
     target: int

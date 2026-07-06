@@ -21,6 +21,7 @@ class MemoryStore:
         self.answers: dict[tuple[str, str], list[AnswerResult]] = {}
         self.wrong_questions: dict[str, list[WrongQuestion]] = {}
         self.reports: dict[str, list[Report]] = {}
+        self.report_times: dict[tuple[str, str], str] = {}
         self.profile_stats: dict[str, dict[str, object]] = {}
         self.wechat_users: dict[str, LoginUser] = {}
         self.auth_sessions: dict[str, dict[str, object]] = {}
@@ -131,6 +132,9 @@ class MemoryStore:
         for report in self.reports.get(session_id, []):
             if report.quizId not in existing_report_ids:
                 user_reports.append(report)
+                guest_time = self.report_times.get((session_id, report.quizId))
+                if guest_time and (user_id, report.quizId) not in self.report_times:
+                    self.report_times[(user_id, report.quizId)] = guest_time
                 existing_report_ids.add(report.quizId)
                 copied_reports += 1
         self.reports[user_id] = user_reports[:10]
@@ -216,9 +220,13 @@ class MemoryStore:
         ]
         existing.insert(0, report)
         self.reports[session_id] = existing[:10]
+        self.report_times[(session_id, report.quizId)] = datetime.now(timezone.utc).isoformat()
 
     def get_reports(self, session_id: str) -> list[Report]:
         return self.reports.get(session_id, [])
+
+    def get_report_time(self, session_id: str, quiz_id: str) -> str:
+        return self.report_times.get((session_id, quiz_id), "")
 
     def record_answer_stat(self, session_id: str, is_correct: bool) -> None:
         stats = self.profile_stats.setdefault(

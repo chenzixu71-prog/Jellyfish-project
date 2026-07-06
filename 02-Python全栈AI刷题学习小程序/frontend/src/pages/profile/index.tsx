@@ -8,7 +8,7 @@ import {
   getStoredAuth,
   loginWithWechat
 } from '../../services/authService'
-import { Report } from '../../services/quizService'
+import { ChallengeHistoryItem, getChallengeHistory, Report } from '../../services/quizService'
 import './index.css'
 
 export default function ProfilePage() {
@@ -17,6 +17,9 @@ export default function ProfilePage() {
   const [profile, setProfile] = useState<CurrentUserProfile | null>(null)
   const [profileLoading, setProfileLoading] = useState(false)
   const [profileError, setProfileError] = useState('')
+  const [challengeHistory, setChallengeHistory] = useState<ChallengeHistoryItem[]>([])
+  const [historyLoading, setHistoryLoading] = useState(false)
+  const [historyError, setHistoryError] = useState('')
   const [loggingIn, setLoggingIn] = useState(false)
   const [loginError, setLoginError] = useState('')
 
@@ -26,9 +29,12 @@ export default function ProfilePage() {
     setAuth(storedAuth)
     if (storedAuth) {
       loadProfile()
+      loadChallengeHistory()
     } else {
       setProfile(null)
       setProfileError('')
+      setChallengeHistory([])
+      setHistoryError('')
     }
   })
 
@@ -45,8 +51,9 @@ export default function ProfilePage() {
       const nextAuth = await loginWithWechat()
       setAuth(nextAuth)
       await loadProfile()
+      await loadChallengeHistory()
     } catch (error) {
-      const message = error instanceof Error ? error.message : '登录失败，请稍后重试'
+      const message = error instanceof Error ? error.message : '微信登录失败，请稍后重试'
       setLoginError(message)
     } finally {
       setLoggingIn(false)
@@ -67,13 +74,32 @@ export default function ProfilePage() {
     }
   }
 
+  async function loadChallengeHistory() {
+    setHistoryLoading(true)
+    setHistoryError('')
+    try {
+      const nextHistory = await getChallengeHistory()
+      setChallengeHistory(nextHistory)
+    } catch (error) {
+      const message = error instanceof Error ? error.message : '闯关历史暂时无法加载'
+      setHistoryError(message)
+    } finally {
+      setHistoryLoading(false)
+    }
+  }
+
+  function openChallengeReport(quizId: string) {
+    Taro.setStorageSync('historyReportQuizId', quizId)
+    Taro.switchTab({ url: '/pages/report/index' })
+  }
+
   return (
     <View className='profile-page'>
       <View className='profile-hero'>
         <View className='hero-copy'>
           <Text className='profile-kicker'>Jelly Log</Text>
           <Text className='profile-title'>学习记录</Text>
-          <Text className='profile-subtitle'>你的水母复盘都会保存在这里</Text>
+          <Text className='profile-subtitle'>你的水母复盘、闯关历史和成长数据都会保存到这里。</Text>
         </View>
         <View className='profile-jelly' />
         <Button className='profile-action' onClick={startNew}>新练习</Button>
@@ -84,7 +110,7 @@ export default function ProfilePage() {
         <View className='login-copy'>
           <Text className='login-title'>{auth ? auth.user.displayName : '水母学员'}</Text>
           <Text className='login-subtitle'>
-            {auth ? '已登录，后续学习记录会归档到你的水母身份。' : '登录后保存你的水母学习记录。'}
+            {auth ? '已登录，后续学习记录会归档到你的水母身份。' : '登录后保存你的水母学习记录，游客数据会自动绑定。'}
           </Text>
           {loginError && <Text className='login-error'>{loginError}</Text>}
           {profileError && <Text className='login-error'>{profileError}</Text>}
@@ -96,7 +122,7 @@ export default function ProfilePage() {
             disabled={loggingIn}
             onClick={handleLogin}
           >
-            微信一键登录
+            微信登录
           </Button>
         )}
       </View>
@@ -136,25 +162,60 @@ export default function ProfilePage() {
         </View>
       )}
 
-      {reports.length === 0 && (
+      <View className='history-section-header'>
+        <Text className='history-section-title'>闯关历史</Text>
+        <Text className='history-section-status'>{historyLoading ? '同步中' : auth ? '账号记录' : '本地记录'}</Text>
+      </View>
+
+      {auth && historyError && <Text className='history-error'>{historyError}</Text>}
+
+      {auth && challengeHistory.length === 0 && !historyLoading && (
         <View className='empty-card'>
-          <Text className='empty-title'>还没有报告</Text>
-          <Text className='empty-copy'>完成一次闯关后，这里会保存你的复盘结果。</Text>
+          <Text className='empty-title'>还没有闯关历史</Text>
+          <Text className='empty-copy'>完成一次闯关并查看报告后，这里会出现账号级历史记录。</Text>
         </View>
       )}
 
-      <View className='report-list'>
-        {reports.map((report) => (
-          <View key={report.quizId} className='history-card'>
-            <Text className='history-title'>{report.title}</Text>
-            <Text className='history-summary'>{report.summary}</Text>
-            <View className='history-meta'>
-              <Text className='history-pill score-pill'>{report.score}/{report.total} 得分</Text>
-              <Text className='history-pill mastery-pill'>{report.mastery}% 掌握度</Text>
+      {auth && challengeHistory.length > 0 && (
+        <View className='report-list'>
+          {challengeHistory.map((item) => (
+            <View
+              key={item.quizId}
+              className='history-card'
+              onClick={() => openChallengeReport(item.quizId)}
+            >
+              <Text className='history-title'>{item.title}</Text>
+              <Text className='history-summary'>完成时间：{item.completedAt.slice(0, 10) || '刚刚完成'}</Text>
+              <View className='history-meta'>
+                <Text className='history-pill score-pill'>{item.score}/{item.total} 得分</Text>
+                <Text className='history-pill mastery-pill'>{item.mastery}% 掌握度</Text>
+              </View>
             </View>
-          </View>
-        ))}
-      </View>
+          ))}
+        </View>
+      )}
+
+      {!auth && reports.length === 0 && (
+        <View className='empty-card'>
+          <Text className='empty-title'>还没有本地报告</Text>
+          <Text className='empty-copy'>完成一次闯关后，这里会先保存本地复盘结果；登录后会绑定到账号。</Text>
+        </View>
+      )}
+
+      {!auth && (
+        <View className='report-list'>
+          {reports.map((report) => (
+            <View key={report.quizId} className='history-card'>
+              <Text className='history-title'>{report.title}</Text>
+              <Text className='history-summary'>{report.summary}</Text>
+              <View className='history-meta'>
+                <Text className='history-pill score-pill'>{report.score}/{report.total} 得分</Text>
+                <Text className='history-pill mastery-pill'>{report.mastery}% 掌握度</Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      )}
     </View>
   )
 }
