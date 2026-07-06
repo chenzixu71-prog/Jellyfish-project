@@ -609,6 +609,8 @@
       height: 10px;
       border-radius: 50%;
       background: #111111;
+      transform-origin: 50% 50%;
+      animation: jellyBlink 4.8s ease-in-out infinite;
     }
 
     .jellyfish-body::before {
@@ -1176,6 +1178,8 @@
       height: 9px;
       border-radius: 50%;
       background: #111111;
+      transform-origin: 50% 50%;
+      animation: jellyBlink 4.8s ease-in-out infinite;
     }
 
     .complete-jelly-eye.left {
@@ -1429,6 +1433,16 @@
 
       50% {
         transform: translateY(-5px) rotate(calc(var(--arm-rotate, 0deg) + 7deg));
+      }
+    }
+
+    @keyframes jellyBlink {
+      0%, 92%, 100% {
+        transform: scaleY(1);
+      }
+
+      95% {
+        transform: scaleY(0.18);
       }
     }
 
