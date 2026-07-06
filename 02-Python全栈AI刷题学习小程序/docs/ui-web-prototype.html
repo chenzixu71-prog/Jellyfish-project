@@ -1092,6 +1092,125 @@
       font-family: var(--font-hand);
     }
 
+    .knowledge-toggle {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .more-button {
+      display: inline-grid;
+      place-items: center;
+      min-height: 36px;
+      margin-top: 10px;
+      padding: 0 14px;
+      border-radius: 999px;
+      background: var(--purple);
+      color: var(--paper);
+      font-family: var(--font-hand);
+      font-size: 14px;
+      font-weight: 950;
+      box-shadow: 0 4px 0 rgba(17, 17, 17, 0.3);
+      cursor: pointer;
+      transition: transform 160ms ease, filter 160ms ease;
+    }
+
+    .more-button:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.04);
+    }
+
+    .knowledge-sheet {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      z-index: 12;
+      height: 58%;
+      padding: 16px 18px 18px;
+      border-radius: 28px 28px 0 0;
+      background: rgba(255, 253, 247, 0.98);
+      box-shadow: 0 -16px 38px rgba(33, 18, 84, 0.24);
+      transform: translateY(105%);
+      transition: transform 300ms cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    .knowledge-toggle:checked ~ .knowledge-sheet {
+      transform: translateY(0);
+    }
+
+    .sheet-handle {
+      width: 48px;
+      height: 5px;
+      margin: 0 auto 12px;
+      border-radius: 999px;
+      background: rgba(98, 70, 242, 0.22);
+    }
+
+    .sheet-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+
+    .sheet-title {
+      color: var(--purple-deep);
+      font-family: var(--font-hand);
+      font-size: 20px;
+      font-weight: 950;
+      line-height: 1.1;
+    }
+
+    .sheet-close {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #f0ecff;
+      color: var(--purple-deep);
+      font-weight: 950;
+      cursor: pointer;
+    }
+
+    .sheet-scroll {
+      height: calc(100% - 54px);
+      overflow-y: auto;
+      padding-right: 5px;
+      color: #20202a;
+      font-size: 12px;
+      line-height: 1.55;
+      font-weight: 780;
+    }
+
+    .knowledge-block {
+      margin-bottom: 10px;
+      padding: 10px;
+      border-radius: 18px;
+      background: #f4f1ff;
+    }
+
+    .knowledge-block.correct {
+      background: #fff2ad;
+    }
+
+    .knowledge-block.wrong {
+      background: #ffe2df;
+    }
+
+    .knowledge-block strong {
+      display: block;
+      margin-bottom: 4px;
+      color: var(--purple-deep);
+      font-size: 13px;
+      font-weight: 950;
+    }
+
     .celebration-bubble {
       position: absolute;
       left: 50%;
@@ -1833,6 +1952,37 @@
                 端口像房间号，帮助请求找到具体的软件服务。
               </div>
             </div>
+            <input class="knowledge-toggle" id="knowledge-toggle" type="checkbox">
+            <label class="more-button" for="knowledge-toggle">展开知识详情</label>
+            <section class="knowledge-sheet" aria-label="知识详情">
+              <div class="sheet-handle"></div>
+              <div class="sheet-head">
+                <div class="sheet-title">端口知识拆解</div>
+                <label class="sheet-close" for="knowledge-toggle">×</label>
+              </div>
+              <div class="sheet-scroll">
+                <div class="knowledge-block correct">
+                  <strong>答对时看这里</strong>
+                  你已经抓住了核心：端口用来区分同一台电脑上的不同服务。
+                </div>
+                <div class="knowledge-block wrong">
+                  <strong>答错时看这里</strong>
+                  不要把端口理解成数据库或缓存。端口更像门牌号，数据库和 Redis 是门后面的具体服务。
+                </div>
+                <div class="knowledge-block">
+                  <strong>一句话解释</strong>
+                  IP 地址负责找到哪一台电脑，端口负责找到这台电脑里的哪一个程序。
+                </div>
+                <div class="knowledge-block">
+                  <strong>生活类比</strong>
+                  一栋楼是服务器，房间号是端口。访问 80 号房间可能是网页服务，访问 3306 号房间可能是数据库服务。
+                </div>
+                <div class="knowledge-block">
+                  <strong>容易混淆</strong>
+                  端口不是数据本身，也不是数据库。它只是网络请求进入具体服务的入口编号。
+                </div>
+              </div>
+            </section>
             <div class="main-button">下一题</div>
           </div>
         </div>
