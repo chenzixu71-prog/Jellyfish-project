@@ -1,9 +1,11 @@
 .quiz-page,
 .complete-page {
   min-height: 100vh;
-  padding: 66px 22px 108px;
+  padding: 54px 20px 108px;
   background:
     radial-gradient(circle at 16% 10%, rgba(255, 255, 255, 0.18), transparent 24%),
+    radial-gradient(circle at 78% 13%, rgba(255, 253, 247, 0.12) 0 34px, transparent 35px),
+    linear-gradient(132deg, transparent 0 63%, rgba(255, 253, 247, 0.08) 64% 66%, transparent 67%),
     linear-gradient(180deg, #6246f2 0 38%, #fffdf7 38% 100%);
   color: #15151f;
   box-sizing: border-box;
@@ -15,9 +17,10 @@
 
 .stage-title {
   display: block;
-  font-size: 31px;
+  font-size: 36px;
   font-weight: 950;
   line-height: 1;
+  color: #fffdf7;
 }
 
 .quiz-progress-row {
@@ -35,6 +38,7 @@
   font-size: 13px;
   font-weight: 950;
   box-shadow: 0 4px 0 #111111;
+  animation: popStep 2.6s ease-in-out infinite;
 }
 
 .quiz-title {
@@ -47,11 +51,11 @@
 
 .question-card {
   margin-top: 24px;
-  padding: 22px;
-  border: 3px solid #111111;
-  border-radius: 30px;
-  background: #fffdf7;
-  box-shadow: 0 8px 0 #111111;
+  padding: 20px;
+  border: 0;
+  border-radius: 28px;
+  background: rgba(255, 253, 247, 0.97);
+  box-shadow: 0 14px 30px rgba(45, 31, 114, 0.18), 0 8px 0 rgba(17, 17, 17, 0.92);
 }
 
 .question-stem {
@@ -86,10 +90,12 @@
   background: #f7de61;
   box-shadow: 0 5px 0 #111111;
   transform: translateY(-2px);
+  animation: selectedPulse 1.35s ease-in-out infinite;
 }
 
 .option-wrong {
   background: #f7c7c2;
+  animation: answerGlow 1.5s ease-in-out infinite;
 }
 
 .option-key {
@@ -121,6 +127,7 @@
   padding: 18px;
   border: 3px solid #111111;
   border-radius: 22px;
+  animation: softLift 2.8s ease-in-out infinite;
 }
 
 .feedback-right {
@@ -176,6 +183,7 @@
   background: #fffdf7;
   box-shadow: 0 -8px 0 #111111;
   box-sizing: border-box;
+  animation: sheetSlideUp 220ms ease-out;
 }
 
 .sheet-title {
@@ -229,10 +237,10 @@
   z-index: 2;
   margin-top: 48px;
   padding: 36px 24px 28px;
-  border: 3px solid #111111;
+  border: 0;
   border-radius: 32px;
-  background: #fffdf7;
-  box-shadow: 0 8px 0 #111111;
+  background: rgba(255, 253, 247, 0.97);
+  box-shadow: 0 14px 30px rgba(45, 31, 114, 0.18), 0 8px 0 #111111;
   text-align: center;
 }
 
@@ -268,7 +276,12 @@
   height: 72px;
   border: 3px solid #111111;
   border-radius: 54% 54% 46% 46% / 62% 62% 40% 40%;
-  background: linear-gradient(180deg, #ffd3ea, #f28abd);
+  background:
+    radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.68) 0 13px, transparent 14px),
+    radial-gradient(circle at 76% 18%, rgba(255, 255, 255, 0.28) 0 9px, transparent 10px),
+    linear-gradient(180deg, #ffd3ea, #f28abd);
+  box-shadow: inset 0 -14px 0 rgba(247, 222, 97, 0.2);
+  animation: jellySquish 2.8s ease-in-out infinite;
 }
 
 .complete-jelly-body::before,
@@ -280,6 +293,7 @@
   height: 8px;
   border-radius: 50%;
   background: #111111;
+  animation: jellyBlink 4.8s ease-in-out infinite;
 }
 
 .complete-jelly-body::before {
@@ -305,8 +319,10 @@
   top: 72px;
   width: 7px;
   border-radius: 999px;
-  background: linear-gradient(180deg, #f6a4cc, #ffdaec);
-  box-shadow: 0 0 0 1px #111111;
+  background:
+    radial-gradient(circle at 50% 88%, rgba(255, 255, 255, 0.42) 0 3px, transparent 4px),
+    linear-gradient(180deg, #f6a4cc, #ffdaec);
+  box-shadow: 0 0 0 1.2px #111111;
   animation: completeWave 2s ease-in-out infinite;
 }
 
@@ -334,11 +350,47 @@
 }
 
 @keyframes completeWave {
-  0%, 100% { transform: rotate(-9deg); }
-  50% { transform: rotate(10deg); }
+  0%, 100% { margin-top: 0; }
+  35% { margin-top: 5px; }
+  70% { margin-top: -2px; }
 }
 
 @keyframes celebrateBubble {
   0%, 100% { opacity: 0.85; transform: translateY(0); }
   50% { opacity: 0.45; transform: translateY(-18px); }
+}
+
+@keyframes selectedPulse {
+  0%, 100% { transform: translateY(-2px); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes answerGlow {
+  0%, 100% { box-shadow: 0 0 0 rgba(247, 222, 97, 0); }
+  50% { box-shadow: 0 0 24px rgba(247, 222, 97, 0.42); }
+}
+
+@keyframes softLift {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+@keyframes popStep {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-4px) scale(1.04); }
+}
+
+@keyframes sheetSlideUp {
+  0% { transform: translateY(100%); }
+  100% { transform: translateY(0); }
+}
+
+@keyframes jellySquish {
+  0%, 100% { transform: scaleX(1) scaleY(1); }
+  50% { transform: scaleX(1.035) scaleY(0.975); }
+}
+
+@keyframes jellyBlink {
+  0%, 92%, 100% { transform: scaleY(1); }
+  95% { transform: scaleY(0.18); }
 }
