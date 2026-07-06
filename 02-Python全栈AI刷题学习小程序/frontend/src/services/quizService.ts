@@ -1,6 +1,6 @@
 import Taro from '@tarojs/taro'
 
-const API_BASE_URL = 'http://127.0.0.1:8010'
+const API_BASE_URLS = ['http://127.0.0.1:8010', 'http://localhost:8010']
 
 export type QuestionType = 'single' | 'multiple' | 'judge'
 export type Difficulty = 'easy' | 'medium' | 'hard'
@@ -99,20 +99,31 @@ interface ApiResponse<T> {
 }
 
 async function request<T>(url: string, method: 'GET' | 'POST', data?: unknown): Promise<T> {
-  const response = await Taro.request<ApiResponse<T>>({
-    url: `${API_BASE_URL}${url}`,
-    method,
-    data,
-    header: {
-      'Content-Type': 'application/json'
-    }
-  })
+  let lastError: unknown
 
-  if (response.statusCode >= 400 || response.data.code !== 0) {
-    throw new Error(response.data?.message || '请求失败')
+  for (const baseUrl of API_BASE_URLS) {
+    try {
+      const response = await Taro.request<ApiResponse<T>>({
+        url: `${baseUrl}${url}`,
+        method,
+        data,
+        header: {
+          'Content-Type': 'application/json'
+        }
+      })
+
+      if (response.statusCode >= 400 || response.data.code !== 0) {
+        throw new Error(response.data?.message || `接口返回异常：${response.statusCode}`)
+      }
+
+      return response.data.data
+    } catch (error) {
+      lastError = error
+    }
   }
 
-  return response.data.data
+  const detail = lastError instanceof Error ? lastError.message : '未知网络错误'
+  throw new Error(`后端接口暂时无法访问，请确认本地后端已启动，并在微信开发者工具勾选“不校验合法域名”。${detail}`)
 }
 
 export function getOrCreateSessionId(): string {
