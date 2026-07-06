@@ -545,7 +545,7 @@
       border: 4px solid #111111;
       border-radius: 58% 58% 43% 43%;
       background: var(--pink);
-      box-shadow: inset 0 -12px 0 rgba(255, 225, 66, 0.45);
+      box-shadow: inset 0 -12px 0 rgba(247, 222, 97, 0.38), inset 14px 8px 0 rgba(255, 255, 255, 0.24);
     }
 
     .jellyfish-body::before,
@@ -569,12 +569,41 @@
 
     .jelly-smile {
       position: absolute;
-      left: 37px;
-      top: 47px;
+      left: 50%;
+      top: 48px;
       width: 22px;
       height: 10px;
       border-bottom: 4px solid #111111;
       border-radius: 0 0 20px 20px;
+      transform: translateX(-50%);
+    }
+
+    .jelly-cheek {
+      position: absolute;
+      top: 43px;
+      width: 12px;
+      height: 8px;
+      border-radius: 50%;
+      background: rgba(245, 154, 143, 0.78);
+    }
+
+    .jelly-cheek.left {
+      left: 19px;
+    }
+
+    .jelly-cheek.right {
+      right: 19px;
+    }
+
+    .jelly-highlight {
+      position: absolute;
+      left: 22px;
+      top: 14px;
+      width: 18px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      transform: rotate(-18deg);
     }
 
     .tentacle {
@@ -983,17 +1012,37 @@
       border: 3px solid #111111;
       border-radius: 58% 58% 42% 42%;
       background: var(--pink);
+      box-shadow: inset 0 -8px 0 rgba(247, 222, 97, 0.38), inset 10px 6px 0 rgba(255, 255, 255, 0.22);
     }
 
     .complete-jelly::after {
       content: "";
       position: absolute;
-      left: 37px;
+      left: 50%;
       top: 33px;
       width: 18px;
       height: 9px;
       border-bottom: 3px solid #111111;
       border-radius: 0 0 20px 20px;
+      transform: translateX(-50%);
+    }
+
+    .complete-jelly-cheek {
+      position: absolute;
+      z-index: 2;
+      top: 34px;
+      width: 10px;
+      height: 7px;
+      border-radius: 50%;
+      background: rgba(245, 154, 143, 0.78);
+    }
+
+    .complete-jelly-cheek.left {
+      left: 21px;
+    }
+
+    .complete-jelly-cheek.right {
+      right: 21px;
     }
 
     .complete-jelly-eye {
@@ -1426,7 +1475,12 @@
               <span class="bubble two"></span>
               <span class="bubble three"></span>
               <div class="jellyfish">
-                <div class="jellyfish-body"><span class="jelly-smile"></span></div>
+                <div class="jellyfish-body">
+                  <span class="jelly-highlight"></span>
+                  <span class="jelly-cheek left"></span>
+                  <span class="jelly-cheek right"></span>
+                  <span class="jelly-smile"></span>
+                </div>
                 <span class="tentacle t1"></span>
                 <span class="tentacle t2"></span>
                 <span class="tentacle t3"></span>
@@ -1522,6 +1576,8 @@
               <div class="complete-jelly">
                 <span class="complete-jelly-eye left"></span>
                 <span class="complete-jelly-eye right"></span>
+                <span class="complete-jelly-cheek left"></span>
+                <span class="complete-jelly-cheek right"></span>
                 <span class="tentacle t1"></span>
                 <span class="tentacle t2"></span>
                 <span class="tentacle t3"></span>
