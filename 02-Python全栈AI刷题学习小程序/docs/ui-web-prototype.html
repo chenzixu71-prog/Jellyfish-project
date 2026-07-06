@@ -255,6 +255,12 @@
         linear-gradient(180deg, var(--purple) 0 42%, var(--paper) 42% 100%);
       color: var(--ink);
       box-shadow: 0 10px 0 #000000;
+      transition: transform 220ms ease, box-shadow 220ms ease;
+    }
+
+    .phone:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 18px 0 #000000;
     }
 
     .screen-block:nth-child(2n) .phone {
@@ -393,6 +399,7 @@
       border-radius: 28px;
       background: #dfeeff;
       box-shadow: 0 8px 0 rgba(20, 17, 40, 0.2);
+      animation: softLift 3.2s ease-in-out infinite;
     }
 
     .challenge-title {
@@ -667,6 +674,19 @@
       font-size: 16px;
       font-weight: 950;
       box-shadow: 0 6px 0 #111111;
+      transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+    }
+
+    .main-button:hover,
+    .share-button:hover {
+      filter: brightness(1.04);
+      transform: translateY(-2px);
+    }
+
+    .main-button:active,
+    .share-button:active {
+      transform: translateY(4px);
+      box-shadow: 0 2px 0 rgba(45, 31, 114, 0.4);
     }
 
     .main-button.above-tab {
@@ -754,6 +774,11 @@
       background: #ffe142;
       font-size: 13px;
       font-weight: 950;
+      animation: popStep 1.8s ease-in-out infinite;
+    }
+
+    .question-dot:nth-child(2) {
+      animation-delay: 0.08s;
     }
 
     .question-dot:nth-child(2) {
@@ -764,14 +789,17 @@
     .question-dot:nth-child(3) {
       background: #1767c8;
       color: #fffdf4;
+      animation-delay: 0.16s;
     }
 
     .question-dot:nth-child(4) {
       background: #ff7bd3;
+      animation-delay: 0.24s;
     }
 
     .question-dot:nth-child(5) {
       background: #d7ef45;
+      animation-delay: 0.32s;
     }
 
     .quiz-card {
@@ -832,6 +860,7 @@
     .option.active {
       background: #d7ef45;
       box-shadow: 0 5px 0 rgba(80, 98, 20, 0.25);
+      animation: selectedPulse 1.7s ease-in-out infinite;
     }
 
     .option-key {
@@ -857,6 +886,7 @@
       font-size: 12px;
       line-height: 1.45;
       font-weight: 800;
+      animation: answerGlow 2.2s ease-in-out infinite;
     }
 
     .feedback strong {
@@ -1045,10 +1075,12 @@
       border: 0;
       border-radius: 18px;
       background: #d7ef45;
+      animation: scoreBreathe 2.4s ease-in-out infinite;
     }
 
     .score-box.yellow {
       background: #ffe142;
+      animation-delay: 0.2s;
     }
 
     .score-num {
@@ -1198,6 +1230,56 @@
       100% {
         opacity: 0;
         transform: translate(calc(-50% + var(--x)), var(--y)) scale(1.22);
+      }
+    }
+
+    @keyframes softLift {
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-6px);
+      }
+    }
+
+    @keyframes popStep {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+
+      50% {
+        transform: translateY(-4px) scale(1.04);
+      }
+    }
+
+    @keyframes selectedPulse {
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-3px);
+      }
+    }
+
+    @keyframes answerGlow {
+      0%, 100% {
+        box-shadow: 0 0 0 rgba(216, 241, 90, 0);
+      }
+
+      50% {
+        box-shadow: 0 0 24px rgba(216, 241, 90, 0.55);
+      }
+    }
+
+    @keyframes scoreBreathe {
+      0%, 100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.03);
       }
     }
 
