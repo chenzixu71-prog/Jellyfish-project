@@ -1,0 +1,927 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>水母diy学习助手 UI 网页原型</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: #fffdf4;
+      color: #111111;
+      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+    }
+
+    .prototype-shell {
+      min-height: 100vh;
+      padding: 32px;
+    }
+
+    .prototype-header {
+      max-width: 1180px;
+      margin: 0 auto 24px;
+    }
+
+    .prototype-title {
+      margin: 0;
+      font-size: 34px;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .prototype-subtitle {
+      margin: 10px 0 0;
+      color: #4b5563;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .screen-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+      gap: 28px;
+      max-width: 1180px;
+      margin: 0 auto;
+    }
+
+    .screen-card {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .screen-label {
+      align-self: flex-start;
+      padding: 7px 13px;
+      border: 2px solid #111111;
+      border-radius: 999px;
+      background: #ffe142;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .phone {
+      position: relative;
+      width: 340px;
+      height: 700px;
+      overflow: hidden;
+      border: 3px solid #111111;
+      border-radius: 34px;
+      background: #fffdf4;
+      box-shadow: 0 10px 0 #111111;
+    }
+
+    .status-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 32px;
+      padding: 0 18px;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .nav-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      height: 44px;
+      font-size: 16px;
+      font-weight: 700;
+    }
+
+    .nav-back {
+      position: absolute;
+      left: 18px;
+      font-size: 30px;
+      line-height: 1;
+    }
+
+    .nav-menu {
+      position: absolute;
+      right: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 78px;
+      height: 32px;
+      border: 1px solid #d1d5db;
+      border-radius: 18px;
+      background: #ffffff;
+      letter-spacing: 3px;
+      font-weight: 900;
+    }
+
+    .page {
+      min-height: calc(100% - 76px);
+      padding: 24px 18px 36px;
+    }
+
+    .card {
+      background: #ffffff;
+      border: 2px solid #111111;
+      border-radius: 24px;
+      box-shadow: 0 8px 0 #111111;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 6px 12px;
+      border: 2px solid #111111;
+      border-radius: 999px;
+      background: #ffe142;
+      color: #111111;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .muted {
+      color: #6b7280;
+    }
+
+    .primary-button,
+    .secondary-button,
+    .share-button {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 2px solid #111111;
+      border-radius: 18px;
+      box-shadow: 0 5px 0 #111111;
+      font-weight: 900;
+      text-align: center;
+    }
+
+    .primary-button {
+      height: 52px;
+      background: #1767c8;
+      color: #ffffff;
+    }
+
+    .secondary-button {
+      height: 48px;
+      background: #ffe142;
+      color: #111111;
+    }
+
+    .hero {
+      position: relative;
+      padding-top: 8px;
+    }
+
+    .hand-logo {
+      width: 156px;
+      color: #1767c8;
+      font-size: 27px;
+      font-weight: 900;
+      line-height: 1;
+      transform: rotate(-2deg);
+    }
+
+    .hero-title {
+      margin-top: 20px;
+      font-size: 31px;
+      font-weight: 900;
+      line-height: 1.15;
+    }
+
+    .hero-subtitle {
+      margin-top: 10px;
+      color: #4b5563;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .input-card {
+      position: relative;
+      margin-top: 30px;
+      padding: 22px;
+    }
+
+    .section-title {
+      margin-bottom: 14px;
+      font-size: 21px;
+      font-weight: 900;
+    }
+
+    .learning-input {
+      min-height: 180px;
+      padding: 17px;
+      border: 2px solid #111111;
+      border-radius: 18px;
+      background: #fffdf4;
+      color: #6b7280;
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .generate-button {
+      margin-top: 18px;
+    }
+
+    .boy-illustration {
+      position: absolute;
+      top: -34px;
+      right: 18px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .face,
+    .girl-face {
+      position: relative;
+      border: 2px solid #111111;
+      border-radius: 50%;
+      background: #ffe142;
+      animation: nod 2.4s ease-in-out infinite;
+    }
+
+    .face {
+      width: 58px;
+      height: 58px;
+    }
+
+    .face::before {
+      content: "";
+      position: absolute;
+      top: -8px;
+      left: 10px;
+      width: 34px;
+      height: 16px;
+      border-radius: 50% 50% 0 0;
+      background: #111111;
+    }
+
+    .eye {
+      position: absolute;
+      top: 25px;
+      width: 6px;
+      height: 8px;
+      border-radius: 50%;
+      background: #111111;
+    }
+
+    .left-eye {
+      left: 19px;
+    }
+
+    .right-eye {
+      right: 19px;
+    }
+
+    .smile {
+      position: absolute;
+      left: 20px;
+      bottom: 14px;
+      width: 18px;
+      height: 9px;
+      border-bottom: 3px solid #111111;
+      border-radius: 0 0 18px 18px;
+    }
+
+    .speech-bubble {
+      padding: 6px 10px;
+      border: 2px solid #111111;
+      border-radius: 16px;
+      background: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .quiz-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .quiz-title {
+      flex: 1;
+      font-size: 21px;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+
+    .question-card {
+      padding: 22px;
+    }
+
+    .question-meta,
+    .history-meta {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 18px;
+    }
+
+    .question-stem {
+      font-size: 20px;
+      font-weight: 900;
+      line-height: 1.5;
+    }
+
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 20px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-height: 56px;
+      padding: 13px;
+      border: 2px solid #111111;
+      border-radius: 18px;
+      background: #ffffff;
+    }
+
+    .option-active {
+      background: #d8f36a;
+      box-shadow: 0 4px 0 #111111;
+      transform: translateY(-2px);
+    }
+
+    .option-key {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 30px;
+      height: 30px;
+      flex-shrink: 0;
+      border: 2px solid #111111;
+      border-radius: 50%;
+      background: #1767c8;
+      color: #ffffff;
+      font-weight: 900;
+    }
+
+    .option-text {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .submit-button {
+      margin-top: 22px;
+    }
+
+    .feedback {
+      margin-top: 22px;
+      padding: 16px;
+      border: 2px solid #111111;
+      border-radius: 18px;
+      background: #d8f36a;
+    }
+
+    .feedback-title {
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .feedback-line,
+    .feedback-explanation {
+      margin-top: 8px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .complete-page {
+      position: relative;
+    }
+
+    .complete-card {
+      position: relative;
+      z-index: 2;
+      margin-top: 88px;
+      padding: 34px 24px 26px;
+      text-align: center;
+    }
+
+    .girl-face {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto;
+      animation: happy 1.2s ease-in-out infinite;
+    }
+
+    .girl-face::before,
+    .girl-face::after {
+      content: "";
+      position: absolute;
+      top: -8px;
+      width: 24px;
+      height: 24px;
+      border: 2px solid #111111;
+      border-radius: 50%;
+      background: #ff4d4d;
+    }
+
+    .girl-face::before {
+      left: 6px;
+    }
+
+    .girl-face::after {
+      right: 6px;
+    }
+
+    .complete-title {
+      margin-top: 18px;
+      font-size: 34px;
+      font-weight: 900;
+    }
+
+    .complete-subtitle {
+      margin: 14px 0 24px;
+      color: #4b5563;
+      font-size: 15px;
+      line-height: 1.7;
+    }
+
+    .confetti {
+      position: absolute;
+      top: 72px;
+      width: 10px;
+      height: 18px;
+      border: 1px solid #111111;
+      animation: confettiFall 1.4s ease-out infinite;
+    }
+
+    .confetti:nth-child(1) {
+      left: 8%;
+      background: #1767c8;
+    }
+
+    .confetti:nth-child(2) {
+      left: 27%;
+      background: #ffe142;
+      animation-delay: 0.08s;
+    }
+
+    .confetti:nth-child(3) {
+      left: 46%;
+      background: #ff4d4d;
+      animation-delay: 0.16s;
+    }
+
+    .confetti:nth-child(4) {
+      left: 65%;
+      background: #d8f36a;
+      animation-delay: 0.24s;
+    }
+
+    .confetti:nth-child(5) {
+      left: 84%;
+      background: #ffffff;
+      animation-delay: 0.32s;
+    }
+
+    .report-card,
+    .loading-card,
+    .history-card,
+    .empty-card {
+      padding: 22px;
+    }
+
+    .report-title {
+      font-size: 24px;
+      font-weight: 900;
+      line-height: 1.25;
+    }
+
+    .report-summary,
+    .history-summary {
+      margin-top: 10px;
+      color: #4b5563;
+      font-size: 13px;
+      line-height: 1.65;
+    }
+
+    .score-row {
+      display: flex;
+      gap: 12px;
+      margin: 20px 0;
+    }
+
+    .score-box {
+      flex: 1;
+      padding: 16px;
+      border: 2px solid #111111;
+      border-radius: 18px;
+      background: #d8f36a;
+    }
+
+    .yellow-box {
+      background: #ffe142;
+    }
+
+    .score-number {
+      font-size: 25px;
+      font-weight: 900;
+    }
+
+    .score-label {
+      margin-top: 4px;
+      color: #4b5563;
+      font-size: 12px;
+    }
+
+    .block-title {
+      margin-top: 18px;
+      font-size: 20px;
+      font-weight: 900;
+    }
+
+    .list-line {
+      margin-top: 7px;
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .share-row {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 24px;
+    }
+
+    .share-button {
+      width: 100%;
+      height: 62px;
+      border: 3px solid #111111;
+      border-radius: 20px;
+      box-shadow: 0 7px 0 #111111;
+      color: #ffffff;
+      font-size: 20px;
+    }
+
+    .share-button-wechat {
+      background: #1767c8;
+    }
+
+    .share-button-qq {
+      background: #ffe142;
+      color: #111111;
+    }
+
+    .loading-card {
+      margin-top: 110px;
+      text-align: center;
+    }
+
+    .loading-dot-group {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .loading-dot {
+      width: 12px;
+      height: 12px;
+      border: 2px solid #111111;
+      border-radius: 50%;
+      background: #1767c8;
+      animation: bounce 0.8s ease-in-out infinite;
+    }
+
+    .loading-dot:nth-child(2) {
+      background: #ffe142;
+      animation-delay: 0.12s;
+    }
+
+    .loading-dot:nth-child(3) {
+      background: #ff4d4d;
+      animation-delay: 0.24s;
+    }
+
+    .loading-title {
+      margin: 18px 0 8px;
+      font-size: 28px;
+      font-weight: 900;
+    }
+
+    .profile-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+    }
+
+    .profile-title {
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    .compact-button {
+      width: 102px;
+      height: 44px;
+      font-size: 14px;
+    }
+
+    .report-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .history-title,
+    .empty-title {
+      font-size: 21px;
+      font-weight: 900;
+      line-height: 1.35;
+    }
+
+    @keyframes nod {
+      0%, 100% {
+        transform: translateY(0) rotate(-3deg);
+      }
+
+      50% {
+        transform: translateY(4px) rotate(3deg);
+      }
+    }
+
+    @keyframes happy {
+      0%, 100% {
+        transform: translateY(0) rotate(-2deg);
+      }
+
+      50% {
+        transform: translateY(-6px) rotate(2deg);
+      }
+    }
+
+    @keyframes confettiFall {
+      0% {
+        opacity: 1;
+        transform: translateY(0) rotate(0deg);
+      }
+
+      80% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateY(360px) rotate(280deg);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-10px);
+      }
+    }
+
+    @media (max-width: 760px) {
+      .prototype-shell {
+        padding: 18px;
+      }
+
+      .screen-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .screen-card {
+        align-items: center;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="prototype-shell">
+    <header class="prototype-header">
+      <h1 class="prototype-title">水母diy学习助手 UI 网页原型</h1>
+      <p class="prototype-subtitle">当前 MVP 前端界面快照：输入知识、AI 出题、答题闯关、通关庆祝、报告生成、学习记录。</p>
+    </header>
+
+    <section class="screen-grid">
+      <article class="screen-card">
+        <div class="screen-label">01 输入知识</div>
+        <div class="phone">
+          <div class="status-bar"><span>8:37</span><span>5G ▰</span></div>
+          <div class="nav-bar">开始学习 <span class="nav-menu">••• ◉</span></div>
+          <div class="page">
+            <div class="hero">
+              <div class="hand-logo">Jellyfish</div>
+              <div class="hero-title">水母diy学习助手</div>
+              <div class="hero-subtitle">把一段知识变成 5 题闯关练习，答完立刻生成复盘报告。</div>
+            </div>
+
+            <div class="card input-card">
+              <div class="boy-illustration">
+                <div class="face">
+                  <div class="eye left-eye"></div>
+                  <div class="eye right-eye"></div>
+                  <div class="smile"></div>
+                </div>
+                <div class="speech-bubble">Let's learn</div>
+              </div>
+              <div class="section-title">今天想学什么？</div>
+              <div class="learning-input">我想学习端口、数据库和 Redis 的基础概念。</div>
+              <div class="primary-button generate-button">生成闯关题</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="screen-card">
+        <div class="screen-label">02 答题闯关</div>
+        <div class="phone">
+          <div class="status-bar"><span>8:38</span><span>5G ▰</span></div>
+          <div class="nav-bar"><span class="nav-back">‹</span>闯关答题 <span class="nav-menu">••• ◉</span></div>
+          <div class="page">
+            <div class="quiz-header">
+              <span class="tag">1/5</span>
+              <div class="quiz-title">端口、数据库和 Redis 入门</div>
+            </div>
+            <div class="card question-card">
+              <div class="question-meta">
+                <span class="tag">单选题</span>
+                <span class="muted">easy</span>
+              </div>
+              <div class="question-stem">端口在网络通信中主要用来做什么？</div>
+              <div class="option-list">
+                <div class="option-item option-active">
+                  <div class="option-key">A</div>
+                  <div class="option-text">区分同一台电脑上的不同服务</div>
+                </div>
+                <div class="option-item">
+                  <div class="option-key">B</div>
+                  <div class="option-text">保存所有用户数据</div>
+                </div>
+                <div class="option-item">
+                  <div class="option-key">C</div>
+                  <div class="option-text">替代数据库完成查询</div>
+                </div>
+              </div>
+              <div class="primary-button submit-button">提交答案</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="screen-card">
+        <div class="screen-label">03 即时讲解</div>
+        <div class="phone">
+          <div class="status-bar"><span>8:39</span><span>5G ▰</span></div>
+          <div class="nav-bar"><span class="nav-back">‹</span>闯关答题 <span class="nav-menu">••• ◉</span></div>
+          <div class="page">
+            <div class="quiz-header">
+              <span class="tag">1/5</span>
+              <div class="quiz-title">端口、数据库和 Redis 入门</div>
+            </div>
+            <div class="card question-card">
+              <div class="question-meta">
+                <span class="tag">单选题</span>
+                <span class="muted">easy</span>
+              </div>
+              <div class="question-stem">端口在网络通信中主要用来做什么？</div>
+              <div class="option-list">
+                <div class="option-item option-active">
+                  <div class="option-key">A</div>
+                  <div class="option-text">区分同一台电脑上的不同服务</div>
+                </div>
+              </div>
+              <div class="feedback">
+                <div class="feedback-title">答对了</div>
+                <div class="feedback-line">你的答案：A. 区分同一台电脑上的不同服务</div>
+                <div class="feedback-line">正确答案：A. 区分同一台电脑上的不同服务</div>
+                <div class="feedback-explanation">端口就像一个房间号，帮助请求找到具体的软件服务。</div>
+                <div class="secondary-button" style="margin-top:16px;">下一题</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="screen-card">
+        <div class="screen-label">04 通关庆祝</div>
+        <div class="phone">
+          <div class="status-bar"><span>8:40</span><span>5G ▰</span></div>
+          <div class="nav-bar"><span class="nav-back">‹</span>闯关答题 <span class="nav-menu">••• ◉</span></div>
+          <div class="page complete-page">
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="confetti"></div>
+            <div class="card complete-card">
+              <div class="girl-face">
+                <div class="eye left-eye"></div>
+                <div class="eye right-eye"></div>
+                <div class="smile"></div>
+              </div>
+              <div class="complete-title">恭喜通关！</div>
+              <div class="complete-subtitle">你的答题记录已经保存，可以生成一份学习复盘报告。</div>
+              <div class="primary-button">查看学习报告</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="screen-card">
+        <div class="screen-label">05 报告 loading</div>
+        <div class="phone">
+          <div class="status-bar"><span>8:41</span><span>5G ▰</span></div>
+          <div class="nav-bar"><span class="nav-back">‹</span>学习报告 <span class="nav-menu">••• ◉</span></div>
+          <div class="page">
+            <div class="card loading-card">
+              <div class="loading-dot-group">
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+              </div>
+              <div class="loading-title">loading......</div>
+              <div class="muted">AI 正在生成你的学习报告</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="screen-card">
+        <div class="screen-label">06 学习报告</div>
+        <div class="phone">
+          <div class="status-bar"><span>8:42</span><span>5G ▰</span></div>
+          <div class="nav-bar"><span class="nav-back">‹</span>学习报告 <span class="nav-menu">••• ◉</span></div>
+          <div class="page">
+            <div class="card report-card">
+              <div class="report-title">我想学习端口、数据库和 Redis 的基础知识</div>
+              <div class="report-summary">本轮围绕“后端基础概念”完成 5 道题，答对 1 题。</div>
+              <div class="score-row">
+                <div class="score-box">
+                  <div class="score-number">1/5</div>
+                  <div class="score-label">答题得分</div>
+                </div>
+                <div class="score-box yellow-box">
+                  <div class="score-number">20%</div>
+                  <div class="score-label">掌握度</div>
+                </div>
+              </div>
+              <div class="block-title">薄弱点</div>
+              <div class="list-line">- 即时反馈</div>
+              <div class="list-line">- 学习复盘</div>
+              <div class="list-line">- 题目结构</div>
+              <div class="block-title">下一步建议</div>
+              <div class="list-line">- 复习错题对应的知识点。</div>
+              <div class="list-line">- 用自己的话重新解释本轮主题。</div>
+              <div class="share-row">
+                <div class="share-button share-button-wechat">分享到微信</div>
+                <div class="share-button share-button-qq">分享到QQ</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="screen-card">
+        <div class="screen-label">07 学习记录</div>
+        <div class="phone">
+          <div class="status-bar"><span>8:43</span><span>5G ▰</span></div>
+          <div class="nav-bar">学习记录 <span class="nav-menu">••• ◉</span></div>
+          <div class="page">
+            <div class="profile-header">
+              <div class="profile-title">学习记录</div>
+              <div class="primary-button compact-button">新练习</div>
+            </div>
+            <div class="report-list">
+              <div class="card history-card">
+                <div class="history-title">端口、数据库和 Redis 入门</div>
+                <div class="history-summary">本轮完成 5 题，建议继续复习端口和缓存的区别。</div>
+                <div class="history-meta">
+                  <span class="tag">1/5</span>
+                  <span class="tag">20%</span>
+                </div>
+              </div>
+              <div class="card history-card">
+                <div class="history-title">HTTP 请求基础</div>
+                <div class="history-summary">已理解请求、响应、状态码的基础关系。</div>
+                <div class="history-meta">
+                  <span class="tag">4/5</span>
+                  <span class="tag">80%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
+    </section>
+  </main>
+</body>
+</html>
