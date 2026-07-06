@@ -1,6 +1,6 @@
 .create-page {
   min-height: 100vh;
-  padding: 28px 22px 44px;
+  padding: 64px 22px 108px;
   overflow: hidden;
   background:
     radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.18), transparent 24%),
@@ -12,7 +12,7 @@
 
 .brand-hero {
   position: relative;
-  min-height: 520px;
+  min-height: 498px;
   color: #fffdf7;
 }
 
@@ -44,15 +44,12 @@
 }
 
 .top-mark {
-  color: rgba(255, 253, 247, 0.72);
-  font-size: 18px;
-  font-weight: 950;
-  letter-spacing: 2px;
+  display: none;
 }
 
 .hero-title {
   display: block;
-  margin-top: 48px;
+  margin-top: 42px;
   max-width: 300px;
   font-size: 48px;
   font-weight: 950;
@@ -299,7 +296,7 @@
 }
 
 .input-panel {
-  margin-top: -72px;
+  margin-top: -58px;
   padding: 22px;
   border: 3px solid #111111;
   border-radius: 30px;
@@ -316,7 +313,7 @@
 
 .learning-input {
   width: 100%;
-  min-height: 132px;
+  min-height: 158px;
   margin-top: 14px;
   padding: 15px;
   border: 3px solid #111111;

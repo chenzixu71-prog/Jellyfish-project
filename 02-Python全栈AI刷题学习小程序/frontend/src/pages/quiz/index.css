@@ -1,7 +1,7 @@
 .quiz-page,
 .complete-page {
   min-height: 100vh;
-  padding: 28px 22px 48px;
+  padding: 66px 22px 108px;
   background:
     radial-gradient(circle at 16% 10%, rgba(255, 255, 255, 0.18), transparent 24%),
     linear-gradient(180deg, #6246f2 0 38%, #fffdf7 38% 100%);
@@ -227,7 +227,7 @@
 .complete-card {
   position: relative;
   z-index: 2;
-  margin-top: 90px;
+  margin-top: 48px;
   padding: 36px 24px 28px;
   border: 3px solid #111111;
   border-radius: 32px;

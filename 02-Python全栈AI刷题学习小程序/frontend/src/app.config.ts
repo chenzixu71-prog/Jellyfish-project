@@ -9,7 +9,8 @@ export default defineAppConfig({
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#6246F2',
     navigationBarTitleText: '水母 DIY 学习助手',
-    navigationBarTextStyle: 'white'
+    navigationBarTextStyle: 'white',
+    navigationStyle: 'custom'
   },
   tabBar: {
     color: '#6B7280',

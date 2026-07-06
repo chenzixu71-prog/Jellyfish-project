@@ -1,6 +1,6 @@
 .report-page {
   min-height: 100vh;
-  padding: 0 22px 46px;
+  padding: 0 22px 108px;
   background:
     radial-gradient(circle at 16% 10%, rgba(255, 255, 255, 0.18), transparent 24%),
     linear-gradient(180deg, #6246f2 0 210px, #fffdf7 210px 100%);
@@ -12,14 +12,14 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding-top: 80px;
+  padding-top: 96px;
 }
 
 .report-cover {
   position: relative;
-  height: 170px;
+  height: 230px;
   margin: 0 -22px;
-  padding: 30px 24px;
+  padding: 74px 24px 30px;
   overflow: hidden;
   box-sizing: border-box;
 }
