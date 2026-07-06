@@ -129,3 +129,93 @@ def test_generate_report_after_answers():
     assert report["mastery"] == 100
     assert report["summary"]
     assert report["nextSteps"]
+
+
+def test_wrong_questions_history_daily_profile_and_weak_regeneration():
+    session_id = "iteration-session"
+    generated = client.post(
+        "/api/generate-quiz",
+        json={
+            "sessionId": session_id,
+            "inputType": "text",
+            "content": "学习端口、数据库和 Redis",
+            "questionCount": 5,
+        },
+    ).json()["data"]
+    first_question = generated["questions"][0]
+    wrong_answer = ["B"] if first_question["answer"] != ["B"] else ["A"]
+
+    wrong_response = client.post(
+        "/api/submit-answer",
+        json={
+            "sessionId": session_id,
+            "quizId": generated["quizId"],
+            "questionId": first_question["id"],
+            "answer": wrong_answer,
+        },
+    )
+    assert wrong_response.status_code == 200
+    assert wrong_response.json()["data"]["isCorrect"] is False
+
+    wrong_questions = client.get(
+        "/api/wrong-questions", params={"sessionId": session_id}
+    ).json()["data"]
+    assert len(wrong_questions) == 1
+    assert wrong_questions[0]["questionId"] == first_question["id"]
+
+    client.post(
+        "/api/submit-answer",
+        json={
+            "sessionId": session_id,
+            "quizId": generated["quizId"],
+            "questionId": first_question["id"],
+            "answer": first_question["answer"],
+        },
+    )
+    wrong_questions_after_review = client.get(
+        "/api/wrong-questions", params={"sessionId": session_id}
+    ).json()["data"]
+    assert wrong_questions_after_review == []
+
+    for question in generated["questions"][1:]:
+        client.post(
+            "/api/submit-answer",
+            json={
+                "sessionId": session_id,
+                "quizId": generated["quizId"],
+                "questionId": question["id"],
+                "answer": question["answer"],
+            },
+        )
+
+    report = client.post(
+        "/api/generate-report",
+        json={"sessionId": session_id, "quizId": generated["quizId"]},
+    ).json()["data"]
+    assert report["mastery"] == 100
+
+    history = client.get(
+        "/api/report-history", params={"sessionId": session_id}
+    ).json()["data"]
+    assert len(history) >= 1
+    assert history[0]["quizId"] == generated["quizId"]
+
+    challenge = client.get(
+        "/api/daily-challenge", params={"sessionId": session_id}
+    ).json()["data"]
+    assert challenge["target"] == 5
+    assert challenge["answered"] == 5
+    assert challenge["completed"] is True
+
+    profile = client.get("/api/profile", params={"sessionId": session_id}).json()["data"]
+    assert profile["totalAnswered"] >= 5
+    assert profile["exp"] > 0
+    assert any(badge["id"] == "first-quiz" and badge["unlocked"] for badge in profile["badges"])
+    assert any(badge["id"] == "perfect-run" and badge["unlocked"] for badge in profile["badges"])
+
+    regenerated = client.post(
+        "/api/regenerate-weak-quiz",
+        json={"sessionId": session_id, "quizId": generated["quizId"]},
+    ).json()["data"]
+    assert regenerated["quizId"]
+    assert len(regenerated["questions"]) == 5

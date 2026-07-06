@@ -47,6 +47,51 @@ export interface Report {
   nextSteps: string[]
 }
 
+export interface WrongQuestion {
+  quizId: string
+  questionId: string
+  stem: string
+  selectedAnswer: string[]
+  correctAnswer: string[]
+  explanation: string
+  knowledge_point: string
+  reviewed: boolean
+}
+
+export interface ReportHistoryItem {
+  quizId: string
+  title: string
+  score: number
+  total: number
+  mastery: number
+  weakPoints: string[]
+}
+
+export interface DailyChallenge {
+  date: string
+  target: number
+  answered: number
+  correct: number
+  completed: boolean
+  progress: number
+}
+
+export interface Badge {
+  id: string
+  name: string
+  description: string
+  unlocked: boolean
+}
+
+export interface LearningProfile {
+  level: number
+  exp: number
+  streakDays: number
+  totalAnswered: number
+  totalCorrect: number
+  badges: Badge[]
+}
+
 interface ApiResponse<T> {
   code: number
   message: string
@@ -102,4 +147,27 @@ export function generateReport(quizId: string): Promise<Report> {
     sessionId: getOrCreateSessionId(),
     quizId
   })
+}
+
+export function getWrongQuestions(): Promise<WrongQuestion[]> {
+  return request<WrongQuestion[]>(`/api/wrong-questions?sessionId=${getOrCreateSessionId()}`, 'GET')
+}
+
+export function regenerateWeakQuiz(quizId: string): Promise<Quiz> {
+  return request<Quiz>('/api/regenerate-weak-quiz', 'POST', {
+    sessionId: getOrCreateSessionId(),
+    quizId
+  })
+}
+
+export function getReportHistory(): Promise<ReportHistoryItem[]> {
+  return request<ReportHistoryItem[]>(`/api/report-history?sessionId=${getOrCreateSessionId()}`, 'GET')
+}
+
+export function getDailyChallenge(): Promise<DailyChallenge> {
+  return request<DailyChallenge>(`/api/daily-challenge?sessionId=${getOrCreateSessionId()}`, 'GET')
+}
+
+export function getLearningProfile(): Promise<LearningProfile> {
+  return request<LearningProfile>(`/api/profile?sessionId=${getOrCreateSessionId()}`, 'GET')
 }

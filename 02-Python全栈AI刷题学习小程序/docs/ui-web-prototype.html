@@ -1685,6 +1685,106 @@
       animation-delay: 0.2s;
     }
 
+    .iteration-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin: 10px 0 16px;
+    }
+
+    .iteration-panel {
+      border: 2px solid #101010;
+      border-radius: 18px;
+      background: rgba(255, 255, 255, 0.78);
+      padding: 12px;
+      box-shadow: 0 4px 0 rgba(16, 16, 16, 0.12);
+    }
+
+    .iteration-panel h3 {
+      margin: 0 0 8px;
+      font-size: 14px;
+      color: var(--purple-deep);
+      font-family: var(--font-title);
+      line-height: 1.1;
+    }
+
+    .iteration-panel p,
+    .iteration-panel li {
+      margin: 0;
+      color: #343142;
+      font-size: 11px;
+      line-height: 1.55;
+      font-weight: 780;
+    }
+
+    .iteration-panel ul {
+      margin: 0;
+      padding-left: 16px;
+    }
+
+    .mini-progress-track {
+      height: 10px;
+      border: 2px solid #101010;
+      border-radius: 999px;
+      background: #ffffff;
+      overflow: hidden;
+      margin: 8px 0 6px;
+    }
+
+    .mini-progress-fill {
+      width: 0%;
+      height: 100%;
+      background: var(--yellow);
+      transition: width 260ms ease;
+    }
+
+    .badge-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .badge-pill {
+      border: 2px solid #101010;
+      border-radius: 999px;
+      background: var(--yellow);
+      padding: 4px 8px;
+      font-size: 10px;
+      font-weight: 900;
+      color: #151515;
+      box-shadow: 0 3px 0 rgba(16, 16, 16, 0.16);
+    }
+
+    .badge-pill.locked {
+      background: #e8e5f2;
+      color: #777284;
+      box-shadow: none;
+    }
+
+    .inline-action {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      border: 2px solid #101010;
+      border-radius: 999px;
+      background: var(--blue);
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: 950;
+      padding: 7px 12px;
+      margin-top: 9px;
+      box-shadow: 0 4px 0 #101010;
+      cursor: pointer;
+      user-select: none;
+      transition: transform 160ms ease, filter 160ms ease;
+    }
+
+    .inline-action:hover {
+      filter: brightness(1.04);
+      transform: translateY(-1px);
+    }
+
     .report-section {
       margin-top: 9px;
       padding: 10px;
@@ -2365,6 +2465,30 @@
                   <div class="score-label">掌握度</div>
                 </div>
               </div>
+              <div class="iteration-grid">
+                <div class="iteration-panel">
+                  <h3>每日水母挑战</h3>
+                  <p id="js-daily-copy">今日目标 5 题，完成报告后自动刷新进度。</p>
+                  <div class="mini-progress-track"><div class="mini-progress-fill" id="js-daily-progress"></div></div>
+                </div>
+                <div class="iteration-panel">
+                  <h3>水母成长值</h3>
+                  <p id="js-profile-copy">Level 1 · 0 EXP · 连续学习 1 天</p>
+                  <div class="badge-row" id="js-badge-row">
+                    <span class="badge-pill locked">首次闯关</span>
+                    <span class="badge-pill locked">满分水母</span>
+                  </div>
+                </div>
+                <div class="iteration-panel">
+                  <h3>错题本</h3>
+                  <ul id="js-wrong-list"><li>答错后会自动沉淀到这里。</li></ul>
+                  <div class="inline-action" id="js-regenerate-btn">薄弱点再练一组</div>
+                </div>
+                <div class="iteration-panel">
+                  <h3>报告历史</h3>
+                  <ul id="js-history-list"><li>生成报告后会保留最近 10 次记录。</li></ul>
+                </div>
+              </div>
               <div class="report-section yellow">
                 <h3>本次总览</h3>
                 <ul>
@@ -2412,7 +2536,11 @@
       currentIndex: 0,
       selectedAnswers: {},
       answerResults: {},
-      report: null
+      report: null,
+      wrongQuestions: [],
+      reportHistory: [],
+      dailyChallenge: null,
+      profile: null
     };
 
     const $ = (selector) => document.querySelector(selector);
@@ -2432,6 +2560,15 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
       });
+      const body = await response.json().catch(() => null);
+      if (!response.ok || !body || body.code !== 0) {
+        throw new Error(body?.message || body?.detail || `HTTP ${response.status}`);
+      }
+      return body.data;
+    }
+
+    async function apiGet(path) {
+      const response = await fetch(`${API_BASE_URL}${path}`);
       const body = await response.json().catch(() => null);
       if (!response.ok || !body || body.code !== 0) {
         throw new Error(body?.message || body?.detail || `HTTP ${response.status}`);
@@ -2553,6 +2690,7 @@
             });
             state.answerResults[question.id] = result;
             renderCurrentQuestion();
+            refreshIterationState();
           } catch (error) {
             $("#js-feedback-title").textContent = "提交失败";
             $("#js-feedback-copy").textContent = `${error.message}。请确认后端服务运行在 127.0.0.1:8010。`;
@@ -2575,6 +2713,52 @@
       }
       if (sections[3]) {
         sections[3].innerHTML = `<h3>下一步行动</h3><ul>${report.nextSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+      }
+    }
+
+    function renderWrongQuestions(items) {
+      $("#js-wrong-list").innerHTML = items.length
+        ? items.slice(0, 4).map((item) => `<li>${escapeHtml(item.knowledge_point)}：${escapeHtml(item.stem)}</li>`).join("")
+        : "<li>本轮暂无待复习错题，继续保持。</li>";
+    }
+
+    function renderReportHistory(items) {
+      $("#js-history-list").innerHTML = items.length
+        ? items.slice(0, 4).map((item) => `<li>${escapeHtml(item.title)} · ${item.score}/${item.total} · 掌握度 ${item.mastery}%</li>`).join("")
+        : "<li>生成报告后会保留最近 10 次记录。</li>";
+    }
+
+    function renderDailyChallenge(challenge) {
+      $("#js-daily-copy").textContent = `今日目标 ${challenge.target} 题，已完成 ${challenge.answered} 题，答对 ${challenge.correct} 题。`;
+      $("#js-daily-progress").style.width = `${challenge.progress}%`;
+    }
+
+    function renderLearningProfile(profile) {
+      $("#js-profile-copy").textContent = `Level ${profile.level} · ${profile.exp} EXP · 连续学习 ${profile.streakDays} 天`;
+      $("#js-badge-row").innerHTML = profile.badges.map((badge) => (
+        `<span class="badge-pill ${badge.unlocked ? "" : "locked"}">${escapeHtml(badge.name)}</span>`
+      )).join("");
+    }
+
+    async function refreshIterationState() {
+      try {
+        const query = `sessionId=${encodeURIComponent(state.sessionId)}`;
+        const [wrongQuestions, reportHistory, dailyChallenge, profile] = await Promise.all([
+          apiGet(`/api/wrong-questions?${query}`),
+          apiGet(`/api/report-history?${query}`),
+          apiGet(`/api/daily-challenge?${query}`),
+          apiGet(`/api/profile?${query}`)
+        ]);
+        state.wrongQuestions = wrongQuestions;
+        state.reportHistory = reportHistory;
+        state.dailyChallenge = dailyChallenge;
+        state.profile = profile;
+        renderWrongQuestions(wrongQuestions);
+        renderReportHistory(reportHistory);
+        renderDailyChallenge(dailyChallenge);
+        renderLearningProfile(profile);
+      } catch (error) {
+        $("#js-wrong-list").innerHTML = `<li>${escapeHtml(error.message)}。请确认后端服务运行在 127.0.0.1:8010。</li>`;
       }
     }
 
@@ -2625,6 +2809,7 @@
         });
         state.report = report;
         renderReport(report);
+        refreshIterationState();
       } catch (error) {
         $("#js-report-summary").textContent = `${error.message}。请确认后端服务运行在 127.0.0.1:8010。`;
       } finally {
@@ -2632,7 +2817,30 @@
       }
     });
 
+    $("#js-regenerate-btn").addEventListener("click", async () => {
+      if (!state.quiz) return;
+      setButtonLoading($("#js-regenerate-btn"), true, "生成复习题...");
+      try {
+        const quiz = await apiPost("/api/regenerate-weak-quiz", {
+          sessionId: state.sessionId,
+          quizId: state.quiz.quizId
+        });
+        state.quiz = quiz;
+        state.currentIndex = 0;
+        state.selectedAnswers = {};
+        state.answerResults = {};
+        state.report = null;
+        renderQuiz(quiz);
+        setLoadingState("薄弱点复习题已生成", "水母已经围绕薄弱点重新出题，可以继续闯关。");
+      } catch (error) {
+        $("#js-wrong-list").innerHTML = `<li>${escapeHtml(error.message)}。请确认后端服务运行在 127.0.0.1:8010。</li>`;
+      } finally {
+        setButtonLoading($("#js-regenerate-btn"), false);
+      }
+    });
+
     bindOptionClicks();
+    refreshIterationState();
   </script>
 </body>
 </html>

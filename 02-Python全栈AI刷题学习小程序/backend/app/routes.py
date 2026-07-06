@@ -5,9 +5,19 @@ from app.schemas import (
     ApiResponse,
     GenerateQuizRequest,
     GenerateReportRequest,
+    RegenerateWeakQuizRequest,
     SubmitAnswerRequest,
 )
-from app.services.quiz_service import create_quiz, generate_report, submit_answer
+from app.services.quiz_service import (
+    create_quiz,
+    generate_report,
+    get_daily_challenge,
+    get_learning_profile,
+    get_report_history,
+    get_wrong_questions,
+    regenerate_weak_quiz,
+    submit_answer,
+)
 
 
 LEVELS = [
@@ -92,3 +102,29 @@ def answer_question(payload: SubmitAnswerRequest):
 def report(payload: GenerateReportRequest):
     generated_report = generate_report(payload.sessionId, payload.quizId)
     return ok(generated_report.model_dump())
+
+
+@router.get("/api/wrong-questions", response_model=ApiResponse)
+def wrong_questions(sessionId: str):
+    return ok([item.model_dump() for item in get_wrong_questions(sessionId)])
+
+
+@router.post("/api/regenerate-weak-quiz", response_model=ApiResponse)
+def weak_quiz(payload: RegenerateWeakQuizRequest):
+    quiz = regenerate_weak_quiz(payload.sessionId, payload.quizId)
+    return ok(quiz.model_dump())
+
+
+@router.get("/api/report-history", response_model=ApiResponse)
+def report_history(sessionId: str):
+    return ok([item.model_dump() for item in get_report_history(sessionId)])
+
+
+@router.get("/api/daily-challenge", response_model=ApiResponse)
+def daily_challenge(sessionId: str):
+    return ok(get_daily_challenge(sessionId).model_dump())
+
+
+@router.get("/api/profile", response_model=ApiResponse)
+def profile(sessionId: str):
+    return ok(get_learning_profile(sessionId).model_dump())

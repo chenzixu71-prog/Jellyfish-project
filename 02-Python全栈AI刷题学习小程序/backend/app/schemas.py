@@ -63,6 +63,11 @@ class GenerateReportRequest(BaseModel):
     quizId: str = Field(min_length=1)
 
 
+class RegenerateWeakQuizRequest(BaseModel):
+    sessionId: str = Field(min_length=1)
+    quizId: str = Field(min_length=1)
+
+
 class Report(BaseModel):
     quizId: str
     title: str
@@ -72,3 +77,48 @@ class Report(BaseModel):
     summary: str
     weakPoints: list[str]
     nextSteps: list[str]
+
+
+class WrongQuestion(BaseModel):
+    quizId: str
+    questionId: str
+    stem: str
+    selectedAnswer: list[str]
+    correctAnswer: list[str]
+    explanation: str
+    knowledge_point: str
+    reviewed: bool = False
+
+
+class ReportHistoryItem(BaseModel):
+    quizId: str
+    title: str
+    score: int
+    total: int
+    mastery: int
+    weakPoints: list[str]
+
+
+class DailyChallenge(BaseModel):
+    date: str
+    target: int
+    answered: int
+    correct: int
+    completed: bool
+    progress: int
+
+
+class Badge(BaseModel):
+    id: str
+    name: str
+    description: str
+    unlocked: bool
+
+
+class LearningProfile(BaseModel):
+    level: int
+    exp: int
+    streakDays: int
+    totalAnswered: int
+    totalCorrect: int
+    badges: list[Badge]
