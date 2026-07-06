@@ -295,6 +295,65 @@
       padding: 27px 20px 22px;
     }
 
+    .home-head {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--paper);
+    }
+
+    .home-avatar {
+      position: relative;
+      width: 50px;
+      height: 50px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #ffd1b7;
+      box-shadow: inset -10px -4px 0 #ff79c6;
+    }
+
+    .home-avatar::before,
+    .home-avatar::after {
+      content: "";
+      position: absolute;
+      top: 23px;
+      width: 5px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--ink);
+    }
+
+    .home-avatar::before {
+      left: 18px;
+    }
+
+    .home-avatar::after {
+      right: 14px;
+    }
+
+    .home-avatar .avatar-smile {
+      position: absolute;
+      left: 20px;
+      top: 33px;
+      width: 15px;
+      height: 7px;
+      border-bottom: 3px solid var(--ink);
+      border-radius: 0 0 12px 12px;
+    }
+
+    .hello-title {
+      font-size: 25px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .level-line {
+      margin-top: 6px;
+      font-size: 13px;
+      font-weight: 850;
+      color: rgba(255, 253, 247, 0.9);
+    }
+
     .script-logo {
       color: var(--paper);
       font-size: 30px;
@@ -328,6 +387,51 @@
       height: 58px;
     }
 
+    .challenge-card {
+      margin-top: 42px;
+      padding: 18px;
+      border-radius: 28px;
+      background: #dfeeff;
+      box-shadow: 0 8px 0 rgba(20, 17, 40, 0.2);
+    }
+
+    .challenge-title {
+      color: var(--purple-deep);
+      font-size: 18px;
+      font-weight: 950;
+      line-height: 1.25;
+    }
+
+    .challenge-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 16px;
+    }
+
+    .stat-pill {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      min-height: 48px;
+      border-radius: 16px;
+      background: rgba(255, 253, 247, 0.72);
+      font-size: 17px;
+      font-weight: 950;
+    }
+
+    .stat-dot {
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: var(--purple);
+      color: var(--paper);
+      font-size: 13px;
+    }
+
     .doodle::before {
       content: "";
       position: absolute;
@@ -357,9 +461,9 @@
     .ocean-stage {
       position: absolute;
       left: 50%;
-      top: 183px;
-      width: 188px;
-      height: 178px;
+      top: 228px;
+      width: 164px;
+      height: 154px;
       transform: translateX(-50%);
       border-radius: 50%;
       background: #1767c8;
@@ -414,7 +518,7 @@
     .jellyfish {
       position: absolute;
       left: 50%;
-      top: 35px;
+      top: 25px;
       width: 108px;
       height: 112px;
       transform: translateX(-50%);
@@ -537,8 +641,8 @@
       position: absolute;
       left: 20px;
       right: 20px;
-      bottom: 90px;
-      min-height: 82px;
+      bottom: 88px;
+      min-height: 78px;
       padding: 14px;
       border: 3px solid #111111;
       border-radius: 18px;
@@ -1204,9 +1308,21 @@
           <div class="status"><span>11:33</span><span>▮▮▮ 5G ▱</span></div>
           <div class="capsule">••• ◎</div>
           <div class="content">
-            <div class="script-logo">Jellyfish<br><span class="yellow-word">Learn</span></div>
-            <div class="small-copy">The knowledge I had in my dream! Turn notes into quiz stages.</div>
+            <div class="home-head">
+              <div class="home-avatar"><span class="avatar-smile"></span></div>
+              <div>
+                <div class="hello-title">Hello, 水母公子</div>
+                <div class="level-line">✨ Level 6 · 今日学习挑战</div>
+              </div>
+            </div>
             <div class="doodle"></div>
+            <div class="challenge-card">
+              <div class="challenge-title">Your Next Challenge Awaits!</div>
+              <div class="challenge-stats">
+                <div class="stat-pill"><span class="stat-dot">★</span>142 Poin</div>
+                <div class="stat-pill"><span class="stat-dot">↗</span>Rank 2/14</div>
+              </div>
+            </div>
             <div class="ocean-stage">
               <span class="bubble one"></span>
               <span class="bubble two"></span>
