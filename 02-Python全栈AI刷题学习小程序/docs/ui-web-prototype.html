@@ -308,21 +308,27 @@
     .doodle::before {
       content: "";
       position: absolute;
-      inset: 13px 7px 8px 9px;
+      left: 7px;
+      top: 18px;
+      width: 34px;
+      height: 23px;
       border: 3px solid #111111;
-      border-radius: 45% 55% 48% 52%;
-      transform: rotate(-12deg);
+      border-radius: 50% 50% 42% 42%;
+      background: #ffe142;
+      transform: rotate(-14deg);
     }
 
     .doodle::after {
-      content: "AI";
+      content: "";
       position: absolute;
-      top: 0;
-      right: 0;
-      color: #e22020;
-      font-size: 14px;
-      font-weight: 950;
-      transform: rotate(12deg);
+      right: 2px;
+      top: 5px;
+      width: 14px;
+      height: 14px;
+      border: 3px solid #1767c8;
+      border-radius: 50%;
+      background: #fffdf4;
+      box-shadow: -20px 31px 0 -5px #fffdf4, -20px 31px 0 -2px #1767c8;
     }
 
     .ocean-stage {
@@ -425,7 +431,7 @@
 
     .jelly-smile {
       position: absolute;
-      left: 41px;
+      left: 37px;
       top: 47px;
       width: 22px;
       height: 10px;
@@ -733,98 +739,57 @@
       font-weight: 950;
     }
 
-    .party-popper {
+    .celebration-bubble {
       position: absolute;
-      left: 26px;
-      top: 322px;
-      width: 66px;
-      height: 88px;
-      z-index: 4;
-      transform: rotate(-26deg);
-    }
-
-    .party-popper::before {
-      content: "";
-      position: absolute;
-      left: 14px;
-      top: 24px;
-      width: 38px;
-      height: 58px;
-      border: 4px solid #111111;
-      border-radius: 8px 8px 22px 22px;
-      background: linear-gradient(135deg, #1767c8 0 33%, #ffe142 33% 66%, #e22020 66%);
-      clip-path: polygon(50% 0, 100% 100%, 0 100%);
-      box-shadow: 0 5px 0 #111111;
-    }
-
-    .party-popper::after {
-      content: "";
-      position: absolute;
-      left: 24px;
-      top: 10px;
+      left: 50%;
+      top: 206px;
+      z-index: 3;
       width: 18px;
       height: 18px;
-      border: 4px solid #111111;
+      border: 3px solid #1767c8;
       border-radius: 50%;
-      background: #fffdf4;
+      background: rgba(255, 253, 244, 0.72);
+      animation: jellyBubble 2.2s ease-out infinite;
     }
 
-    .burst-piece {
-      position: absolute;
-      left: 58px;
-      top: 315px;
-      width: 10px;
-      height: 15px;
-      border: 1px solid #111111;
-      z-index: 3;
-      animation: burst 1.45s ease-out infinite;
+    .celebration-bubble.b1 {
+      --x: -72px;
+      --y: -138px;
+      width: 17px;
+      height: 17px;
     }
 
-    .burst-piece.p1 {
-      background: #1767c8;
-      --x: 130px;
+    .celebration-bubble.b2 {
+      --x: -28px;
+      --y: -170px;
+      width: 24px;
+      height: 24px;
+      animation-delay: 0.2s;
+    }
+
+    .celebration-bubble.b3 {
+      --x: 36px;
       --y: -145px;
-      --r: 220deg;
+      width: 15px;
+      height: 15px;
+      animation-delay: 0.38s;
     }
 
-    .burst-piece.p2 {
-      background: #ffe142;
-      --x: 84px;
-      --y: -180px;
-      --r: -180deg;
-      animation-delay: 0.08s;
+    .celebration-bubble.b4 {
+      --x: 76px;
+      --y: -110px;
+      width: 21px;
+      height: 21px;
+      animation-delay: 0.58s;
     }
 
-    .burst-piece.p3 {
-      background: #e22020;
-      --x: 180px;
-      --y: -82px;
-      --r: 280deg;
-      animation-delay: 0.16s;
-    }
-
-    .burst-piece.p4 {
-      background: #d7ef45;
-      --x: 150px;
-      --y: -210px;
-      --r: -260deg;
-      animation-delay: 0.24s;
-    }
-
-    .burst-piece.p5 {
-      background: #ff7bd3;
-      --x: 214px;
-      --y: -154px;
-      --r: 320deg;
-      animation-delay: 0.32s;
-    }
-
-    .burst-piece.p6 {
-      background: #fffdf4;
-      --x: 105px;
-      --y: -92px;
-      --r: -220deg;
-      animation-delay: 0.4s;
+    .celebration-bubble.b5 {
+      --x: 4px;
+      --y: -112px;
+      width: 12px;
+      height: 12px;
+      border-color: #e22020;
+      animation-delay: 0.78s;
     }
 
     .complete-panel {
@@ -867,6 +832,24 @@
       height: 9px;
       border-bottom: 3px solid #111111;
       border-radius: 0 0 20px 20px;
+    }
+
+    .complete-jelly-eye {
+      position: absolute;
+      top: 27px;
+      z-index: 2;
+      width: 7px;
+      height: 9px;
+      border-radius: 50%;
+      background: #111111;
+    }
+
+    .complete-jelly-eye.left {
+      left: 32px;
+    }
+
+    .complete-jelly-eye.right {
+      right: 32px;
     }
 
     .complete-jelly .tentacle {
@@ -1044,22 +1027,6 @@
       }
     }
 
-    @keyframes burst {
-      0% {
-        opacity: 1;
-        transform: translateY(0) rotate(0deg);
-      }
-
-      70% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0;
-        transform: translate(var(--x), var(--y)) rotate(var(--r));
-      }
-    }
-
     @keyframes jellyBounce {
       0%, 100% {
         transform: translateX(-50%) translateY(0) rotate(-2deg);
@@ -1087,6 +1054,22 @@
 
       50% {
         transform: translateY(-14px) scale(1.12);
+      }
+    }
+
+    @keyframes jellyBubble {
+      0% {
+        opacity: 0;
+        transform: translate(-50%, 0) scale(0.55);
+      }
+
+      18% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translate(calc(-50% + var(--x)), var(--y)) scale(1.22);
       }
     }
 
@@ -1292,15 +1275,15 @@
           <div class="status"><span>11:36</span><span>▮▮▮ 5G ▱</span></div>
           <div class="capsule">••• ◎</div>
           <div class="content">
-            <div class="party-popper"></div>
-            <div class="burst-piece p1"></div>
-            <div class="burst-piece p2"></div>
-            <div class="burst-piece p3"></div>
-            <div class="burst-piece p4"></div>
-            <div class="burst-piece p5"></div>
-            <div class="burst-piece p6"></div>
+            <div class="celebration-bubble b1"></div>
+            <div class="celebration-bubble b2"></div>
+            <div class="celebration-bubble b3"></div>
+            <div class="celebration-bubble b4"></div>
+            <div class="celebration-bubble b5"></div>
             <div class="complete-panel">
               <div class="complete-jelly">
+                <span class="complete-jelly-eye left"></span>
+                <span class="complete-jelly-eye right"></span>
                 <span class="tentacle t1"></span>
                 <span class="tentacle t2"></span>
                 <span class="tentacle t3"></span>
