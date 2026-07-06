@@ -861,3 +861,32 @@
   color: #4a36c9;
   box-shadow: 0 14px 26px rgba(98, 70, 242, 0.18);
 }
+
+.brand-hero {
+  min-height: 350px;
+}
+
+.home-board {
+  margin-top: -46px;
+  padding-top: 18px;
+  box-shadow: none;
+}
+
+.challenge-card {
+  padding: 14px 24px 20px;
+  background: transparent;
+  box-shadow: none;
+}
+
+.challenge-card::after {
+  display: none;
+}
+
+.input-panel {
+  margin-top: 20px;
+}
+
+.jelly-label {
+  bottom: -14px;
+  transform: translateX(-50%) rotate(0deg);
+}
