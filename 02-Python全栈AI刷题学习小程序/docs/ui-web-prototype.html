@@ -914,43 +914,6 @@
       line-height: 1.35;
     }
 
-    .question-dot {
-      display: grid;
-      place-items: center;
-      height: 34px;
-      border: 0;
-      border-radius: 16px;
-      background: var(--yellow);
-      font-size: 13px;
-      font-weight: 950;
-      animation: popStep 1.8s ease-in-out infinite;
-    }
-
-    .question-dot:nth-child(2) {
-      animation-delay: 0.08s;
-    }
-
-    .question-dot:nth-child(2) {
-      background: #e22020;
-      color: #fffdf4;
-    }
-
-    .question-dot:nth-child(3) {
-      background: #1767c8;
-      color: #fffdf4;
-      animation-delay: 0.16s;
-    }
-
-    .question-dot:nth-child(4) {
-      background: var(--pink);
-      animation-delay: 0.24s;
-    }
-
-    .question-dot:nth-child(5) {
-      background: var(--lime);
-      animation-delay: 0.32s;
-    }
-
     .quiz-card {
       margin-top: 20px;
       padding: 16px;
@@ -1007,9 +970,14 @@
     }
 
     .option.active {
-      background: var(--lime);
-      box-shadow: 0 5px 0 rgba(80, 98, 20, 0.25);
+      background: #f8df67;
+      box-shadow: 0 5px 0 rgba(136, 103, 12, 0.24);
       animation: selectedPulse 1.7s ease-in-out infinite;
+    }
+
+    .option.wrong {
+      background: #ffe2df;
+      box-shadow: 0 5px 0 rgba(165, 73, 63, 0.16);
     }
 
     .option-key {
@@ -1031,7 +999,7 @@
       padding: 12px;
       border: 0;
       border-radius: 20px;
-      background: var(--lime);
+      background: #fff2ad;
       font-size: 12px;
       line-height: 1.45;
       font-weight: 800;
