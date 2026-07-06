@@ -94,8 +94,8 @@ export default function ReportPage() {
         ))}
 
         <View className='share-row'>
-          <Button className='primary-button share-button' openType='share'>分享到 VX</Button>
-          <Button className='secondary-button share-button' onClick={shareToQQ}>分享到 QQ</Button>
+          <Button className='share-button share-button-wechat' openType='share'>分享到微信</Button>
+          <Button className='share-button share-button-qq' onClick={shareToQQ}>分享到QQ</Button>
         </View>
       </View>
     </View>
