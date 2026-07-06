@@ -24,8 +24,8 @@
       --soft-blue: #dfeeff;
       --soft-mint: #e2f8ef;
       --font-sans: Inter, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-      --font-title: "LXGW WenKai", "KaiTi", "STKaiti", "Microsoft YaHei", sans-serif;
       --font-hand: "LXGW WenKai", "KaiTi", "STKaiti", "Microsoft YaHei", sans-serif;
+      --font-title: var(--font-hand);
     }
 
     body {
@@ -36,7 +36,7 @@
         radial-gradient(circle at 86% 10%, rgba(33, 230, 218, 0.16), transparent 28%),
         #171719;
       color: var(--paper);
-      font-family: var(--font-sans);
+      font-family: var(--font-hand);
     }
 
     .page {
@@ -1521,8 +1521,8 @@
       position: absolute;
       left: 16px;
       right: 16px;
-      top: 72px;
-      bottom: 22px;
+      top: 46px;
+      bottom: 16px;
       margin: 0;
       overflow-y: auto;
       padding: 18px 16px 20px;
@@ -1531,6 +1531,10 @@
         radial-gradient(circle at 86% 8%, rgba(33, 230, 218, 0.12), transparent 26%),
         rgba(255, 253, 247, 0.98);
       overscroll-behavior: contain;
+    }
+
+    .report-screen .script-logo {
+      display: none;
     }
 
     .report-title {
@@ -2194,7 +2198,7 @@
         <div class="phone">
           <div class="status"><span>11:37</span><span>▮▮▮ 5G ▱</span></div>
           <div class="capsule">••• ◎</div>
-          <div class="content">
+          <div class="content report-screen">
             <div class="script-logo">REPORT<br>CENTER</div>
             <div class="report-card report-full">
               <div class="report-title">水母学习报告</div>
