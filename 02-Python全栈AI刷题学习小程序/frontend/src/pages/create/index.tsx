@@ -60,7 +60,7 @@ export default function CreatePage() {
       })
     }
     if (images.length > 0) {
-      parts.push(`\n\n【上传图片】用户选择了 ${images.length} 张图片。当前小程序版先记录图片数量；如果图片里有关键知识，请用户在文本里补充说明。`)
+      parts.push(`\n\n【上传图片】用户选择了 ${images.length} 张图片。当前版本先记录图片数量；如果图片里有关键知识，请用户在文本里补充说明。`)
     }
     return parts.filter(Boolean).join('')
   }
@@ -105,6 +105,14 @@ export default function CreatePage() {
         </Text>
         <Text className='hero-subtitle'>把零散知识变成 5 道闯关题，答完马上看到讲解和报告。</Text>
 
+        <View className='challenge-card'>
+          <Text className='challenge-title'>今日水母挑战已准备</Text>
+          <View className='challenge-stats'>
+            <View className='stat-pill'><Text className='stat-dot'>5</Text><Text>闯关题</Text></View>
+            <View className='stat-pill'><Text className='stat-dot blue'>AI</Text><Text>即时讲解</Text></View>
+          </View>
+        </View>
+
         <View className='ocean-stage'>
           <View className='ocean-bubble bubble-one' />
           <View className='ocean-bubble bubble-two' />
@@ -145,6 +153,22 @@ export default function CreatePage() {
           让水母生成题目
         </Button>
       </View>
+
+      {loading && (
+        <View className='loading-overlay'>
+          <View className='loading-panel'>
+            <View className='loading-jelly'>
+              <View className='loading-jelly-body' />
+              <View className='loading-tentacle loading-tentacle-1' />
+              <View className='loading-tentacle loading-tentacle-2' />
+              <View className='loading-tentacle loading-tentacle-3' />
+            </View>
+            <Text className='loading-title'>水母正在解析素材...</Text>
+            <Text className='loading-copy'>正在生成适合闯关的 5 道题。</Text>
+            <View className='loading-track'><View className='loading-fill' /></View>
+          </View>
+        </View>
+      )}
     </View>
   )
 }

@@ -45,7 +45,6 @@ export default function QuizPage() {
 
   function toggleOption(key: string) {
     if (!question || result) return
-
     if (question.type === 'multiple') {
       setSelected((previous) => (
         previous.includes(key)
@@ -54,7 +53,6 @@ export default function QuizPage() {
       ))
       return
     }
-
     setSelected([key])
   }
 
