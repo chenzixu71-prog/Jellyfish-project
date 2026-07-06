@@ -213,7 +213,7 @@
       margin: 0 auto 28px;
       padding: 16px 22px;
       border: 1px solid rgba(255, 253, 247, 0.34);
-      border-radius: 999px;
+      border-radius: var(--bend, 999px);
       background: rgba(255, 255, 255, 0.045);
       color: #b9b4c8;
       font-size: 16px;
@@ -681,19 +681,19 @@
       position: absolute;
       z-index: 2;
       top: 70px;
-      width: 9px;
-      height: 48px;
+      width: 7px;
+      height: 38px;
       border: 0;
       border-radius: 999px;
       background:
-        radial-gradient(circle at 50% 88%, rgba(255, 255, 255, 0.42) 0 4px, transparent 5px),
+        radial-gradient(circle at 50% 88%, rgba(255, 255, 255, 0.42) 0 3px, transparent 4px),
         linear-gradient(180deg, rgba(246, 164, 204, 0.98) 0%, rgba(255, 218, 236, 0.94) 100%);
       box-shadow:
         inset 1px 0 0 rgba(255, 255, 255, 0.44),
         inset -1px 0 0 rgba(17, 17, 17, 0.08),
-        0 0 0 1.5px rgba(17, 17, 17, 0.72);
+        0 0 0 1.2px rgba(17, 17, 17, 0.68);
       transform-origin: 50% 0;
-      animation: tentacleWave 2.35s ease-in-out infinite;
+      animation: tentacleWave 2.55s ease-in-out infinite;
     }
 
     .tentacle::before {
@@ -701,49 +701,53 @@
       position: absolute;
       left: 50%;
       top: -7px;
-      width: 9px;
-      height: 9px;
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #f6a4cc;
-      box-shadow: 0 0 0 1.5px rgba(17, 17, 17, 0.66);
+      box-shadow: 0 0 0 1.2px rgba(17, 17, 17, 0.62);
       transform: translateX(-50%);
     }
 
     .tentacle.t1 {
       left: 24px;
-      height: 43px;
-      --base-rotate: 18deg;
-      --wave-rotate: 9deg;
-      --wave-x: -4px;
+      height: 33px;
+      --base-rotate: 20deg;
+      --wave-rotate: 13deg;
+      --wave-x: -5px;
+      --bend: 46% 54% 70% 30% / 18% 16% 84% 82%;
       transform: rotate(var(--base-rotate));
     }
 
     .tentacle.t2 {
       left: 43px;
-      height: 55px;
-      --base-rotate: 5deg;
-      --wave-rotate: 7deg;
-      --wave-x: -2px;
+      height: 43px;
+      --base-rotate: 7deg;
+      --wave-rotate: 10deg;
+      --wave-x: -3px;
+      --bend: 45% 55% 62% 38% / 14% 18% 82% 86%;
       transform: rotate(var(--base-rotate));
       animation-delay: 0.2s;
     }
 
     .tentacle.t3 {
       right: 39px;
-      height: 53px;
-      --base-rotate: -5deg;
-      --wave-rotate: -7deg;
-      --wave-x: 2px;
+      height: 42px;
+      --base-rotate: -7deg;
+      --wave-rotate: -10deg;
+      --wave-x: 3px;
+      --bend: 55% 45% 38% 62% / 18% 14% 86% 82%;
       transform: rotate(var(--base-rotate));
       animation-delay: 0.35s;
     }
 
     .tentacle.t4 {
       right: 23px;
-      height: 43px;
-      --base-rotate: -18deg;
-      --wave-rotate: -9deg;
-      --wave-x: 4px;
+      height: 33px;
+      --base-rotate: -20deg;
+      --wave-rotate: -13deg;
+      --wave-x: 5px;
+      --bend: 54% 46% 30% 70% / 16% 18% 82% 84%;
       transform: rotate(var(--base-rotate));
       animation-delay: 0.5s;
     }
@@ -1447,34 +1451,42 @@
 
     .complete-jelly .tentacle {
       top: 57px;
-      height: 34px;
-      width: 7px;
+      height: 25px;
+      width: 6px;
       box-shadow:
         inset 1px 0 0 rgba(255, 255, 255, 0.38),
         inset -1px 0 0 rgba(17, 17, 17, 0.08),
-        0 0 0 1.3px rgba(17, 17, 17, 0.62);
+        0 0 0 1.1px rgba(17, 17, 17, 0.58);
     }
 
     .complete-jelly .tentacle.t1 {
       left: 22px;
-      --base-rotate: 15deg;
+      --base-rotate: 20deg;
+      --wave-rotate: 12deg;
+      --wave-x: -4px;
     }
 
     .complete-jelly .tentacle.t2 {
       left: 39px;
-      height: 36px;
-      --base-rotate: 4deg;
+      height: 30px;
+      --base-rotate: 7deg;
+      --wave-rotate: 9deg;
+      --wave-x: -2px;
     }
 
     .complete-jelly .tentacle.t3 {
       right: 25px;
-      height: 35px;
-      --base-rotate: -4deg;
+      height: 29px;
+      --base-rotate: -7deg;
+      --wave-rotate: -9deg;
+      --wave-x: 2px;
     }
 
     .complete-jelly .tentacle.t4 {
       right: 13px;
-      --base-rotate: -15deg;
+      --base-rotate: -20deg;
+      --wave-rotate: -12deg;
+      --wave-x: 4px;
     }
 
     .complete-jelly .jelly-arm {
