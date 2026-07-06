@@ -396,6 +396,7 @@
       right: 30px;
       width: 58px;
       height: 58px;
+      animation: bubbleRise 3.4s ease-in-out infinite;
     }
 
     .challenge-card {
@@ -447,27 +448,31 @@
     .doodle::before {
       content: "";
       position: absolute;
-      left: 7px;
-      top: 18px;
-      width: 34px;
-      height: 23px;
-      border: 3px solid #111111;
-      border-radius: 50% 50% 42% 42%;
-      background: var(--yellow);
-      transform: rotate(-14deg);
+      left: 12px;
+      top: 24px;
+      width: 19px;
+      height: 19px;
+      border: 3px solid rgba(255, 253, 247, 0.95);
+      border-radius: 50%;
+      background: rgba(255, 253, 247, 0.18);
+      box-shadow:
+        22px -18px 0 -4px rgba(255, 253, 247, 0.18),
+        22px -18px 0 -1px rgba(255, 253, 247, 0.9),
+        -7px -19px 0 -6px rgba(255, 253, 247, 0.18),
+        -7px -19px 0 -3px rgba(255, 253, 247, 0.86);
     }
 
     .doodle::after {
       content: "";
       position: absolute;
-      right: 2px;
-      top: 5px;
-      width: 14px;
-      height: 14px;
-      border: 3px solid #1767c8;
+      right: 7px;
+      top: 33px;
+      width: 11px;
+      height: 11px;
+      border: 3px solid rgba(255, 253, 247, 0.86);
       border-radius: 50%;
-      background: #fffdf4;
-      box-shadow: -20px 31px 0 -5px #fffdf4, -20px 31px 0 -2px #1767c8;
+      background: rgba(255, 253, 247, 0.14);
+      box-shadow: -21px 15px 0 -4px rgba(255, 253, 247, 0.14), -21px 15px 0 -1px rgba(255, 253, 247, 0.82);
     }
 
     .ocean-stage {
