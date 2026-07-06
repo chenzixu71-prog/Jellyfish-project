@@ -55,9 +55,32 @@
 ### P2: Fresh Knowledge Retrieval
 
 - 后端增加检索服务接口。
+- 第一版搜索供应商优先使用 Tavily，通过 `langchain-tavily` 的 `TavilySearch` 工具接入。
 - 支持最小检索策略：搜索结果标题、摘要、URL、抓取正文片段。
 - 对检索内容做去噪、切分、评分和来源记录。
 - 对来源不足或冲突的主题返回澄清状态。
+
+### Tavily Search Decision
+
+用户已确认可以使用 Tavily 做 search。第一版采用：
+
+```python
+from langchain_tavily import TavilySearch
+
+tavily_search_tool = TavilySearch(
+    max_results=5,
+    topic="general",
+)
+```
+
+后端配置：
+
+- `TAVILY_API_KEY`：Tavily API Key，只放后端环境变量。
+- `SEARCH_PROVIDER=tavily`：用于后续保留供应商切换能力。
+- `SEARCH_MAX_RESULTS=5`：默认搜索结果数。
+- `SEARCH_DEPTH=basic`：默认先用 basic，必要时再升 advanced。
+
+检索结果必须进入来源记录，不允许前端直接调用 Tavily。
 
 ## User Experience
 
@@ -81,6 +104,6 @@
 ## Open Questions
 
 - 第一版是否只允许用户粘贴 URL，而不做全网搜索？
-- 搜索供应商优先使用 Firecrawl，还是先做可替换接口？
+- Tavily 默认搜索范围是否需要限制官方文档、Wikipedia、GitHub、产品官网等可信域名？
 - 是否允许生成“来源不足但可基于用户输入出题”的低置信度题组？
 - 前端是否第一版展示来源，还是先只在后端记录？

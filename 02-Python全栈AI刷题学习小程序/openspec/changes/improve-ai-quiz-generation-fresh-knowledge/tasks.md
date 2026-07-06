@@ -2,7 +2,9 @@
 
 ## 1. Specification Review
 
-- [ ] Confirm whether first version supports search, user-provided URL only, or both.
+- [x] Confirm search provider: Tavily is accepted for search.
+- [ ] Confirm whether first version supports Tavily search, user-provided URL only, or both.
+- [ ] Confirm Tavily domain policy: unrestricted search, official-docs-first, or allowlist per query.
 - [ ] Confirm whether source citations are shown in frontend immediately or only stored in backend.
 - [ ] Confirm fallback behavior when sources are insufficient.
 
@@ -21,6 +23,9 @@
 - [ ] Add `SourceDocument` schema.
 - [ ] Add `SourceProvider` interface.
 - [ ] Add mock source provider for local tests.
+- [ ] Add Tavily source provider using `langchain-tavily`.
+- [ ] Add backend env vars: `TAVILY_API_KEY`, `SEARCH_PROVIDER`, `SEARCH_MAX_RESULTS`, `SEARCH_DEPTH`.
+- [ ] Add source domain filtering support for trusted-source queries.
 - [ ] Add source-aware quiz generation prompt.
 - [ ] Extend quiz response parsing with optional source metadata.
 - [ ] Add grounding validation.
@@ -38,10 +43,12 @@
 
 - [ ] Update `docs/product-requirement-analysis.md` with fresh-knowledge generation requirement.
 - [ ] Update `docs/solution-design.md` with source-aware generation architecture.
-- [ ] Update README environment notes if external search provider is introduced.
+- [ ] Update README environment notes for Tavily search setup.
+- [ ] Update `backend/.env.example` with Tavily search variables.
 
 ## 6. Verification
 
 - [ ] Run backend pytest.
 - [ ] Run Taro build.
 - [ ] Manually verify `Harness Engineering` no longer silently generates wrong-domain questions.
+- [ ] Manually verify Tavily domain filtering with a Wikipedia-only query.

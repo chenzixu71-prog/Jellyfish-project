@@ -53,13 +53,38 @@ Source types:
 - `user_text`: user pasted text.
 - `uploaded_text`: parsed file text.
 - `url`: user supplied URL.
-- `search_result`: search provider result.
+- `search_result`: Tavily search provider result.
 
 Implementation boundary:
 
 - Define `SourceProvider` interface first.
 - First implementation can be mock/local for tests.
-- Firecrawl/search integration can be added behind the same interface.
+- First real search implementation uses Tavily via `langchain-tavily`.
+- Other search providers can be added behind the same interface later.
+
+Tavily integration shape:
+
+```python
+from langchain_tavily import TavilySearch
+
+tavily_search_tool = TavilySearch(
+    max_results=5,
+    topic="general",
+)
+```
+
+The backend should keep Tavily usage inside a service such as `search_service.py`, not inside route handlers.
+
+Environment variables:
+
+```text
+TAVILY_API_KEY=
+SEARCH_PROVIDER=tavily
+SEARCH_MAX_RESULTS=5
+SEARCH_DEPTH=basic
+```
+
+For narrow source requirements, the backend should support domain filters when the provider supports them, for example “only Wikipedia sources” or “prefer official docs”.
 
 ### 3. Source Processor
 
@@ -125,6 +150,12 @@ Compatibility:
 
 - Existing frontend can continue reading `title`, `summary`, `questions`.
 - Source metadata can be hidden at first and surfaced later.
+
+Agent boundary:
+
+- Tavily can be used as a LangChain tool inside a controlled retrieval step.
+- The first version should avoid letting an autonomous agent directly decide final quiz content without backend validation.
+- The model may use Tavily results to collect context, but final quiz JSON still goes through the same schema and grounding validator.
 
 ### 5. Grounding Validator
 
@@ -224,3 +255,4 @@ Regression examples:
 - `Harness Engineering`: should trigger disambiguation or source lookup.
 - `Harness.io pipeline templates`: should generate DevOps/Harness-specific questions with sources.
 - Very short input `AI`: should ask user to narrow topic.
+- `What nation hosted the Euro 2024? Include only wikipedia sources.`: Tavily provider should support domain-constrained retrieval or return only accepted sources after filtering.

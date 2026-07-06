@@ -27,6 +27,32 @@ The system SHALL support generating quizzes from explicit source context when th
 - WHEN quiz generation runs
 - THEN the generated questions SHALL be about Harness.io / DevOps / CI-CD concepts, not unrelated harness meanings.
 
+### Requirement: Tavily Search Provider
+
+The system SHALL support Tavily as the first real search provider for fresh-knowledge retrieval.
+
+#### Scenario: Tavily is configured
+
+- GIVEN `SEARCH_PROVIDER=tavily`
+- AND `TAVILY_API_KEY` is configured on the backend
+- WHEN the system needs fresh external sources
+- THEN the backend SHALL query Tavily and convert the results into source documents.
+
+#### Scenario: Tavily is not configured
+
+- GIVEN Tavily is selected but `TAVILY_API_KEY` is missing
+- WHEN the system needs external search
+- THEN the backend SHALL return a controlled configuration error or fall back to a mock/local provider in development mode.
+
+### Requirement: Trusted Domain Filtering
+
+The system SHALL support filtering search sources by trusted domains when the query or generation mode requires it.
+
+#### Scenario: Wikipedia-only request
+
+- WHEN the user asks for only Wikipedia sources
+- THEN the source collector SHALL only accept results from Wikipedia domains or return insufficient evidence.
+
 ### Requirement: Source References
 
 For source-aware generation, each generated question SHALL include one or more `source_refs` that map to collected source metadata.
