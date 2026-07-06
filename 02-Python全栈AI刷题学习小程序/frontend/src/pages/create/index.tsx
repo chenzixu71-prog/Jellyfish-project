@@ -91,15 +91,8 @@ export default function CreatePage() {
     <View className='create-page'>
       <View className='brand-hero'>
         <View className='brand-row'>
-          <View className='brand-icon'>
-            <View className='brand-logo-body'>
-              <View className='brand-logo-smile' />
-            </View>
-            <View className='brand-logo-tentacle brand-logo-tentacle-1' />
-            <View className='brand-logo-tentacle brand-logo-tentacle-2' />
-            <View className='brand-logo-tentacle brand-logo-tentacle-3' />
-          </View>
-          <Text className='brand-name'>Jelly Quest</Text>
+          <Text className='brand-main'>Jelly</Text>
+          <Text className='brand-quest'>Quest</Text>
           <Text className='top-mark'>AI</Text>
         </View>
 
@@ -112,9 +105,21 @@ export default function CreatePage() {
 
         <View className='challenge-card'>
           <Text className='challenge-title'>今日水母挑战已准备</Text>
-          <View className='challenge-stats'>
-            <View className='stat-pill'><Text className='stat-dot'>5</Text><Text>闯关题</Text></View>
-            <View className='stat-pill'><Text className='stat-dot blue'>AI</Text><Text>即时讲解</Text></View>
+          <Text className='challenge-copy'>围绕端口、数据库和 Redis 生成 5 道题。答完每题都会收到即时讲解。</Text>
+          <View className='tag-row'>
+            <Text className='topic-tag'>端口</Text>
+            <Text className='topic-tag'>数据库</Text>
+            <Text className='topic-tag'>Redis</Text>
+          </View>
+          <View className='progress-card'>
+            <View className='progress-head'>
+              <Text className='progress-title'>今日题目</Text>
+              <Text className='progress-count'>5 / 20</Text>
+            </View>
+            <View className='progress-track'>
+              <View className='progress-fill' />
+            </View>
+            <Text className='progress-copy'>今天共有 20 个小挑战，先完成当前 5 题闯关。</Text>
           </View>
         </View>
 

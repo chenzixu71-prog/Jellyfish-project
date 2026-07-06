@@ -15,111 +15,37 @@
 
 .brand-hero {
   position: relative;
-  min-height: 600px;
+  min-height: 680px;
   color: #fffdf7;
 }
 
 .brand-row {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 14px;
-  min-height: 62px;
+  gap: 8px;
+  min-height: 54px;
+  padding: 0 18px;
+  border: 3px solid rgba(255, 253, 247, 0.8);
+  border-radius: 24px;
+  background: rgba(255, 253, 247, 0.08);
+  box-shadow: inset 0 0 0 1px rgba(255, 253, 247, 0.1), 0 10px 22px rgba(45, 31, 114, 0.18);
 }
 
-.brand-icon {
-  position: relative;
-  width: 56px;
-  height: 56px;
-  flex: 0 0 56px;
-  border: 3px solid #111111;
-  border-radius: 18px;
-  background: #fffdf7;
-  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.85);
-  transform: rotate(-3deg);
-  overflow: hidden;
-}
-
-.brand-logo-body {
-  position: absolute;
-  left: 11px;
-  top: 10px;
-  width: 30px;
-  height: 25px;
-  border: 2px solid #111111;
-  border-radius: 50% 50% 42% 42% / 62% 62% 42% 42%;
-  background:
-    radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.72) 0 5px, transparent 6px),
-    linear-gradient(180deg, #ffd3ea, #f28abd);
-}
-
-.brand-logo-body::before,
-.brand-logo-body::after {
-  content: "";
-  position: absolute;
-  top: 13px;
-  width: 3px;
-  height: 4px;
-  border-radius: 50%;
-  background: #111111;
-}
-
-.brand-logo-body::before {
-  left: 10px;
-}
-
-.brand-logo-body::after {
-  right: 10px;
-}
-
-.brand-logo-smile {
-  position: absolute;
-  left: 50%;
-  top: 17px;
-  width: 8px;
-  height: 5px;
-  border-bottom: 2px solid #111111;
-  border-radius: 0 0 10px 10px;
-  transform: translateX(-50%);
-}
-
-.brand-logo-tentacle {
-  position: absolute;
-  top: 34px;
-  width: 4px;
-  border-radius: 999px;
-  background: linear-gradient(180deg, #f6a4cc, #ffdaec);
-  box-shadow: 0 0 0 1px #111111;
-  transform-origin: 50% 0;
-  animation: brandTentacle 1.9s ease-in-out infinite;
-}
-
-.brand-logo-tentacle-1 {
-  left: 19px;
-  height: 12px;
-  transform: rotate(8deg);
-}
-
-.brand-logo-tentacle-2 {
-  left: 27px;
-  height: 15px;
-  animation-delay: 0.18s;
-}
-
-.brand-logo-tentacle-3 {
-  left: 35px;
-  height: 12px;
-  transform: rotate(-8deg);
-  animation-delay: 0.32s;
-}
-
-.brand-name {
-  flex: 1;
-  color: rgba(255, 253, 247, 0.9);
-  font-size: 22px;
+.brand-main {
+  color: #fffdf7;
+  font-size: 32px;
   font-weight: 950;
-  letter-spacing: 1px;
+  letter-spacing: 4px;
   line-height: 1.1;
-  text-shadow: 0 2px 0 rgba(17, 17, 17, 0.16);
+  text-shadow: 0 5px 0 rgba(255, 255, 255, 0.16), 0 6px 0 rgba(45, 31, 114, 0.2);
+}
+
+.brand-quest {
+  color: #f7de61;
+  font-size: 18px;
+  font-weight: 950;
+  line-height: 1;
+  text-shadow: 0 3px 0 rgba(45, 31, 114, 0.22);
 }
 
 .top-mark {
@@ -154,7 +80,7 @@
 .hero-subtitle {
   display: block;
   margin-top: 18px;
-  max-width: 210px;
+  max-width: 260px;
   color: rgba(255, 253, 247, 0.86);
   font-size: 15px;
   font-weight: 850;
@@ -165,59 +91,100 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 452px;
+  top: 455px;
   z-index: 8;
   width: auto;
   margin-top: 0;
-  padding: 16px 18px 18px;
-  border-radius: 26px;
-  background: #dfeeff;
+  padding: 24px 24px 26px;
+  border-radius: 34px;
+  background: rgba(255, 253, 247, 0.98);
   color: #15151f;
-  box-shadow: 0 8px 0 rgba(20, 17, 40, 0.2);
+  box-shadow: 0 22px 34px rgba(45, 31, 114, 0.16);
   animation: softLift 3.2s ease-in-out infinite;
 }
 
 .challenge-title {
   display: block;
-  color: #4f39d8;
-  font-size: 18px;
+  color: #15151f;
+  font-size: 22px;
   font-weight: 950;
   line-height: 1.28;
 }
 
-.challenge-stats {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
+.challenge-copy {
+  display: block;
   margin-top: 14px;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.7;
 }
 
-.stat-pill {
+.tag-row {
   display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.topic-tag {
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 5px;
-  min-height: 42px;
-  border-radius: 18px;
-  background: rgba(255, 253, 247, 0.72);
-  font-size: 13px;
+  min-width: 56px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: 999px;
+  background: #f4efff;
+  color: #6246f2;
+  font-size: 14px;
   font-weight: 950;
 }
 
-.stat-dot {
-  display: grid;
-  place-items: center;
-  width: 21px;
-  height: 21px;
-  border-radius: 50%;
-  background: #6246f2;
-  color: #fffdf7;
-  font-size: 12px;
+.progress-card {
+  margin-top: 22px;
+  padding: 18px;
+  border: 2px solid #ded5ff;
+  border-radius: 24px;
+  background: #f6f2ff;
+}
+
+.progress-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.progress-title,
+.progress-count {
+  color: #4f39d8;
+  font-size: 16px;
   font-weight: 950;
 }
 
-.stat-dot.blue {
-  background: #59a7f5;
+.progress-track {
+  height: 16px;
+  margin-top: 16px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: #ded8fb;
+}
+
+.progress-fill {
+  width: 25%;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #f7de61, #f3c85f);
+}
+
+.progress-copy {
+  display: block;
+  margin-top: 14px;
+  color: #4b5563;
+  font-size: 14px;
+  font-weight: 850;
+  line-height: 1.5;
 }
 
 .ocean-stage {
@@ -490,7 +457,7 @@
 .input-panel {
   position: relative;
   z-index: 3;
-  margin-top: -26px;
+  margin-top: -18px;
   padding: 22px 18px 18px;
   border: 0;
   border-radius: 28px;

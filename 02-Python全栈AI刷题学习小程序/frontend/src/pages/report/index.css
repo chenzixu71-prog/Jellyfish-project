@@ -1,6 +1,6 @@
 .report-page {
   min-height: 100vh;
-  padding: 0 14px 108px;
+  padding: 0 18px 108px;
   background:
     radial-gradient(circle at 16% 10%, rgba(255, 255, 255, 0.18), transparent 24%),
     radial-gradient(circle at 78% 13%, rgba(255, 253, 247, 0.12) 0 34px, transparent 35px),
@@ -20,7 +20,7 @@
 .report-cover {
   position: relative;
   height: 230px;
-  margin: 0 -14px;
+  margin: 0 -18px;
   padding: 74px 24px 30px;
   overflow: hidden;
   box-sizing: border-box;
@@ -51,11 +51,11 @@
 
 .report-card,
 .loading-card {
-  padding: 16px;
+  padding: 24px 20px;
   border: 0;
-  border-radius: 28px;
+  border-radius: 28px 28px 0 0;
   background: rgba(255, 253, 247, 0.97);
-  box-shadow: 0 14px 30px rgba(45, 31, 114, 0.18), 0 8px 0 rgba(17, 17, 17, 0.9);
+  box-shadow: 0 22px 34px rgba(45, 31, 114, 0.16);
 }
 
 .report-card {
@@ -151,7 +151,7 @@
 .report-title {
   display: block;
   color: #4f39d8;
-  font-size: 28px;
+  font-size: 30px;
   font-weight: 950;
   line-height: 1.25;
 }
@@ -173,9 +173,9 @@
 .score-box {
   flex: 1;
   padding: 16px;
-  border: 3px solid #111111;
-  border-radius: 20px;
-  box-shadow: 0 5px 0 rgba(17, 17, 17, 0.2);
+  border: 0;
+  border-radius: 22px;
+  box-shadow: 0 8px 0 rgba(17, 17, 17, 0.1);
   animation: scoreBreathe 2.8s ease-in-out infinite;
 }
 
@@ -205,9 +205,9 @@
   margin-top: 16px;
   padding: 18px;
   border: 3px solid #111111;
-  border-radius: 22px;
+  border-radius: 24px;
   background: #ffffff;
-  box-shadow: 0 6px 18px rgba(45, 31, 114, 0.08);
+  box-shadow: 0 5px 0 rgba(17, 17, 17, 0.08);
 }
 
 .report-section.yellow {
