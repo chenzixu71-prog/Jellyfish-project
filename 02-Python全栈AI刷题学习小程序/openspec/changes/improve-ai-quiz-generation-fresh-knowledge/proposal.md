@@ -42,36 +42,43 @@
 - Prompt 加强：要求模型不得超出提供来源编造事实。
 - JSON 扩展：增加 generation metadata，但保持 questions 主结构兼容。
 
-### P1: Search-Optional Quiz Generation
+### P1: Tool-Assisted Quiz Generation
 
 - 引入可选搜索上下文：
   - 用户输入文本。
   - 用户上传文件解析文本。
-  - 用户粘贴 URL 或指定资料 URL 后的网页文本。
-  - 后端 Tavily 搜索结果摘要。
+  - 用户粘贴 URL 后，使用 Tavily Extract 获取页面内容。
+  - 用户输入关键词/主题后，使用 Tavily Search 搜索相关资料。
 - 出题接口增加“联网搜索开关”。
 - 搜索关闭时，搜索上下文为空，直接走现有出题链路。
-- 搜索开启时，后端调用 Tavily；搜索失败、超时或无结果时，只记录 warning 并降级为空搜索上下文，不阻断出题。
-- 第一版不强制每题展示来源，先把搜索资料作为 Prompt 参考资料进入 DeepSeek。
+- 搜索开启时，把 `tavily_search` 和 `tavily_extract` 两个工具提供给 AI，由 AI 根据用户输入决定调用关键词搜索、URL 抽取，或两者都调用。
+- 工具调用失败、超时或无结果时，只记录 warning 并降级为空/部分搜索上下文，不阻断出题。
+- 第一版不强制每题展示来源，先把工具结果作为 Prompt 参考资料进入 DeepSeek。
 
 ### P2: Fresh Knowledge Retrieval
 
-- 后端增加检索服务接口。
-- 第一版搜索供应商优先使用 Tavily，通过 `langchain-tavily` 的 `TavilySearch` 工具接入。
-- 支持最小检索策略：搜索结果标题、摘要、URL、抓取正文片段。
+- 后端增加检索/抽取工具层。
+- 第一版搜索供应商优先使用 Tavily，通过 `langchain-tavily` 的 `TavilySearch` 和 `TavilyExtract` 工具接入。
+- 支持两类输入：
+  - 关键词/主题：调用 Tavily Search。
+  - 网页 URL：调用 Tavily Extract 获取整页内容或相关 chunks。
 - 对检索内容做去噪、切分、评分和来源记录。
 - 对来源不足或冲突的主题返回澄清状态。
 
-### Tavily Search Decision
+### Tavily Tool Decision
 
-用户已确认可以使用 Tavily 做 search。第一版采用：
+用户已确认可以使用 Tavily 做 search。官方 LangChain 集成提供两类工具：
 
 ```python
-from langchain_tavily import TavilySearch
+from langchain_tavily import TavilySearch, TavilyExtract
 
 tavily_search_tool = TavilySearch(
     max_results=5,
     topic="general",
+)
+
+tavily_extract_tool = TavilyExtract(
+    extract_depth="basic",
 )
 ```
 
@@ -81,18 +88,23 @@ tavily_search_tool = TavilySearch(
 - `SEARCH_PROVIDER=tavily`：用于后续保留供应商切换能力。
 - `SEARCH_MAX_RESULTS=5`：默认搜索结果数。
 - `SEARCH_DEPTH=basic`：默认先用 basic，必要时再升 advanced。
+- `EXTRACT_DEPTH=basic`：默认网页抽取深度，复杂页面可切 advanced。
+- `TAVILY_TIMEOUT_SECONDS=8`：工具调用超时。
 
-检索结果必须进入来源记录，不允许前端直接调用 Tavily。
+工具结果必须进入来源记录，不允许前端直接调用 Tavily。
 
 ### Confirmed First-Version Flow
 
 ```text
-用户输入主题 -> 接口收到请求 -> 判断“联网搜索开关”是否开启
+用户输入主题或 URL -> 接口收到请求 -> 判断“联网搜索开关”是否开启
   ├─ 关闭：搜索上下文为空，直接走出题
-  └─ 开启：调 Tavily 搜索，设置超时和条数上限
-        ├─ 搜到：格式化结果，标题 + 摘要，限长，作为参考资料
-        └─ 失败/超时：记 warning 日志，搜索上下文为空，降级
--> 组装 Prompt：系统角色 + 用户输入 + 搜索资料 + 出题要求
+  └─ 开启：把 tavily_search 和 tavily_extract 提供给 AI
+        ├─ 输入是关键词/主题：AI 可调用 tavily_search
+        ├─ 输入包含 URL：AI 可调用 tavily_extract
+        ├─ 简单知识：AI 可只取搜索摘要，减少成本
+        ├─ 复杂/新知识：AI 可提高结果数、使用 raw content 或 extract chunks
+        └─ 失败/超时：记 warning 日志，搜索上下文为空或保留部分结果，降级
+-> 组装 Prompt：系统角色 + 用户输入 + 工具资料 + 出题要求
 -> DeepSeek 生成题目 -> 校验 JSON 结构 -> 返回给前端
 ```
 
@@ -117,7 +129,6 @@ tavily_search_tool = TavilySearch(
 
 ## Open Questions
 
-- 第一版是否只允许用户粘贴 URL，而不做全网搜索？
 - 联网搜索开关第一版默认开启还是默认关闭？
-- Tavily 默认搜索范围是否需要限制官方文档、Wikipedia、GitHub、产品官网等可信域名？
+- Tavily 默认搜索范围是否限制官方文档、Wikipedia、GitHub、产品官网等可信域名？
 - 前端是否第一版展示来源，还是先只在后端记录？
