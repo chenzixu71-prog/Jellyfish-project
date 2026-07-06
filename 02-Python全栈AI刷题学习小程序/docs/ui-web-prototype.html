@@ -1529,6 +1529,14 @@
       font-family: var(--font-title);
     }
 
+    .report-subtitle {
+      margin-top: 6px;
+      color: #5c6070;
+      font-size: 11px;
+      line-height: 1.45;
+      font-weight: 850;
+    }
+
     .score-row {
       display: grid;
       grid-template-columns: 1fr 1fr;
@@ -1542,6 +1550,7 @@
       border-radius: 18px;
       background: var(--yellow);
       animation: scoreBreathe 2.4s ease-in-out infinite;
+      box-shadow: inset 0 -8px 0 rgba(17, 17, 17, 0.05);
     }
 
     .score-box.mastery {
@@ -1557,6 +1566,7 @@
       font-size: 12px;
       line-height: 1.55;
       font-weight: 800;
+      box-shadow: inset 0 0 0 1px rgba(98, 70, 242, 0.06);
     }
 
     .report-section h3 {
@@ -1582,9 +1592,19 @@
       background: #e1f4ff;
     }
 
+    .report-card.report-full::after {
+      content: "向下滑动查看完整报告";
+      display: block;
+      margin-top: 10px;
+      color: #7b7690;
+      font-size: 11px;
+      text-align: center;
+    }
+
     .score-num {
       font-size: 24px;
       font-weight: 950;
+      font-family: var(--font-title);
     }
 
     .score-label {
@@ -2165,6 +2185,7 @@
             <div class="script-logo">REPORT<br>CENTER</div>
             <div class="report-card report-full">
               <div class="report-title">水母学习报告</div>
+              <div class="report-subtitle">本报告根据本轮 5 道题的答题结果自动生成，帮助你知道下一步该复习哪里。</div>
               <div class="score-row">
                 <div class="score-box">
                   <div class="score-num">1/5</div>
