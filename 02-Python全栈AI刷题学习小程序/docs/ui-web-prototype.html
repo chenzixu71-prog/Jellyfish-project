@@ -669,43 +669,63 @@
 
     .tentacle {
       position: absolute;
-      z-index: 1;
+      z-index: 2;
       top: 70px;
-      width: 15px;
-      height: 42px;
-      border: 3px solid #111111;
-      border-top: 0;
-      border-radius: 0 0 999px 999px;
-      background: linear-gradient(180deg, #f5a4cc 0%, #ffd1e4 100%);
+      width: 16px;
+      height: 44px;
+      border: 0;
+      border-radius: 999px;
+      background:
+        radial-gradient(circle at 50% 88%, rgba(255, 255, 255, 0.42) 0 4px, transparent 5px),
+        linear-gradient(180deg, rgba(246, 164, 204, 0.98) 0%, rgba(255, 218, 236, 0.94) 100%);
+      box-shadow:
+        inset 2px 0 0 rgba(255, 255, 255, 0.38),
+        inset -2px 0 0 rgba(17, 17, 17, 0.1),
+        0 0 0 2px rgba(17, 17, 17, 0.78);
       transform-origin: 50% 0;
       animation: tentacleWave 1.8s ease-in-out infinite;
     }
 
+    .tentacle::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: -7px;
+      width: 13px;
+      height: 12px;
+      border-radius: 50%;
+      background: #f6a4cc;
+      box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.72);
+      transform: translateX(-50%);
+    }
+
     .tentacle.t1 {
-      left: 23px;
-      --base-rotate: 6deg;
+      left: 20px;
+      height: 38px;
+      --base-rotate: 15deg;
       transform: rotate(var(--base-rotate));
     }
 
     .tentacle.t2 {
-      left: 45px;
-      height: 48px;
-      --base-rotate: -4deg;
+      left: 39px;
+      height: 52px;
+      --base-rotate: 4deg;
       transform: rotate(var(--base-rotate));
       animation-delay: 0.2s;
     }
 
     .tentacle.t3 {
-      right: 34px;
-      --base-rotate: 7deg;
+      right: 35px;
+      height: 50px;
+      --base-rotate: -4deg;
       transform: rotate(var(--base-rotate));
       animation-delay: 0.35s;
     }
 
     .tentacle.t4 {
-      right: 16px;
-      height: 36px;
-      --base-rotate: -7deg;
+      right: 18px;
+      height: 38px;
+      --base-rotate: -15deg;
       transform: rotate(var(--base-rotate));
       animation-delay: 0.5s;
     }
