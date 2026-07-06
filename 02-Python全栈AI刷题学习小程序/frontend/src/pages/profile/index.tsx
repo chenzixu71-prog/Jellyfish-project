@@ -101,11 +101,23 @@ export default function ProfilePage() {
           <Text className='profile-title'>学习记录</Text>
           <Text className='profile-subtitle'>你的水母复盘、闯关历史和成长数据都会保存到这里。</Text>
         </View>
-        <View className='profile-jelly' />
-        <Button className='profile-action' onClick={startNew}>新练习</Button>
+        <View className='profile-jelly-stage'>
+          <View className='profile-bubble profile-bubble-one' />
+          <View className='profile-bubble profile-bubble-two' />
+          <View className='profile-jelly'>
+            <View className='profile-jelly-body'>
+              <View className='profile-jelly-mouth' />
+            </View>
+            <View className='profile-tentacle profile-tentacle-one' />
+            <View className='profile-tentacle profile-tentacle-two' />
+            <View className='profile-tentacle profile-tentacle-three' />
+            <View className='profile-tentacle profile-tentacle-four' />
+          </View>
+          <Button className='profile-action' onClick={startNew}>新练习</Button>
+        </View>
       </View>
 
-      <View className='login-card'>
+      <View className={`login-card ${loggingIn ? 'login-card-loading' : ''} ${auth ? 'login-card-authed' : ''}`}>
         <View className='login-avatar'>水</View>
         <View className='login-copy'>
           <Text className='login-title'>{auth ? auth.user.displayName : '水母学员'}</Text>
@@ -114,6 +126,16 @@ export default function ProfilePage() {
           </Text>
           {loginError && <Text className='login-error'>{loginError}</Text>}
           {profileError && <Text className='login-error'>{profileError}</Text>}
+          <View className='login-status-row'>
+            <Text className='login-status-chip'>{loggingIn ? '微信认证中' : auth ? '微信已登录' : '游客模式'}</Text>
+            {loggingIn && (
+              <View className='login-wave'>
+                <View className='login-wave-dot' />
+                <View className='login-wave-dot login-wave-dot-two' />
+                <View className='login-wave-dot login-wave-dot-three' />
+              </View>
+            )}
+          </View>
         </View>
         {!auth && (
           <Button

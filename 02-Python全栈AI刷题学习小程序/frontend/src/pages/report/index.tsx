@@ -18,8 +18,8 @@ export default function ReportPage() {
   const [loading, setLoading] = useState(true)
 
   useShareAppMessage(() => ({
-    title: report ? `我的学习报告：${report.title}` : '水母 DIY 学习助手',
-    path: '/pages/create/index'
+    title: report ? `我的水母学习报告：${report.title}` : '水母 DIY 学习助手',
+    path: report ? `/pages/report/index?quizId=${report.quizId}` : '/pages/create/index'
   }))
 
   useDidShow(async () => {
@@ -70,8 +70,19 @@ export default function ReportPage() {
     Taro.switchTab({ url: '/pages/report/index' })
   }
 
-  function shareToQQ() {
-    Taro.showToast({ title: 'QQ 分享入口已保留', icon: 'none' })
+  function buildShareText() {
+    if (!report) {
+      return '我正在用水母 DIY 学习助手生成闯关题目，一起来学习吧。'
+    }
+
+    return `我刚完成「${report.title}」水母闯关，得分 ${report.score}/${report.total}，掌握度 ${report.mastery}%。`
+  }
+
+  async function shareToQQ() {
+    await Taro.setClipboardData({
+      data: buildShareText()
+    })
+    Taro.showToast({ title: '已复制，可粘贴到 QQ', icon: 'none' })
   }
 
   if (loading) {

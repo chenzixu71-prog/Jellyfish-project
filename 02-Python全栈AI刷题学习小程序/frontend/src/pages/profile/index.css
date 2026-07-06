@@ -617,3 +617,281 @@
   word-break: normal;
   overflow-wrap: break-word;
 }
+
+.profile-hero {
+  min-height: 308px;
+  padding: 34px 24px 32px;
+  background: transparent;
+  box-shadow: none;
+  overflow: visible;
+}
+
+.profile-hero::before {
+  right: -20px;
+  top: -30px;
+  width: 156px;
+  height: 156px;
+}
+
+.profile-hero::after {
+  left: 24px;
+  bottom: 34px;
+  width: 66px;
+  height: 66px;
+}
+
+.hero-copy {
+  max-width: 278px;
+}
+
+.profile-subtitle {
+  width: 252px;
+  max-width: 58%;
+}
+
+.profile-jelly-stage {
+  position: absolute;
+  z-index: 4;
+  right: 16px;
+  top: 96px;
+  width: 166px;
+  height: 178px;
+}
+
+.profile-jelly {
+  position: absolute;
+  left: 30px;
+  top: 0;
+  width: 106px;
+  height: 116px;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  animation: profileFloat 2.8s ease-in-out infinite;
+}
+
+.profile-jelly::before,
+.profile-jelly::after {
+  content: none;
+}
+
+.profile-jelly-body {
+  position: absolute;
+  left: 8px;
+  top: 0;
+  width: 88px;
+  height: 72px;
+  border-radius: 48px 48px 28px 28px;
+  background:
+    radial-gradient(circle at 30% 22%, rgba(255, 255, 255, 0.76) 0 13px, transparent 14px),
+    radial-gradient(circle at 30% 58%, rgba(255, 115, 162, 0.4) 0 8px, transparent 9px),
+    radial-gradient(circle at 72% 58%, rgba(255, 115, 162, 0.4) 0 8px, transparent 9px),
+    linear-gradient(180deg, #ffd0e8 0%, #ff95c8 100%);
+  box-shadow: inset -8px -9px 0 rgba(224, 82, 153, 0.18), 0 10px 18px rgba(42, 29, 110, 0.2);
+}
+
+.profile-jelly-body::before,
+.profile-jelly-body::after {
+  content: "";
+  position: absolute;
+  top: 36px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #111111;
+}
+
+.profile-jelly-body::before {
+  left: 29px;
+}
+
+.profile-jelly-body::after {
+  right: 29px;
+}
+
+.profile-jelly-mouth {
+  position: absolute;
+  left: 38px;
+  top: 48px;
+  width: 17px;
+  height: 10px;
+  border-bottom: 3px solid #111111;
+  border-radius: 0 0 18px 18px;
+}
+
+.profile-tentacle {
+  position: absolute;
+  top: 66px;
+  width: 9px;
+  height: 40px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #ffaad2 0%, #ffd7ea 100%);
+  box-shadow: 3px 6px 8px rgba(42, 29, 110, 0.16);
+  transform-origin: top center;
+  animation: profileTentacleFloat 2s ease-in-out infinite;
+}
+
+.profile-tentacle-one {
+  left: 20px;
+  height: 34px;
+  transform: rotate(12deg);
+}
+
+.profile-tentacle-two {
+  left: 42px;
+  height: 48px;
+  animation-delay: 0.16s;
+}
+
+.profile-tentacle-three {
+  left: 64px;
+  height: 46px;
+  animation-delay: 0.28s;
+}
+
+.profile-tentacle-four {
+  left: 85px;
+  height: 36px;
+  transform: rotate(-12deg);
+  animation-delay: 0.42s;
+}
+
+.profile-bubble {
+  position: absolute;
+  z-index: 5;
+  border: 3px solid rgba(215, 230, 255, 0.92);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.18);
+  animation: profileBubbleRise 3.2s ease-in-out infinite;
+}
+
+.profile-bubble-one {
+  left: 18px;
+  top: 14px;
+  width: 22px;
+  height: 22px;
+}
+
+.profile-bubble-two {
+  right: 26px;
+  top: 36px;
+  width: 16px;
+  height: 16px;
+  animation-delay: 0.45s;
+}
+
+.profile-jelly-stage .profile-action {
+  position: absolute;
+  left: 9px;
+  right: auto;
+  top: 124px;
+  bottom: auto;
+  width: 148px;
+  height: 48px;
+  line-height: 48px;
+  border-radius: 999px;
+  background: #f8df63;
+  color: #4a36c9;
+  box-shadow: 0 12px 22px rgba(45, 31, 114, 0.16);
+}
+
+.login-card {
+  margin-top: 6px;
+}
+
+.login-card-loading {
+  box-shadow: 0 20px 44px rgba(98, 70, 242, 0.18);
+}
+
+.login-card-loading .login-avatar {
+  animation: loginPulse 1.2s ease-in-out infinite;
+}
+
+.login-card-authed .login-avatar {
+  background: linear-gradient(135deg, #6246f2, #7d62ff);
+}
+
+.login-status-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.login-status-chip {
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: #f3efff;
+  color: #6246f2;
+  font-size: 12px;
+  font-weight: 950;
+}
+
+.login-wave {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.login-wave-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #6246f2;
+  animation: loginDot 0.9s ease-in-out infinite;
+}
+
+.login-wave-dot-two {
+  animation-delay: 0.15s;
+}
+
+.login-wave-dot-three {
+  animation-delay: 0.3s;
+}
+
+@keyframes profileTentacleFloat {
+  0%, 100% {
+    border-radius: 999px 999px 18px 18px;
+    transform: translateY(0) rotate(4deg);
+  }
+
+  50% {
+    border-radius: 999px 999px 26px 26px;
+    transform: translateY(5px) rotate(-5deg);
+  }
+}
+
+@keyframes profileBubbleRise {
+  0%, 100% {
+    opacity: 0.72;
+    transform: translateY(0) scale(1);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-10px) scale(1.08);
+  }
+}
+
+@keyframes loginPulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.06);
+  }
+}
+
+@keyframes loginDot {
+  0%, 100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translateY(-4px);
+  }
+}
