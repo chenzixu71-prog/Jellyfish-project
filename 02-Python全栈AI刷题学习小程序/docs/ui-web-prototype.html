@@ -16,9 +16,10 @@
       --purple-deep: #4f39d8;
       --purple-soft: #f1ecff;
       --cyan: #21e6da;
-      --yellow: #ffe743;
-      --lime: #d8f15a;
-      --pink: #ff79c6;
+      --yellow: #f7de61;
+      --lime: #c8df80;
+      --pink: #f28abd;
+      --coral: #f59a8f;
       --blue: #59a7f5;
       --soft-blue: #dfeeff;
       --soft-mint: #e2f8ef;
@@ -145,7 +146,7 @@
 
     .app-icon-word span:nth-child(1),
     .app-icon-word span:nth-child(6) {
-      color: #ffe142;
+      color: var(--yellow);
       transform: rotate(-10deg);
     }
 
@@ -448,7 +449,7 @@
       height: 23px;
       border: 3px solid #111111;
       border-radius: 50% 50% 42% 42%;
-      background: #ffe142;
+      background: var(--yellow);
       transform: rotate(-14deg);
     }
 
@@ -543,7 +544,7 @@
       height: 72px;
       border: 4px solid #111111;
       border-radius: 58% 58% 43% 43%;
-      background: #ff7bd3;
+      background: var(--pink);
       box-shadow: inset 0 -12px 0 rgba(255, 225, 66, 0.45);
     }
 
@@ -623,7 +624,7 @@
       padding: 6px 9px;
       border: 3px solid #111111;
       border-radius: 999px;
-      background: #ffe142;
+      background: var(--yellow);
       color: #111111;
       font-size: 12px;
       font-weight: 950;
@@ -715,7 +716,7 @@
       display: inline-block;
       margin: 14px 0 0 96px;
       padding: 6px 9px;
-      background: #ffe142;
+      background: var(--yellow);
       color: #111111;
       font-size: 11px;
       font-weight: 950;
@@ -775,7 +776,7 @@
       height: 34px;
       border: 0;
       border-radius: 16px;
-      background: #ffe142;
+      background: var(--yellow);
       font-size: 13px;
       font-weight: 950;
       animation: popStep 1.8s ease-in-out infinite;
@@ -797,12 +798,12 @@
     }
 
     .question-dot:nth-child(4) {
-      background: #ff7bd3;
+      background: var(--pink);
       animation-delay: 0.24s;
     }
 
     .question-dot:nth-child(5) {
-      background: #d7ef45;
+      background: var(--lime);
       animation-delay: 0.32s;
     }
 
@@ -862,7 +863,7 @@
     }
 
     .option.active {
-      background: #d7ef45;
+      background: var(--lime);
       box-shadow: 0 5px 0 rgba(80, 98, 20, 0.25);
       animation: selectedPulse 1.7s ease-in-out infinite;
     }
@@ -886,7 +887,7 @@
       padding: 12px;
       border: 0;
       border-radius: 20px;
-      background: #d7ef45;
+      background: var(--lime);
       font-size: 12px;
       line-height: 1.45;
       font-weight: 800;
@@ -981,7 +982,7 @@
       height: 50px;
       border: 3px solid #111111;
       border-radius: 58% 58% 42% 42%;
-      background: #ff7bd3;
+      background: var(--pink);
     }
 
     .complete-jelly::after {
@@ -1078,12 +1079,12 @@
       padding: 13px;
       border: 0;
       border-radius: 18px;
-      background: #d7ef45;
+      background: var(--lime);
       animation: scoreBreathe 2.4s ease-in-out infinite;
     }
 
     .score-box.yellow {
-      background: #ffe142;
+      background: var(--yellow);
       animation-delay: 0.2s;
     }
 
@@ -1160,7 +1161,7 @@
       height: 48px;
       border: 3px solid #111111;
       border-radius: 50%;
-      background: #ffe142;
+      background: var(--yellow);
       color: #111111;
       font-size: 24px;
       font-weight: 950;
