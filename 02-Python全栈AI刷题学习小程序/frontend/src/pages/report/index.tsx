@@ -1,12 +1,20 @@
 import { useState } from 'react'
 import Taro, { useDidShow, useRouter, useShareAppMessage } from '@tarojs/taro'
 import { Button, Text, View } from '@tarojs/components'
-import { generateReport, Quiz, Report } from '../../services/quizService'
+import {
+  generateReport,
+  getReportDetail,
+  getReportHistory,
+  Quiz,
+  Report,
+  ReportHistoryItem
+} from '../../services/quizService'
 import './index.css'
 
 export default function ReportPage() {
   const router = useRouter()
   const [report, setReport] = useState<Report | null>(null)
+  const [reportHistory, setReportHistory] = useState<ReportHistoryItem[]>([])
   const [loading, setLoading] = useState(true)
 
   useShareAppMessage(() => ({
@@ -18,30 +26,49 @@ export default function ReportPage() {
     const storedQuiz = Taro.getStorageSync<Quiz>('currentQuiz')
     const historyQuizId = Taro.getStorageSync<string>('historyReportQuizId')
     const quizId = router.params.quizId || historyQuizId || storedQuiz?.quizId
+
     if (historyQuizId) {
       Taro.removeStorageSync('historyReportQuizId')
     }
+
     if (!quizId) {
       setReport(null)
+      await loadReportHistory()
       setLoading(false)
       return
     }
 
     setLoading(true)
     try {
-      const nextReport = await generateReport(quizId)
+      const nextReport = historyQuizId ? await getReportDetail(quizId) : await generateReport(quizId)
       setReport(nextReport)
       const history = Taro.getStorageSync<Report[]>('learningReports') || []
       Taro.setStorageSync('learningReports', [nextReport, ...history.filter((item) => item.quizId !== quizId)].slice(0, 10))
     } catch (error) {
       Taro.showToast({
-        title: error instanceof Error ? error.message : '报告生成失败',
+        title: error instanceof Error ? error.message : '报告加载失败',
         icon: 'none'
       })
+      setReport(null)
+      await loadReportHistory()
     } finally {
       setLoading(false)
     }
   })
+
+  async function loadReportHistory() {
+    try {
+      const list = await getReportHistory()
+      setReportHistory(list)
+    } catch (error) {
+      setReportHistory([])
+    }
+  }
+
+  function openSavedReport(quizId: string) {
+    Taro.setStorageSync('historyReportQuizId', quizId)
+    Taro.switchTab({ url: '/pages/report/index' })
+  }
 
   function shareToQQ() {
     Taro.showToast({ title: 'QQ 分享入口已保留', icon: 'none' })
@@ -62,7 +89,7 @@ export default function ReportPage() {
             <View className='loading-dot loading-dot-delay-2' />
           </View>
           <Text className='loading-title'>loading......</Text>
-          <Text className='muted'>AI 正在生成你的学习报告</Text>
+          <Text className='muted'>水母正在整理你的学习报告</Text>
         </View>
       </View>
     )
@@ -71,7 +98,30 @@ export default function ReportPage() {
   if (!report) {
     return (
       <View className='report-page'>
-        <Text className='muted'>暂时没有报告。</Text>
+        <View className='report-cover'>
+          <Text className='cover-label'>REPORT HISTORY</Text>
+          <View className='cover-bubble' />
+        </View>
+
+        <View className='report-card'>
+          <Text className='report-title'>报告历史</Text>
+          <Text className='report-summary'>完成闯关并生成报告后，可以在这里重新打开最近的学习报告。</Text>
+
+          {reportHistory.length === 0 && (
+            <View className='report-section'>
+              <Text className='block-title'>暂无报告</Text>
+              <Text className='list-line'>- 先完成一组水母闯关，再回来查看报告。</Text>
+            </View>
+          )}
+
+          {reportHistory.map((item) => (
+            <View key={item.quizId} className='report-history-card' onClick={() => openSavedReport(item.quizId)}>
+              <Text className='report-history-title'>{item.title}</Text>
+              <Text className='report-history-meta'>{item.score}/{item.total} 得分 · {item.mastery}% 掌握度</Text>
+              <Text className='report-history-time'>{item.completedAt?.slice(0, 10) || '刚刚完成'}</Text>
+            </View>
+          ))}
+        </View>
       </View>
     )
   }

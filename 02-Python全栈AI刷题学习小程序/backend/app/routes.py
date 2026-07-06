@@ -17,6 +17,7 @@ from app.services.quiz_service import (
     get_challenge_history,
     get_daily_challenge,
     get_learning_profile,
+    get_report_detail,
     get_report_history,
     get_wrong_questions,
     regenerate_weak_quiz,
@@ -181,6 +182,19 @@ def weak_quiz(payload: RegenerateWeakQuizRequest, authorization: str | None = He
 def report_history(sessionId: str, authorization: str | None = Header(default=None)):
     owner_id = resolve_learning_owner(sessionId, authorization)
     return ok([item.model_dump() for item in get_report_history(owner_id)])
+
+
+@router.get("/api/report-detail", response_model=ApiResponse)
+def report_detail(
+    sessionId: str,
+    quizId: str,
+    authorization: str | None = Header(default=None),
+):
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    saved_report = get_report_detail(owner_id, quizId)
+    if not saved_report:
+        return ApiResponse(code=1003, message="报告不存在，请先完成闯关并生成报告", data=None)
+    return ok(saved_report.model_dump())
 
 
 @router.get("/api/challenge-history", response_model=ApiResponse)

@@ -215,15 +215,23 @@ class MemoryStore:
         return self.wrong_questions.get(session_id, [])
 
     def save_report(self, session_id: str, report: Report) -> None:
+        completed_at = datetime.now(timezone.utc).isoformat()
+        report.completedAt = completed_at
         existing = [
             item for item in self.reports.get(session_id, []) if item.quizId != report.quizId
         ]
         existing.insert(0, report)
         self.reports[session_id] = existing[:10]
-        self.report_times[(session_id, report.quizId)] = datetime.now(timezone.utc).isoformat()
+        self.report_times[(session_id, report.quizId)] = completed_at
 
     def get_reports(self, session_id: str) -> list[Report]:
         return self.reports.get(session_id, [])
+
+    def get_report(self, session_id: str, quiz_id: str) -> Report | None:
+        return next(
+            (item for item in self.get_reports(session_id) if item.quizId == quiz_id),
+            None,
+        )
 
     def get_report_time(self, session_id: str, quiz_id: str) -> str:
         return self.report_times.get((session_id, quiz_id), "")

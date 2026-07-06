@@ -112,6 +112,7 @@ class Report(BaseModel):
     summary: str
     weakPoints: list[str]
     nextSteps: list[str]
+    completedAt: str = ""
 
 
 class WrongQuestion(BaseModel):
@@ -132,6 +133,7 @@ class ReportHistoryItem(BaseModel):
     total: int
     mastery: int
     weakPoints: list[str]
+    completedAt: str = ""
 
 
 class ChallengeHistoryItem(BaseModel):

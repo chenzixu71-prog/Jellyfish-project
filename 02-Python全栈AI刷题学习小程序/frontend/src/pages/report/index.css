@@ -210,6 +210,38 @@
   box-shadow: 0 5px 0 rgba(17, 17, 17, 0.08);
 }
 
+.report-history-card {
+  margin-top: 16px;
+  padding: 18px;
+  border-radius: 26px;
+  background: #ffffff;
+  box-shadow: inset 0 0 0 2px #ede8ff;
+}
+
+.report-history-title {
+  display: block;
+  color: #15151f;
+  font-size: 20px;
+  font-weight: 950;
+  line-height: 1.35;
+}
+
+.report-history-meta {
+  display: block;
+  margin-top: 8px;
+  color: #6246f2;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.report-history-time {
+  display: block;
+  margin-top: 6px;
+  color: #5b6472;
+  font-size: 13px;
+  font-weight: 800;
+}
+
 .report-section.yellow {
   background: #fff3a8;
 }

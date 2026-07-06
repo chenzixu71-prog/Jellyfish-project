@@ -258,6 +258,62 @@ def test_challenge_history_returns_authenticated_reports():
     assert history[0]["completedAt"]
 
 
+def test_report_history_and_detail_return_saved_report():
+    login = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "report-history-code", "sessionId": "report-history-guest"},
+    ).json()["data"]
+    headers = {"Authorization": f"Bearer {login['token']}"}
+    session_id = "report-history-session"
+
+    generated = client.post(
+        "/api/generate-quiz",
+        headers=headers,
+        json={
+            "sessionId": session_id,
+            "inputType": "text",
+            "content": "learn report history",
+            "questionCount": 5,
+        },
+    ).json()["data"]
+
+    for question in generated["questions"]:
+        client.post(
+            "/api/submit-answer",
+            headers=headers,
+            json={
+                "sessionId": session_id,
+                "quizId": generated["quizId"],
+                "questionId": question["id"],
+                "answer": question["answer"],
+            },
+        )
+
+    report = client.post(
+        "/api/generate-report",
+        headers=headers,
+        json={"sessionId": session_id, "quizId": generated["quizId"]},
+    ).json()["data"]
+    assert report["completedAt"]
+
+    history = client.get(
+        "/api/report-history",
+        headers=headers,
+        params={"sessionId": session_id},
+    ).json()["data"]
+    assert history[0]["quizId"] == generated["quizId"]
+    assert history[0]["completedAt"] == report["completedAt"]
+
+    detail = client.get(
+        "/api/report-detail",
+        headers=headers,
+        params={"sessionId": session_id, "quizId": generated["quizId"]},
+    ).json()["data"]
+    assert detail["quizId"] == generated["quizId"]
+    assert detail["summary"] == report["summary"]
+    assert detail["completedAt"] == report["completedAt"]
+
+
 def test_generate_quiz_returns_five_mixed_questions():
     response = client.post(
         "/api/generate-quiz",

@@ -45,6 +45,7 @@ export interface Report {
   summary: string
   weakPoints: string[]
   nextSteps: string[]
+  completedAt?: string
 }
 
 export interface WrongQuestion {
@@ -65,6 +66,7 @@ export interface ReportHistoryItem {
   total: number
   mastery: number
   weakPoints: string[]
+  completedAt?: string
 }
 
 export interface ChallengeHistoryItem {
@@ -191,6 +193,10 @@ export function regenerateWeakQuiz(quizId: string): Promise<Quiz> {
 
 export function getReportHistory(): Promise<ReportHistoryItem[]> {
   return request<ReportHistoryItem[]>(`/api/report-history?sessionId=${getOrCreateSessionId()}`, 'GET')
+}
+
+export function getReportDetail(quizId: string): Promise<Report> {
+  return request<Report>(`/api/report-detail?sessionId=${getOrCreateSessionId()}&quizId=${quizId}`, 'GET')
 }
 
 export function getChallengeHistory(): Promise<ChallengeHistoryItem[]> {

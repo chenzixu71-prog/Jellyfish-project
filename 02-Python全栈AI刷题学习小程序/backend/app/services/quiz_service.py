@@ -112,9 +112,17 @@ def get_report_history(session_id: str) -> list[ReportHistoryItem]:
             total=report.total,
             mastery=report.mastery,
             weakPoints=report.weakPoints,
+            completedAt=report.completedAt or store.get_report_time(session_id, report.quizId),
         )
         for report in store.get_reports(session_id)
     ]
+
+
+def get_report_detail(session_id: str, quiz_id: str) -> Report | None:
+    report = store.get_report(session_id, quiz_id)
+    if report and not report.completedAt:
+        report.completedAt = store.get_report_time(session_id, quiz_id)
+    return report
 
 
 def get_challenge_history(session_id: str) -> list[ChallengeHistoryItem]:
