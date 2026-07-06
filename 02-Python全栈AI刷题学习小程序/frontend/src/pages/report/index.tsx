@@ -10,7 +10,7 @@ export default function ReportPage() {
   const [loading, setLoading] = useState(true)
 
   useShareAppMessage(() => ({
-    title: report ? `我的学习报告：${report.title}` : '水母diy学习助手',
+    title: report ? `我的学习报告：${report.title}` : '水母 DIY 学习助手',
     path: '/pages/create/index'
   }))
 
@@ -46,6 +46,13 @@ export default function ReportPage() {
     return (
       <View className='page report-page'>
         <View className='card loading-card'>
+          <View className='mini-jelly'>
+            <View className='mini-jelly-head'>
+              <View className='mini-eye mini-eye-left' />
+              <View className='mini-eye mini-eye-right' />
+              <View className='mini-mouth' />
+            </View>
+          </View>
           <View className='loading-dot-group'>
             <View className='loading-dot' />
             <View className='loading-dot loading-dot-delay-1' />
@@ -68,34 +75,42 @@ export default function ReportPage() {
 
   return (
     <View className='page report-page'>
+      <View className='report-cover'>
+        <Text className='cover-label'>REPORT CENTER</Text>
+        <View className='cover-bubble' />
+      </View>
       <View className='card report-card'>
-        <Text className='report-title'>{report.title}</Text>
+        <Text className='report-title'>水母学习报告</Text>
         <Text className='report-summary'>{report.summary}</Text>
 
         <View className='score-row'>
-          <View className='score-box'>
+          <View className='score-box score-box-yellow'>
             <Text className='score-number'>{report.score}/{report.total}</Text>
             <Text className='score-label'>答题得分</Text>
           </View>
-          <View className='score-box yellow-box'>
+          <View className='score-box score-box-blue'>
             <Text className='score-number'>{report.mastery}%</Text>
             <Text className='score-label'>掌握度</Text>
           </View>
         </View>
 
-        <Text className='block-title'>薄弱点</Text>
-        {report.weakPoints.map((item) => (
-          <Text key={item} className='list-line'>- {item}</Text>
-        ))}
+        <View className='report-section'>
+          <Text className='block-title'>薄弱点</Text>
+          {report.weakPoints.map((item) => (
+            <Text key={item} className='list-line'>- {item}</Text>
+          ))}
+        </View>
 
-        <Text className='block-title'>下一步建议</Text>
-        {report.nextSteps.map((item) => (
-          <Text key={item} className='list-line'>- {item}</Text>
-        ))}
+        <View className='report-section'>
+          <Text className='block-title'>下一步建议</Text>
+          {report.nextSteps.map((item) => (
+            <Text key={item} className='list-line'>- {item}</Text>
+          ))}
+        </View>
 
         <View className='share-row'>
           <Button className='share-button share-button-wechat' openType='share'>分享到微信</Button>
-          <Button className='share-button share-button-qq' onClick={shareToQQ}>分享到QQ</Button>
+          <Button className='share-button share-button-qq' onClick={shareToQQ}>分享到 QQ</Button>
         </View>
       </View>
     </View>

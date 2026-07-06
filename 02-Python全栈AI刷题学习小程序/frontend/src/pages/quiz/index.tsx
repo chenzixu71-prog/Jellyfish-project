@@ -13,6 +13,12 @@ function answerText(question: Question, answer: string[]) {
     .join('、')
 }
 
+function typeText(question: Question) {
+  if (question.type === 'multiple') return '多选题'
+  if (question.type === 'judge') return '判断题'
+  return '单选题'
+}
+
 export default function QuizPage() {
   const [quiz, setQuiz] = useState<Quiz | null>(null)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -99,21 +105,22 @@ export default function QuizPage() {
   if (completed) {
     return (
       <View className='page complete-page'>
-        <View className='confetti-layer'>
-          {Array.from({ length: 20 }).map((_, index) => (
-            <View key={index} className={`confetti confetti-${index % 5}`} />
-          ))}
-        </View>
+        <View className='bubble-celebrate bubble-one' />
+        <View className='bubble-celebrate bubble-two' />
+        <View className='bubble-celebrate bubble-three' />
         <View className='card complete-card'>
-          <View className='girl-illustration'>
-            <View className='girl-face'>
-              <View className='eye left-eye' />
-              <View className='eye right-eye' />
-              <View className='smile' />
+          <View className='complete-jellyfish'>
+            <View className='complete-jelly-head'>
+              <View className='complete-eye complete-eye-left' />
+              <View className='complete-eye complete-eye-right' />
+              <View className='complete-mouth' />
             </View>
+            <View className='complete-tentacle complete-tentacle-1' />
+            <View className='complete-tentacle complete-tentacle-2' />
+            <View className='complete-tentacle complete-tentacle-3' />
           </View>
           <Text className='complete-title'>恭喜通关！</Text>
-          <Text className='complete-subtitle'>你的答题记录已经保存，可以生成一份学习复盘报告。</Text>
+          <Text className='complete-subtitle'>水母已经帮你整理好答题结果，下一步可以生成结构化学习报告。</Text>
           <Button className='primary-button' onClick={goReport}>查看学习报告</Button>
         </View>
       </View>
@@ -129,7 +136,7 @@ export default function QuizPage() {
 
       <View className='card question-card'>
         <View className='question-meta'>
-          <Text className='tag'>{question.type === 'multiple' ? '多选题' : question.type === 'judge' ? '判断题' : '单选题'}</Text>
+          <Text className='tag'>{typeText(question)}</Text>
           <Text className='muted'>{question.difficulty}</Text>
         </View>
         <Text className='question-stem'>{question.stem}</Text>

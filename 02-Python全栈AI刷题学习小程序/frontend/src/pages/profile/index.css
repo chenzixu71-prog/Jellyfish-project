@@ -6,8 +6,17 @@
 }
 
 .profile-title {
+  display: block;
+  color: #2459d6;
   font-size: 30px;
   font-weight: 900;
+}
+
+.profile-subtitle {
+  display: block;
+  margin-top: 6px;
+  color: #6b7280;
+  font-size: 13px;
 }
 
 .compact-button {
@@ -20,6 +29,7 @@
 .empty-card,
 .history-card {
   padding: 22px;
+  border-radius: 22px;
 }
 
 .empty-title,

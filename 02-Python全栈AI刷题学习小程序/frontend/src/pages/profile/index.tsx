@@ -18,7 +18,10 @@ export default function ProfilePage() {
   return (
     <View className='page profile-page'>
       <View className='profile-header'>
-        <Text className='profile-title'>学习记录</Text>
+        <View>
+          <Text className='profile-title'>学习记录</Text>
+          <Text className='profile-subtitle'>你的水母复盘都会保存在这里</Text>
+        </View>
         <Button className='primary-button compact-button' onClick={startNew}>新练习</Button>
       </View>
 
@@ -36,7 +39,7 @@ export default function ProfilePage() {
             <Text className='history-summary'>{report.summary}</Text>
             <View className='history-meta'>
               <Text className='tag'>{report.score}/{report.total}</Text>
-              <Text className='tag'>{report.mastery}%</Text>
+              <Text className='tag'>{report.mastery}% 掌握度</Text>
             </View>
           </View>
         ))}

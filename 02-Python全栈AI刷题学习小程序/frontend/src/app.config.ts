@@ -8,12 +8,12 @@ export default defineAppConfig({
   window: {
     backgroundTextStyle: 'light',
     navigationBarBackgroundColor: '#FFFDF4',
-    navigationBarTitleText: '水母diy学习助手',
+    navigationBarTitleText: '水母 DIY 学习助手',
     navigationBarTextStyle: 'black'
   },
   tabBar: {
     color: '#6B7280',
-    selectedColor: '#1767C8',
+    selectedColor: '#2459D6',
     backgroundColor: '#FFFFFF',
     list: [
       {

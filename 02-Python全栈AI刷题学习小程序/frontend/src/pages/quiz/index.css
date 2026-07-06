@@ -12,6 +12,7 @@
 
 .quiz-title {
   flex: 1;
+  color: #2459d6;
   font-size: 22px;
   font-weight: 900;
   line-height: 1.25;
@@ -52,10 +53,11 @@
   border-radius: 18px;
   background: #ffffff;
   box-sizing: border-box;
+  transition: all 0.16s ease;
 }
 
 .option-active {
-  background: #d8f36a;
+  background: #fff06b;
   box-shadow: 0 4px 0 #111111;
   transform: translateY(-2px);
 }
@@ -69,7 +71,7 @@
   flex-shrink: 0;
   border: 2px solid #111111;
   border-radius: 50%;
-  background: #1767c8;
+  background: #2459d6;
   color: #ffffff;
   font-weight: 900;
 }
@@ -92,11 +94,11 @@
 }
 
 .feedback-right {
-  background: #d8f36a;
+  background: #fff06b;
 }
 
 .feedback-wrong {
-  background: #ffe2e2;
+  background: #ffd9d5;
 }
 
 .feedback-title {
@@ -120,14 +122,15 @@
 .complete-card {
   position: relative;
   z-index: 2;
-  margin-top: 90px;
+  margin-top: 86px;
   padding: 34px 24px 26px;
   text-align: center;
 }
 
 .complete-title {
   display: block;
-  margin-top: 18px;
+  margin-top: 20px;
+  color: #2459d6;
   font-size: 34px;
   font-weight: 900;
 }
@@ -140,110 +143,142 @@
   line-height: 1.7;
 }
 
-.girl-illustration {
-  display: flex;
-  justify-content: center;
-}
-
-.girl-face {
+.complete-jellyfish {
   position: relative;
-  width: 72px;
-  height: 72px;
-  border: 2px solid #111111;
-  border-radius: 50%;
-  background: #ffe142;
-  animation: happy 1.2s ease-in-out infinite;
+  width: 110px;
+  height: 138px;
+  margin: 0 auto;
+  animation: completeFloat 2.6s ease-in-out infinite;
 }
 
-.girl-face::before,
-.girl-face::after {
-  content: '';
+.complete-jelly-head {
   position: absolute;
-  top: -8px;
-  width: 24px;
-  height: 24px;
-  border: 2px solid #111111;
-  border-radius: 50%;
-  background: #ff4d4d;
+  left: 14px;
+  top: 0;
+  width: 82px;
+  height: 70px;
+  border: 3px solid #111111;
+  border-radius: 44px 44px 30px 30px;
+  background: #8bb8ff;
+  box-shadow: inset -8px -7px 0 #5e8ee8;
 }
 
-.girl-face::before {
-  left: 6px;
-}
-
-.girl-face::after {
-  right: 6px;
-}
-
-.confetti-layer {
+.complete-eye {
   position: absolute;
-  inset: 0;
+  top: 29px;
+  width: 8px;
+  height: 10px;
+  border-radius: 50%;
+  background: #111111;
+}
+
+.complete-eye-left {
+  left: 27px;
+}
+
+.complete-eye-right {
+  right: 27px;
+}
+
+.complete-mouth {
+  position: absolute;
+  left: 34px;
+  top: 44px;
+  width: 16px;
+  height: 9px;
+  border-bottom: 3px solid #111111;
+  border-radius: 0 0 20px 20px;
+}
+
+.complete-tentacle {
+  position: absolute;
+  top: 68px;
+  width: 12px;
+  border-left: 3px solid #111111;
+  border-radius: 50%;
+  animation: completeWave 2s ease-in-out infinite;
+}
+
+.complete-tentacle-1 {
+  left: 34px;
+  height: 40px;
+}
+
+.complete-tentacle-2 {
+  left: 54px;
+  height: 48px;
+  animation-delay: 0.2s;
+}
+
+.complete-tentacle-3 {
+  right: 31px;
+  height: 38px;
+  animation-delay: 0.35s;
+}
+
+.bubble-celebrate {
+  position: absolute;
   z-index: 1;
-  overflow: hidden;
-  pointer-events: none;
+  border: 2px solid #111111;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.82);
+  animation: celebrateBubble 2.8s ease-in-out infinite;
 }
 
-.confetti {
-  position: absolute;
-  top: -20px;
-  width: 10px;
-  height: 18px;
-  border: 1px solid #111111;
-  animation: confettiFall 1.4s ease-out forwards;
+.bubble-one {
+  right: 34px;
+  top: 56px;
+  width: 25px;
+  height: 25px;
 }
 
-.confetti-0 {
-  left: 8%;
-  background: #1767c8;
+.bubble-two {
+  left: 42px;
+  top: 120px;
+  width: 15px;
+  height: 15px;
+  animation-delay: 0.3s;
 }
 
-.confetti-1 {
-  left: 27%;
-  background: #ffe142;
-  animation-delay: 0.08s;
+.bubble-three {
+  right: 86px;
+  top: 168px;
+  width: 12px;
+  height: 12px;
+  animation-delay: 0.55s;
 }
 
-.confetti-2 {
-  left: 46%;
-  background: #ff4d4d;
-  animation-delay: 0.16s;
-}
-
-.confetti-3 {
-  left: 65%;
-  background: #d8f36a;
-  animation-delay: 0.24s;
-}
-
-.confetti-4 {
-  left: 84%;
-  background: #ffffff;
-  animation-delay: 0.32s;
-}
-
-@keyframes confettiFall {
-  0% {
-    opacity: 1;
-    transform: translateY(0) rotate(0deg);
-  }
-
-  80% {
-    opacity: 1;
-  }
-
-  100% {
-    opacity: 0;
-    transform: translateY(360px) rotate(280deg);
-  }
-}
-
-@keyframes happy {
+@keyframes completeFloat {
   0%,
   100% {
     transform: translateY(0) rotate(-2deg);
   }
 
   50% {
-    transform: translateY(-6px) rotate(2deg);
+    transform: translateY(-8px) rotate(2deg);
+  }
+}
+
+@keyframes completeWave {
+  0%,
+  100% {
+    transform: rotate(-9deg);
+  }
+
+  50% {
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes celebrateBubble {
+  0%,
+  100% {
+    opacity: 0.85;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 0.45;
+    transform: translateY(-18px);
   }
 }

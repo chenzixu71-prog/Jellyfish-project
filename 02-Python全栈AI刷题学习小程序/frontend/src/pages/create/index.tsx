@@ -35,21 +35,30 @@ export default function CreatePage() {
   return (
     <View className='page create-page'>
       <View className='hero'>
-        <View className='hand-logo'>Jellyfish</View>
-        <Text className='hero-title'>水母diy学习助手</Text>
-        <Text className='hero-subtitle'>把一段知识变成 5 题闯关练习，答完立刻生成复盘报告。</Text>
+        <View className='bubble bubble-small' />
+        <View className='bubble bubble-soft' />
+        <View className='brand-row'>
+          <Text className='hand-logo'>Jelly Quest</Text>
+          <Text className='status-pill'>今日挑战 5 题</Text>
+        </View>
+        <Text className='hero-title'>水母 DIY 学习助手</Text>
+        <Text className='hero-subtitle'>把一段知识变成闯关练习，答完马上看到讲解和学习报告。</Text>
+        <View className='jellyfish-hero'>
+          <View className='jelly-head'>
+            <View className='jelly-eye jelly-eye-left' />
+            <View className='jelly-eye jelly-eye-right' />
+            <View className='jelly-mouth' />
+          </View>
+          <View className='tentacle tentacle-1' />
+          <View className='tentacle tentacle-2' />
+          <View className='tentacle tentacle-3' />
+          <View className='tentacle tentacle-4' />
+          <View className='front-bubble front-bubble-1' />
+          <View className='front-bubble front-bubble-2' />
+        </View>
       </View>
 
       <View className='card input-card'>
-        <View className='boy-illustration'>
-          <View className='face face-boy'>
-            <View className='eye left-eye' />
-            <View className='eye right-eye' />
-            <View className='smile' />
-          </View>
-          <View className='speech-bubble'>Let&apos;s learn</View>
-        </View>
-
         <Text className='section-title'>今天想学什么？</Text>
         <Textarea
           className='learning-input'
@@ -60,7 +69,7 @@ export default function CreatePage() {
           onInput={(event) => setContent(event.detail.value)}
         />
         <Button className='primary-button generate-button' loading={loading} onClick={handleGenerate}>
-          生成闯关题
+          让水母生成题目
         </Button>
       </View>
     </View>

@@ -1,48 +1,219 @@
 .create-page {
   display: flex;
   flex-direction: column;
-  gap: 28px;
+  gap: 24px;
 }
 
 .hero {
   position: relative;
-  padding-top: 18px;
+  min-height: 310px;
+  padding-top: 14px;
+  overflow: hidden;
+}
+
+.brand-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 3;
 }
 
 .hand-logo {
-  width: 156px;
-  color: #1767c8;
-  font-size: 28px;
+  color: #2459d6;
+  font-size: 30px;
   font-weight: 900;
   line-height: 1;
   transform: rotate(-2deg);
 }
 
+.status-pill {
+  padding: 7px 12px;
+  border: 2px solid #111111;
+  border-radius: 999px;
+  background: #fff6a8;
+  font-size: 12px;
+  font-weight: 900;
+}
+
 .hero-title {
   display: block;
-  margin-top: 22px;
-  font-size: 34px;
+  position: relative;
+  z-index: 3;
+  margin-top: 28px;
+  max-width: 235px;
+  color: #111111;
+  font-size: 38px;
   font-weight: 900;
-  line-height: 1.15;
+  line-height: 1.12;
 }
 
 .hero-subtitle {
   display: block;
-  margin-top: 12px;
+  position: relative;
+  z-index: 3;
+  max-width: 230px;
+  margin-top: 14px;
   color: #4b5563;
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.65;
+}
+
+.bubble {
+  position: absolute;
+  border: 2px solid #111111;
+  border-radius: 50%;
+  background: #ffffff;
+  opacity: 0.9;
+}
+
+.bubble-small {
+  right: 78px;
+  top: 76px;
+  width: 22px;
+  height: 22px;
+}
+
+.bubble-soft {
+  right: 38px;
+  top: 38px;
+  width: 38px;
+  height: 38px;
+  background: #fff6a8;
+}
+
+.jellyfish-hero {
+  position: absolute;
+  right: 10px;
+  bottom: 6px;
+  width: 132px;
+  height: 168px;
+  animation: jellyFloat 3.4s ease-in-out infinite;
+}
+
+.jelly-head {
+  position: absolute;
+  left: 20px;
+  top: 12px;
+  width: 90px;
+  height: 78px;
+  border: 3px solid #111111;
+  border-radius: 48px 48px 34px 34px;
+  background: #8bb8ff;
+  box-shadow: inset -9px -8px 0 #5e8ee8;
+}
+
+.jelly-head::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  top: 10px;
+  width: 28px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.48);
+}
+
+.jelly-eye {
+  position: absolute;
+  top: 34px;
+  width: 8px;
+  height: 10px;
+  border-radius: 50%;
+  background: #111111;
+}
+
+.jelly-eye-left {
+  left: 30px;
+}
+
+.jelly-eye-right {
+  right: 30px;
+}
+
+.jelly-mouth {
+  position: absolute;
+  left: 38px;
+  top: 48px;
+  width: 17px;
+  height: 9px;
+  border-bottom: 3px solid #111111;
+  border-radius: 0 0 20px 20px;
+}
+
+.tentacle {
+  position: absolute;
+  top: 82px;
+  width: 12px;
+  height: 52px;
+  border-left: 3px solid #111111;
+  border-radius: 50%;
+  transform-origin: top center;
+  animation: tentacleWave 2.2s ease-in-out infinite;
+}
+
+.tentacle-1 {
+  left: 37px;
+  height: 46px;
+  transform: rotate(13deg);
+}
+
+.tentacle-2 {
+  left: 56px;
+  height: 56px;
+  animation-delay: 0.18s;
+}
+
+.tentacle-3 {
+  right: 47px;
+  height: 52px;
+  transform: rotate(-8deg);
+  animation-delay: 0.3s;
+}
+
+.tentacle-4 {
+  right: 31px;
+  height: 43px;
+  transform: rotate(-16deg);
+  animation-delay: 0.46s;
+}
+
+.front-bubble {
+  position: absolute;
+  z-index: 5;
+  border: 2px solid #111111;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.86);
+  animation: bubbleRise 2.6s ease-in-out infinite;
+}
+
+.front-bubble-1 {
+  right: 8px;
+  top: 22px;
+  width: 18px;
+  height: 18px;
+}
+
+.front-bubble-2 {
+  right: 30px;
+  top: 2px;
+  width: 11px;
+  height: 11px;
+  animation-delay: 0.4s;
 }
 
 .input-card {
   position: relative;
   padding: 24px;
+  border-radius: 22px;
+  background: #ffffff;
 }
 
 .section-title {
   display: block;
   margin-bottom: 14px;
-  font-size: 22px;
+  color: #2459d6;
+  font-size: 24px;
   font-weight: 900;
 }
 
@@ -62,79 +233,39 @@
   margin-top: 20px;
 }
 
-.boy-illustration {
-  position: absolute;
-  top: -34px;
-  right: 20px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-
-.face {
-  position: relative;
-  width: 58px;
-  height: 58px;
-  border: 2px solid #111111;
-  border-radius: 50%;
-  background: #ffe142;
-  animation: nod 2.4s ease-in-out infinite;
-}
-
-.face-boy::before {
-  content: '';
-  position: absolute;
-  top: -8px;
-  left: 10px;
-  width: 34px;
-  height: 16px;
-  border-radius: 50% 50% 0 0;
-  background: #111111;
-}
-
-.eye {
-  position: absolute;
-  top: 25px;
-  width: 6px;
-  height: 8px;
-  border-radius: 50%;
-  background: #111111;
-}
-
-.left-eye {
-  left: 19px;
-}
-
-.right-eye {
-  right: 19px;
-}
-
-.smile {
-  position: absolute;
-  left: 20px;
-  bottom: 14px;
-  width: 18px;
-  height: 9px;
-  border-bottom: 3px solid #111111;
-  border-radius: 0 0 18px 18px;
-}
-
-.speech-bubble {
-  padding: 6px 10px;
-  border: 2px solid #111111;
-  border-radius: 16px;
-  background: #ffffff;
-  font-size: 12px;
-  font-weight: 800;
-}
-
-@keyframes nod {
+@keyframes jellyFloat {
   0%,
   100% {
-    transform: translateY(0) rotate(-3deg);
+    transform: translateY(0) rotate(-2deg);
   }
 
   50% {
-    transform: translateY(4px) rotate(3deg);
+    transform: translateY(-9px) rotate(2deg);
+  }
+}
+
+@keyframes tentacleWave {
+  0%,
+  100% {
+    border-radius: 54% 46% 60% 40%;
+    transform: rotate(-8deg);
+  }
+
+  50% {
+    border-radius: 42% 58% 46% 54%;
+    transform: rotate(10deg);
+  }
+}
+
+@keyframes bubbleRise {
+  0%,
+  100% {
+    opacity: 0.9;
+    transform: translateY(0);
+  }
+
+  50% {
+    opacity: 0.55;
+    transform: translateY(-12px);
   }
 }
