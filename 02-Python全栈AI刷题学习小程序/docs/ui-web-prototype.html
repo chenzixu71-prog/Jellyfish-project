@@ -3,924 +3,1037 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>水母diy学习助手 UI 网页原型</title>
+  <title>水母 DIY 学习助手 - HTML Demo</title>
   <style>
     * {
       box-sizing: border-box;
     }
 
+    html {
+      scroll-behavior: smooth;
+    }
+
     body {
       margin: 0;
-      background: #fffdf4;
-      color: #111111;
-      font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-    }
-
-    .prototype-shell {
       min-height: 100vh;
-      padding: 32px;
+      background: #10121e;
+      color: #f8f8ef;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
     }
 
-    .prototype-header {
-      max-width: 1180px;
-      margin: 0 auto 24px;
+    .demo-page {
+      min-height: 100vh;
+      overflow-x: hidden;
+      padding: 56px 6vw 72px;
     }
 
-    .prototype-title {
-      margin: 0;
-      font-size: 34px;
-      font-weight: 900;
-      line-height: 1.15;
-    }
-
-    .prototype-subtitle {
-      margin: 10px 0 0;
-      color: #4b5563;
-      font-size: 15px;
-      line-height: 1.7;
-    }
-
-    .screen-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-      gap: 28px;
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       max-width: 1180px;
       margin: 0 auto;
     }
 
-    .screen-card {
+    .brand-lockup {
       display: flex;
-      flex-direction: column;
       align-items: center;
-      gap: 12px;
+      gap: 18px;
+      color: #8f93a3;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
     }
 
-    .screen-label {
-      align-self: flex-start;
-      padding: 7px 13px;
-      border: 2px solid #111111;
-      border-radius: 999px;
-      background: #ffe142;
-      font-size: 13px;
+    .brand-icon {
+      display: grid;
+      place-items: center;
+      width: 54px;
+      height: 54px;
+      border-radius: 16px;
+      background: #f8f8ef;
+      color: #10121e;
+      font-size: 30px;
+      font-weight: 950;
+      transform: rotate(-2deg);
+    }
+
+    .topbar-mark {
+      color: #8f93a3;
+      font-size: 25px;
       font-weight: 900;
+      letter-spacing: 0.08em;
+    }
+
+    .hero {
+      max-width: 1180px;
+      margin: 72px auto 48px;
+    }
+
+    .hero-title {
+      max-width: 1080px;
+      margin: 0;
+      color: #f8f8ef;
+      font-size: clamp(54px, 9vw, 126px);
+      font-weight: 950;
+      line-height: 0.98;
+      letter-spacing: 0;
+    }
+
+    .hero-title .blue {
+      color: #1767c8;
+      display: inline-block;
+      transform: rotate(-3deg);
+    }
+
+    .hero-title .red {
+      color: #e22020;
+      display: inline-block;
+      transform: rotate(2deg);
+    }
+
+    .hero-title .yellow {
+      color: #ffe142;
+      display: inline-block;
+      transform: rotate(-1deg);
+    }
+
+    .product-row {
+      display: flex;
+      align-items: center;
+      gap: 34px;
+      margin-top: 58px;
+    }
+
+    .app-icon {
+      position: relative;
+      display: grid;
+      place-items: center;
+      width: 164px;
+      height: 164px;
+      flex: 0 0 auto;
+      border-radius: 34px;
+      background: #fffdf4;
+      color: #111111;
+      box-shadow: 0 8px 0 #000000;
+      transform: rotate(-1deg);
+    }
+
+    .app-icon-word {
+      position: absolute;
+      color: #1767c8;
+      font-size: 30px;
+      font-weight: 950;
+      letter-spacing: 0;
+      line-height: 0.85;
+    }
+
+    .app-icon-word span:nth-child(1) {
+      color: #ffe142;
+      transform: rotate(-12deg);
+    }
+
+    .app-icon-word span:nth-child(2) {
+      color: #1767c8;
+      transform: rotate(8deg);
+    }
+
+    .app-icon-word span:nth-child(3) {
+      color: #e22020;
+      transform: rotate(-4deg);
+    }
+
+    .app-icon-word span:nth-child(4) {
+      color: #1767c8;
+      transform: rotate(6deg);
+    }
+
+    .app-icon-word span {
+      display: inline-block;
+    }
+
+    .mini-face {
+      position: absolute;
+      right: 25px;
+      bottom: 28px;
+      width: 36px;
+      height: 31px;
+      border: 3px solid #111111;
+      border-radius: 48% 48% 55% 55%;
+      background: #fffdf4;
+    }
+
+    .mini-face::before,
+    .mini-face::after {
+      content: "";
+      position: absolute;
+      top: 10px;
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: #111111;
+    }
+
+    .mini-face::before {
+      left: 9px;
+    }
+
+    .mini-face::after {
+      right: 9px;
+    }
+
+    .product-name {
+      margin: 0;
+      color: #f8f8ef;
+      font-size: clamp(42px, 6vw, 72px);
+      font-weight: 950;
+      letter-spacing: 0.02em;
+      line-height: 1;
+    }
+
+    .product-subtitle {
+      margin: 20px 0 0;
+      color: #a4a7b5;
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .showcase {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 34px;
+      max-width: 1180px;
+      margin: 58px auto 0;
+      align-items: start;
     }
 
     .phone {
       position: relative;
-      width: 340px;
-      height: 700px;
+      height: 760px;
       overflow: hidden;
-      border: 3px solid #111111;
-      border-radius: 34px;
+      border: 4px solid #111111;
+      border-radius: 42px;
       background: #fffdf4;
-      box-shadow: 0 10px 0 #111111;
-    }
-
-    .status-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      height: 32px;
-      padding: 0 18px;
-      font-size: 12px;
-      font-weight: 800;
-    }
-
-    .nav-bar {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      position: relative;
-      height: 44px;
-      font-size: 16px;
-      font-weight: 700;
-    }
-
-    .nav-back {
-      position: absolute;
-      left: 18px;
-      font-size: 30px;
-      line-height: 1;
-    }
-
-    .nav-menu {
-      position: absolute;
-      right: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 78px;
-      height: 32px;
-      border: 1px solid #d1d5db;
-      border-radius: 18px;
-      background: #ffffff;
-      letter-spacing: 3px;
-      font-weight: 900;
-    }
-
-    .page {
-      min-height: calc(100% - 76px);
-      padding: 24px 18px 36px;
-    }
-
-    .card {
-      background: #ffffff;
-      border: 2px solid #111111;
-      border-radius: 24px;
-      box-shadow: 0 8px 0 #111111;
-    }
-
-    .tag {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      padding: 6px 12px;
-      border: 2px solid #111111;
-      border-radius: 999px;
-      background: #ffe142;
       color: #111111;
-      font-size: 12px;
-      font-weight: 800;
+      box-shadow: 0 12px 0 #000000;
     }
 
-    .muted {
-      color: #6b7280;
+    .phone.tall {
+      margin-top: 0;
     }
 
-    .primary-button,
-    .secondary-button,
-    .share-button {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 2px solid #111111;
-      border-radius: 18px;
-      box-shadow: 0 5px 0 #111111;
-      font-weight: 900;
-      text-align: center;
+    .phone.offset {
+      margin-top: 36px;
     }
 
-    .primary-button {
-      height: 52px;
-      background: #1767c8;
-      color: #ffffff;
-    }
-
-    .secondary-button {
-      height: 48px;
-      background: #ffe142;
-      color: #111111;
-    }
-
-    .hero {
-      position: relative;
-      padding-top: 8px;
-    }
-
-    .hand-logo {
-      width: 156px;
-      color: #1767c8;
-      font-size: 27px;
-      font-weight: 900;
-      line-height: 1;
-      transform: rotate(-2deg);
-    }
-
-    .hero-title {
-      margin-top: 20px;
-      font-size: 31px;
-      font-weight: 900;
-      line-height: 1.15;
-    }
-
-    .hero-subtitle {
-      margin-top: 10px;
-      color: #4b5563;
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    .input-card {
-      position: relative;
-      margin-top: 30px;
-      padding: 22px;
-    }
-
-    .section-title {
-      margin-bottom: 14px;
-      font-size: 21px;
-      font-weight: 900;
-    }
-
-    .learning-input {
-      min-height: 180px;
-      padding: 17px;
-      border: 2px solid #111111;
-      border-radius: 18px;
-      background: #fffdf4;
-      color: #6b7280;
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    .generate-button {
+    .phone.deep {
       margin-top: 18px;
     }
 
-    .boy-illustration {
+    .status {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      height: 34px;
+      padding: 0 26px;
+      font-size: 14px;
+      font-weight: 900;
+    }
+
+    .wechat-capsule {
       position: absolute;
-      top: -34px;
-      right: 18px;
+      top: 42px;
+      right: 16px;
       display: flex;
       align-items: center;
-      gap: 8px;
+      justify-content: center;
+      width: 80px;
+      height: 34px;
+      border: 1px solid #d7d7d0;
+      border-radius: 18px;
+      background: #fff;
+      font-size: 21px;
+      font-weight: 950;
+      letter-spacing: 2px;
+      z-index: 10;
     }
 
-    .face,
-    .girl-face {
+    .screen-content {
       position: relative;
-      border: 2px solid #111111;
-      border-radius: 50%;
-      background: #ffe142;
-      animation: nod 2.4s ease-in-out infinite;
+      height: calc(100% - 34px);
+      padding: 28px 26px 22px;
     }
 
-    .face {
-      width: 58px;
-      height: 58px;
+    .home-title {
+      color: #1767c8;
+      font-size: 36px;
+      font-weight: 950;
+      letter-spacing: 0;
+      line-height: 0.95;
     }
 
-    .face::before {
+    .home-copy {
+      max-width: 210px;
+      margin-top: 14px;
+      font-size: 13px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .doodle-corner {
+      position: absolute;
+      top: 74px;
+      right: 38px;
+      width: 82px;
+      height: 82px;
+    }
+
+    .doodle-corner::before {
       content: "";
       position: absolute;
-      top: -8px;
-      left: 10px;
-      width: 34px;
-      height: 16px;
-      border-radius: 50% 50% 0 0;
-      background: #111111;
+      inset: 18px 10px 10px 13px;
+      border: 4px solid #111111;
+      border-radius: 40% 55% 45% 50%;
+      transform: rotate(-14deg);
     }
 
-    .eye {
+    .doodle-corner::after {
+      content: "AI";
       position: absolute;
-      top: 25px;
-      width: 6px;
-      height: 8px;
+      top: 0;
+      right: 0;
+      color: #e22020;
+      font-size: 18px;
+      font-weight: 950;
+      transform: rotate(13deg);
+    }
+
+    .round-poster {
+      position: absolute;
+      left: 48px;
+      top: 296px;
+      width: 244px;
+      height: 244px;
+      border-radius: 50%;
+      background: #1767c8;
+    }
+
+    .round-poster-text {
+      position: absolute;
+      inset: -42px;
+      color: #1767c8;
+      font-size: 35px;
+      font-weight: 950;
+      letter-spacing: 0.03em;
+      text-align: center;
+      transform: rotate(-16deg);
+    }
+
+    .round-poster-text .red {
+      color: #e22020;
+    }
+
+    .round-poster-text .yellow {
+      color: #ffe142;
+    }
+
+    .jelly-kid {
+      position: absolute;
+      left: 48px;
+      top: 52px;
+      width: 142px;
+      height: 170px;
+      border: 5px solid #111111;
+      border-radius: 43% 48% 50% 45%;
+      background: #fffdf4;
+      transform: rotate(7deg);
+      animation: floaty 2.6s ease-in-out infinite;
+    }
+
+    .jelly-kid::before {
+      content: "";
+      position: absolute;
+      top: -22px;
+      left: 27px;
+      width: 86px;
+      height: 38px;
+      border: 5px solid #111111;
+      border-radius: 50% 50% 44% 44%;
+      background: #ffe142;
+      transform: rotate(-4deg);
+    }
+
+    .jelly-kid::after {
+      content: "";
+      position: absolute;
+      left: 42px;
+      top: 63px;
+      width: 50px;
+      height: 24px;
+      border-bottom: 5px solid #111111;
+      border-radius: 0 0 50px 50px;
+    }
+
+    .kid-eye {
+      position: absolute;
+      top: 68px;
+      width: 9px;
+      height: 12px;
       border-radius: 50%;
       background: #111111;
     }
 
-    .left-eye {
-      left: 19px;
+    .kid-eye.left {
+      left: 43px;
     }
 
-    .right-eye {
-      right: 19px;
+    .kid-eye.right {
+      right: 43px;
     }
 
-    .smile {
+    .script-sign {
       position: absolute;
-      left: 20px;
-      bottom: 14px;
-      width: 18px;
-      height: 9px;
-      border-bottom: 3px solid #111111;
-      border-radius: 0 0 18px 18px;
+      left: 30px;
+      bottom: 52px;
+      font-size: 34px;
+      font-weight: 950;
+      transform: rotate(-3deg);
+      text-decoration: underline;
+      text-decoration-thickness: 4px;
+      text-underline-offset: 6px;
     }
 
-    .speech-bubble {
-      padding: 6px 10px;
-      border: 2px solid #111111;
-      border-radius: 16px;
-      background: #ffffff;
+    .skip {
+      position: absolute;
+      right: 24px;
+      bottom: 42px;
+      padding: 8px 15px;
+      border-radius: 18px;
+      background: #d8d8d8;
+      color: #ffffff;
+      font-size: 13px;
+      font-weight: 800;
+    }
+
+    .opening-title {
+      margin-top: 20px;
+      color: #1767c8;
+      font-size: 76px;
+      font-weight: 950;
+      line-height: 0.78;
+      letter-spacing: 0;
+    }
+
+    .opening-red {
+      display: block;
+      color: #e22020;
+      font-size: 42px;
+      line-height: 1;
+    }
+
+    .ticket {
+      display: inline-block;
+      margin: 18px 0 0 126px;
+      padding: 7px 11px;
+      background: #ffe142;
+      color: #111111;
+      font-size: 13px;
+      font-weight: 950;
+      transform: rotate(-15deg);
+    }
+
+    .big-doodle {
+      position: relative;
+      height: 260px;
+    }
+
+    .tall-kid {
+      position: absolute;
+      right: 16px;
+      top: 12px;
+      width: 164px;
+      height: 234px;
+      border: 5px solid #111111;
+      border-radius: 46% 43% 50% 48%;
+      background: #fffdf4;
+      transform: rotate(8deg);
+      animation: wiggle 2.8s ease-in-out infinite;
+    }
+
+    .tall-kid::before {
+      content: "";
+      position: absolute;
+      top: -29px;
+      left: 34px;
+      width: 94px;
+      height: 48px;
+      border: 5px solid #111111;
+      border-radius: 50%;
+      background: #fffdf4;
+    }
+
+    .tall-kid::after {
+      content: "";
+      position: absolute;
+      left: 51px;
+      top: 88px;
+      width: 58px;
+      height: 27px;
+      border-bottom: 5px solid #111111;
+      border-radius: 0 0 50px 50px;
+    }
+
+    .welcome {
+      position: absolute;
+      left: 4px;
+      bottom: 26px;
+      max-width: 130px;
+    }
+
+    .welcome strong {
+      display: block;
+      font-size: 21px;
+      font-weight: 950;
+    }
+
+    .welcome span {
+      display: block;
+      margin-top: 6px;
+      font-size: 8px;
+      line-height: 1.2;
+    }
+
+    .blue-pill {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 58px;
+      margin-top: 8px;
+      padding: 0 28px;
+      border-radius: 30px;
+      background: #1767c8;
+      color: #ffe142;
+      font-size: 18px;
+      font-weight: 950;
+    }
+
+    .blue-pill .center-logo {
+      display: grid;
+      place-items: center;
+      width: 96px;
+      height: 36px;
+      border: 2px solid #fffdf4;
+      border-radius: 50%;
+      color: #fffdf4;
+      font-size: 14px;
+      transform: rotate(-4deg);
+    }
+
+    .icon-menu {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      margin-top: 28px;
+      text-align: center;
+    }
+
+    .menu-item {
+      min-height: 62px;
+      border-right: 2px solid #111111;
+    }
+
+    .menu-item:last-child {
+      border-right: 0;
+    }
+
+    .menu-icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 36px;
+      margin: 0 auto 7px;
+      color: #1767c8;
+      font-size: 24px;
+      font-weight: 950;
+    }
+
+    .menu-label {
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .task-card {
+      margin-top: 20px;
+      padding: 10px 0 0;
+      font-size: 15px;
+      font-weight: 900;
+    }
+
+    .task-badge {
+      display: inline-block;
+      padding: 5px 10px;
+      border: 3px solid #1767c8;
+      border-radius: 8px;
+      color: #1767c8;
+      font-size: 13px;
+      font-weight: 950;
+    }
+
+    .streak {
+      display: flex;
+      gap: 8px;
+      margin-top: 18px;
+    }
+
+    .streak-dot {
+      width: 22px;
+      height: 22px;
+      border: 3px solid #111111;
+      border-radius: 45% 55% 50% 45%;
+      background: #111111;
+    }
+
+    .bottom-tab {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      bottom: -3px;
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      min-height: 86px;
+      padding: 10px 12px 8px;
+      border-radius: 30px 30px 0 0;
+      background: #1767c8;
+      color: #fffdf4;
+      text-align: center;
       font-size: 12px;
       font-weight: 800;
     }
 
-    .quiz-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 20px;
-    }
-
-    .quiz-title {
-      flex: 1;
-      font-size: 21px;
-      font-weight: 900;
-      line-height: 1.25;
-    }
-
-    .question-card {
-      padding: 22px;
-    }
-
-    .question-meta,
-    .history-meta {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 18px;
-    }
-
-    .question-stem {
-      font-size: 20px;
-      font-weight: 900;
-      line-height: 1.5;
-    }
-
-    .option-list {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      margin-top: 20px;
-    }
-
-    .option-item {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      min-height: 56px;
-      padding: 13px;
-      border: 2px solid #111111;
-      border-radius: 18px;
-      background: #ffffff;
-    }
-
-    .option-active {
-      background: #d8f36a;
-      box-shadow: 0 4px 0 #111111;
-      transform: translateY(-2px);
-    }
-
-    .option-key {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 30px;
-      height: 30px;
-      flex-shrink: 0;
-      border: 2px solid #111111;
+    .tab-circle {
+      display: grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      margin: 0 auto 5px;
+      border: 2px solid #fffdf4;
       border-radius: 50%;
+      font-size: 15px;
+    }
+
+    .report-blue-card {
+      margin-top: 20px;
+      padding: 22px;
+      border-radius: 10px;
       background: #1767c8;
-      color: #ffffff;
-      font-weight: 900;
+      color: #fffdf4;
     }
 
-    .option-text {
-      flex: 1;
-      font-size: 14px;
-      line-height: 1.55;
+    .price-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-bottom: 22px;
     }
 
-    .submit-button {
+    .price-dot {
+      display: grid;
+      place-items: center;
+      width: 24px;
+      height: 24px;
+      flex: 0 0 auto;
+      border-radius: 50%;
+      background: #e22020;
+      color: #fffdf4;
+      font-size: 11px;
+      font-weight: 950;
+    }
+
+    .price-main {
+      font-size: 27px;
+      font-weight: 950;
+      line-height: 1;
+    }
+
+    .price-desc {
+      margin-top: 6px;
+      font-size: 12px;
+      line-height: 1.4;
+      opacity: 0.9;
+    }
+
+    .member-card {
       margin-top: 22px;
+      padding: 20px 22px;
+      border-radius: 10px;
+      background: #1767c8;
+      color: #fffdf4;
     }
 
-    .feedback {
-      margin-top: 22px;
-      padding: 16px;
-      border: 2px solid #111111;
-      border-radius: 18px;
-      background: #d8f36a;
+    .member-title {
+      font-size: 27px;
+      font-weight: 950;
+      line-height: 1.05;
     }
 
-    .feedback-title {
-      font-size: 20px;
-      font-weight: 900;
+    .member-copy {
+      max-width: 210px;
+      margin-top: 18px;
+      font-size: 10px;
+      line-height: 1.35;
+      color: #10121e;
     }
 
-    .feedback-line,
-    .feedback-explanation {
-      margin-top: 8px;
-      font-size: 13px;
+    .report-logo {
+      margin-top: 34px;
+      color: #1767c8;
+      font-size: 74px;
+      font-weight: 950;
+      line-height: 0.78;
+      letter-spacing: 0;
+    }
+
+    .report-logo span:nth-child(2) {
+      color: #ffe142;
+    }
+
+    .report-logo span:nth-child(3) {
+      color: #e22020;
+    }
+
+    .report-footer {
+      position: absolute;
+      left: 28px;
+      right: 28px;
+      bottom: 104px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      color: #111111;
+      font-size: 10px;
+      line-height: 1.3;
+    }
+
+    .cta-strip {
+      max-width: 1180px;
+      margin: 70px auto 0;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 24px;
+      align-items: center;
+      padding: 26px 32px;
+      border: 3px solid #f8f8ef;
+      border-radius: 28px;
+      color: #f8f8ef;
+    }
+
+    .cta-strip h2 {
+      margin: 0;
+      font-size: 30px;
+      font-weight: 950;
+    }
+
+    .cta-strip p {
+      margin: 8px 0 0;
+      color: #a4a7b5;
       line-height: 1.6;
     }
 
-    .complete-page {
-      position: relative;
-    }
-
-    .complete-card {
-      position: relative;
-      z-index: 2;
-      margin-top: 88px;
-      padding: 34px 24px 26px;
-      text-align: center;
-    }
-
-    .girl-face {
-      width: 72px;
-      height: 72px;
-      margin: 0 auto;
-      animation: happy 1.2s ease-in-out infinite;
-    }
-
-    .girl-face::before,
-    .girl-face::after {
-      content: "";
-      position: absolute;
-      top: -8px;
-      width: 24px;
-      height: 24px;
-      border: 2px solid #111111;
-      border-radius: 50%;
-      background: #ff4d4d;
-    }
-
-    .girl-face::before {
-      left: 6px;
-    }
-
-    .girl-face::after {
-      right: 6px;
-    }
-
-    .complete-title {
-      margin-top: 18px;
-      font-size: 34px;
-      font-weight: 900;
-    }
-
-    .complete-subtitle {
-      margin: 14px 0 24px;
-      color: #4b5563;
-      font-size: 15px;
-      line-height: 1.7;
-    }
-
-    .confetti {
-      position: absolute;
-      top: 72px;
-      width: 10px;
-      height: 18px;
-      border: 1px solid #111111;
-      animation: confettiFall 1.4s ease-out infinite;
-    }
-
-    .confetti:nth-child(1) {
-      left: 8%;
-      background: #1767c8;
-    }
-
-    .confetti:nth-child(2) {
-      left: 27%;
-      background: #ffe142;
-      animation-delay: 0.08s;
-    }
-
-    .confetti:nth-child(3) {
-      left: 46%;
-      background: #ff4d4d;
-      animation-delay: 0.16s;
-    }
-
-    .confetti:nth-child(4) {
-      left: 65%;
-      background: #d8f36a;
-      animation-delay: 0.24s;
-    }
-
-    .confetti:nth-child(5) {
-      left: 84%;
-      background: #ffffff;
-      animation-delay: 0.32s;
-    }
-
-    .report-card,
-    .loading-card,
-    .history-card,
-    .empty-card {
-      padding: 22px;
-    }
-
-    .report-title {
-      font-size: 24px;
-      font-weight: 900;
-      line-height: 1.25;
-    }
-
-    .report-summary,
-    .history-summary {
-      margin-top: 10px;
-      color: #4b5563;
-      font-size: 13px;
-      line-height: 1.65;
-    }
-
-    .score-row {
-      display: flex;
-      gap: 12px;
-      margin: 20px 0;
-    }
-
-    .score-box {
-      flex: 1;
-      padding: 16px;
-      border: 2px solid #111111;
-      border-radius: 18px;
-      background: #d8f36a;
-    }
-
-    .yellow-box {
-      background: #ffe142;
-    }
-
-    .score-number {
-      font-size: 25px;
-      font-weight: 900;
-    }
-
-    .score-label {
-      margin-top: 4px;
-      color: #4b5563;
-      font-size: 12px;
-    }
-
-    .block-title {
-      margin-top: 18px;
-      font-size: 20px;
-      font-weight: 900;
-    }
-
-    .list-line {
-      margin-top: 7px;
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .share-row {
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      margin-top: 24px;
-    }
-
-    .share-button {
-      width: 100%;
-      height: 62px;
+    .cta-button {
+      display: grid;
+      place-items: center;
+      min-width: 180px;
+      height: 56px;
       border: 3px solid #111111;
-      border-radius: 20px;
-      box-shadow: 0 7px 0 #111111;
-      color: #ffffff;
-      font-size: 20px;
-    }
-
-    .share-button-wechat {
-      background: #1767c8;
-    }
-
-    .share-button-qq {
+      border-radius: 999px;
       background: #ffe142;
       color: #111111;
+      font-size: 17px;
+      font-weight: 950;
+      box-shadow: 0 6px 0 #000000;
+      text-decoration: none;
     }
 
-    .loading-card {
-      margin-top: 110px;
-      text-align: center;
-    }
-
-    .loading-dot-group {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .loading-dot {
-      width: 12px;
-      height: 12px;
-      border: 2px solid #111111;
-      border-radius: 50%;
-      background: #1767c8;
-      animation: bounce 0.8s ease-in-out infinite;
-    }
-
-    .loading-dot:nth-child(2) {
-      background: #ffe142;
-      animation-delay: 0.12s;
-    }
-
-    .loading-dot:nth-child(3) {
-      background: #ff4d4d;
-      animation-delay: 0.24s;
-    }
-
-    .loading-title {
-      margin: 18px 0 8px;
-      font-size: 28px;
-      font-weight: 900;
-    }
-
-    .profile-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-    }
-
-    .profile-title {
-      font-size: 30px;
-      font-weight: 900;
-    }
-
-    .compact-button {
-      width: 102px;
-      height: 44px;
-      font-size: 14px;
-    }
-
-    .report-list {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-    }
-
-    .history-title,
-    .empty-title {
-      font-size: 21px;
-      font-weight: 900;
-      line-height: 1.35;
-    }
-
-    @keyframes nod {
+    @keyframes floaty {
       0%, 100% {
-        transform: translateY(0) rotate(-3deg);
+        transform: translateY(0) rotate(7deg);
       }
 
       50% {
-        transform: translateY(4px) rotate(3deg);
+        transform: translateY(-10px) rotate(3deg);
       }
     }
 
-    @keyframes happy {
+    @keyframes wiggle {
       0%, 100% {
-        transform: translateY(0) rotate(-2deg);
+        transform: translateY(0) rotate(8deg);
       }
 
       50% {
-        transform: translateY(-6px) rotate(2deg);
+        transform: translateY(8px) rotate(4deg);
       }
     }
 
-    @keyframes confettiFall {
-      0% {
-        opacity: 1;
-        transform: translateY(0) rotate(0deg);
-      }
-
-      80% {
-        opacity: 1;
-      }
-
-      100% {
-        opacity: 0;
-        transform: translateY(360px) rotate(280deg);
-      }
-    }
-
-    @keyframes bounce {
-      0%, 100% {
-        transform: translateY(0);
-      }
-
-      50% {
-        transform: translateY(-10px);
-      }
-    }
-
-    @media (max-width: 760px) {
-      .prototype-shell {
-        padding: 18px;
-      }
-
-      .screen-grid {
+    @media (max-width: 1120px) {
+      .showcase {
         grid-template-columns: 1fr;
+        justify-items: center;
       }
 
-      .screen-card {
-        align-items: center;
+      .phone {
+        width: min(390px, 92vw);
+      }
+
+      .phone.offset,
+      .phone.deep {
+        margin-top: 0;
+      }
+    }
+
+    @media (max-width: 720px) {
+      .demo-page {
+        padding: 28px 18px 48px;
+      }
+
+      .topbar {
+        align-items: flex-start;
+      }
+
+      .brand-lockup {
+        gap: 12px;
+        font-size: 16px;
+      }
+
+      .brand-icon {
+        width: 42px;
+        height: 42px;
+        border-radius: 12px;
+        font-size: 24px;
+      }
+
+      .topbar-mark {
+        font-size: 16px;
+      }
+
+      .hero {
+        margin-top: 44px;
+      }
+
+      .product-row {
+        align-items: flex-start;
+        gap: 18px;
+      }
+
+      .app-icon {
+        width: 96px;
+        height: 96px;
+        border-radius: 22px;
+      }
+
+      .app-icon-word {
+        font-size: 18px;
+      }
+
+      .mini-face {
+        right: 14px;
+        bottom: 15px;
+        width: 25px;
+        height: 22px;
+        border-width: 2px;
+      }
+
+      .product-subtitle {
+        font-size: 18px;
+      }
+
+      .phone {
+        height: 720px;
+      }
+
+      .cta-strip {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
 <body>
-  <main class="prototype-shell">
-    <header class="prototype-header">
-      <h1 class="prototype-title">水母diy学习助手 UI 网页原型</h1>
-      <p class="prototype-subtitle">当前 MVP 前端界面快照：输入知识、AI 出题、答题闯关、通关庆祝、报告生成、学习记录。</p>
+  <main class="demo-page">
+    <header class="topbar">
+      <div class="brand-lockup">
+        <div class="brand-icon">J</div>
+        <div>JELLYFISH DIY</div>
+      </div>
+      <div class="topbar-mark">UI/UX</div>
     </header>
 
-    <section class="screen-grid">
-      <article class="screen-card">
-        <div class="screen-label">01 输入知识</div>
-        <div class="phone">
-          <div class="status-bar"><span>8:37</span><span>5G ▰</span></div>
-          <div class="nav-bar">开始学习 <span class="nav-menu">••• ◉</span></div>
-          <div class="page">
-            <div class="hero">
-              <div class="hand-logo">Jellyfish</div>
-              <div class="hero-title">水母diy学习助手</div>
-              <div class="hero-subtitle">把一段知识变成 5 题闯关练习，答完立刻生成复盘报告。</div>
-            </div>
+    <section class="hero">
+      <h1 class="hero-title">
+        优秀<span class="blue">小</span><span class="red">程</span><span class="yellow">序</span>界面分享
+      </h1>
 
-            <div class="card input-card">
-              <div class="boy-illustration">
-                <div class="face">
-                  <div class="eye left-eye"></div>
-                  <div class="eye right-eye"></div>
-                  <div class="smile"></div>
-                </div>
-                <div class="speech-bubble">Let's learn</div>
-              </div>
-              <div class="section-title">今天想学什么？</div>
-              <div class="learning-input">我想学习端口、数据库和 Redis 的基础概念。</div>
-              <div class="primary-button generate-button">生成闯关题</div>
+      <div class="product-row">
+        <div class="app-icon" aria-label="水母diy学习助手图标">
+          <div class="app-icon-word">
+            <span>j</span><span>u</span><span>j</span><span>u</span><br>
+            <span>learn</span>
+          </div>
+          <div class="mini-face"></div>
+        </div>
+
+        <div>
+          <h2 class="product-name">JELLYFISH LEARN</h2>
+          <p class="product-subtitle">AI 闯关学习助手</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="showcase" aria-label="小程序界面展示">
+      <article class="phone tall">
+        <div class="status"><span>11:33</span><span>▮▮▮ 5G ▱</span></div>
+        <div class="wechat-capsule">••• ◎</div>
+        <div class="screen-content">
+          <div class="home-title">Jellyfish<br>Learn</div>
+          <div class="home-copy">The knowledge I had in my dream! Welcome to the sweet and lively AI learning shop.</div>
+          <div class="doodle-corner"></div>
+
+          <div class="round-poster">
+            <div class="round-poster-text">
+              JELLY <span class="yellow">QUIZ</span> <span class="red">OPENING</span>
+            </div>
+            <div class="jelly-kid">
+              <div class="kid-eye left"></div>
+              <div class="kid-eye right"></div>
             </div>
           </div>
+
+          <div class="script-sign">Jellyfish Learn</div>
+          <div class="skip">跳过2</div>
         </div>
       </article>
 
-      <article class="screen-card">
-        <div class="screen-label">02 答题闯关</div>
-        <div class="phone">
-          <div class="status-bar"><span>8:38</span><span>5G ▰</span></div>
-          <div class="nav-bar"><span class="nav-back">‹</span>闯关答题 <span class="nav-menu">••• ◉</span></div>
-          <div class="page">
-            <div class="quiz-header">
-              <span class="tag">1/5</span>
-              <div class="quiz-title">端口、数据库和 Redis 入门</div>
+      <article class="phone offset">
+        <div class="status"><span>11:34</span><span>▮▮▮ 5G ▱</span></div>
+        <div class="wechat-capsule">••• ◎</div>
+        <div class="screen-content">
+          <div class="opening-title">JuJuly<span class="opening-red">LEARNING</span></div>
+          <div class="ticket">GOOD<br>DAY</div>
+
+          <div class="big-doodle">
+            <div class="welcome">
+              <strong>WELCOME</strong>
+              <span>AI turns your notes into tiny quiz stages, instant feedback, and a cute report.</span>
             </div>
-            <div class="card question-card">
-              <div class="question-meta">
-                <span class="tag">单选题</span>
-                <span class="muted">easy</span>
-              </div>
-              <div class="question-stem">端口在网络通信中主要用来做什么？</div>
-              <div class="option-list">
-                <div class="option-item option-active">
-                  <div class="option-key">A</div>
-                  <div class="option-text">区分同一台电脑上的不同服务</div>
-                </div>
-                <div class="option-item">
-                  <div class="option-key">B</div>
-                  <div class="option-text">保存所有用户数据</div>
-                </div>
-                <div class="option-item">
-                  <div class="option-key">C</div>
-                  <div class="option-text">替代数据库完成查询</div>
-                </div>
-              </div>
-              <div class="primary-button submit-button">提交答案</div>
+            <div class="tall-kid">
+              <div class="kid-eye left"></div>
+              <div class="kid-eye right"></div>
             </div>
           </div>
+
+          <div class="blue-pill">
+            <span>‹</span>
+            <span class="center-logo">JuJuly<br>Learn</span>
+            <span>›</span>
+          </div>
+
+          <div class="icon-menu">
+            <div class="menu-item">
+              <div class="menu-icon">▣</div>
+              <div class="menu-label">输入</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon">▥</div>
+              <div class="menu-label">出题</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon">✓</div>
+              <div class="menu-label">闯关</div>
+            </div>
+            <div class="menu-item">
+              <div class="menu-icon">▤</div>
+              <div class="menu-label">报告</div>
+            </div>
+          </div>
+
+          <div class="task-card">
+            <span class="task-badge">今日闯关 满5题</span>
+            <div style="margin-top: 10px;">完成 5 题生成复盘报告</div>
+            <div class="streak">
+              <span class="streak-dot"></span>
+              <span class="streak-dot"></span>
+              <span class="streak-dot"></span>
+              <span class="streak-dot"></span>
+              <span class="streak-dot"></span>
+              <span class="streak-dot"></span>
+              <span class="streak-dot"></span>
+            </div>
+          </div>
+
+          <nav class="bottom-tab">
+            <div><span class="tab-circle">⌂</span>首页</div>
+            <div><span class="tab-circle">♡</span>错题</div>
+            <div><span class="tab-circle">▣</span>题库</div>
+            <div><span class="tab-circle">▤</span>报告</div>
+            <div><span class="tab-circle">☺</span>我的</div>
+          </nav>
         </div>
       </article>
 
-      <article class="screen-card">
-        <div class="screen-label">03 即时讲解</div>
-        <div class="phone">
-          <div class="status-bar"><span>8:39</span><span>5G ▰</span></div>
-          <div class="nav-bar"><span class="nav-back">‹</span>闯关答题 <span class="nav-menu">••• ◉</span></div>
-          <div class="page">
-            <div class="quiz-header">
-              <span class="tag">1/5</span>
-              <div class="quiz-title">端口、数据库和 Redis 入门</div>
-            </div>
-            <div class="card question-card">
-              <div class="question-meta">
-                <span class="tag">单选题</span>
-                <span class="muted">easy</span>
-              </div>
-              <div class="question-stem">端口在网络通信中主要用来做什么？</div>
-              <div class="option-list">
-                <div class="option-item option-active">
-                  <div class="option-key">A</div>
-                  <div class="option-text">区分同一台电脑上的不同服务</div>
-                </div>
-              </div>
-              <div class="feedback">
-                <div class="feedback-title">答对了</div>
-                <div class="feedback-line">你的答案：A. 区分同一台电脑上的不同服务</div>
-                <div class="feedback-line">正确答案：A. 区分同一台电脑上的不同服务</div>
-                <div class="feedback-explanation">端口就像一个房间号，帮助请求找到具体的软件服务。</div>
-                <div class="secondary-button" style="margin-top:16px;">下一题</div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </article>
+      <article class="phone deep">
+        <div class="status"><span>11:34</span><span>▮▮▮ 5G ▱</span></div>
+        <div class="wechat-capsule">••• ◎</div>
+        <div class="screen-content">
+          <div class="home-title" style="font-size: 24px;">Jellyfish Learn</div>
 
-      <article class="screen-card">
-        <div class="screen-label">04 通关庆祝</div>
-        <div class="phone">
-          <div class="status-bar"><span>8:40</span><span>5G ▰</span></div>
-          <div class="nav-bar"><span class="nav-back">‹</span>闯关答题 <span class="nav-menu">••• ◉</span></div>
-          <div class="page complete-page">
-            <div class="confetti"></div>
-            <div class="confetti"></div>
-            <div class="confetti"></div>
-            <div class="confetti"></div>
-            <div class="confetti"></div>
-            <div class="card complete-card">
-              <div class="girl-face">
-                <div class="eye left-eye"></div>
-                <div class="eye right-eye"></div>
-                <div class="smile"></div>
+          <div class="report-blue-card">
+            <div class="price-row">
+              <div class="price-dot">题</div>
+              <div>
+                <div class="price-main">500 分</div>
+                <div class="price-desc">完成基础概念闯关，解锁知识讲解与复盘。</div>
               </div>
-              <div class="complete-title">恭喜通关！</div>
-              <div class="complete-subtitle">你的答题记录已经保存，可以生成一份学习复盘报告。</div>
-              <div class="primary-button">查看学习报告</div>
+            </div>
+            <div class="price-row" style="margin-bottom: 0;">
+              <div class="price-dot">报</div>
+              <div>
+                <div class="price-main">1000 分</div>
+                <div class="price-desc">生成个性化学习报告，定位薄弱点。</div>
+              </div>
             </div>
           </div>
-        </div>
-      </article>
 
-      <article class="screen-card">
-        <div class="screen-label">05 报告 loading</div>
-        <div class="phone">
-          <div class="status-bar"><span>8:41</span><span>5G ▰</span></div>
-          <div class="nav-bar"><span class="nav-back">‹</span>学习报告 <span class="nav-menu">••• ◉</span></div>
-          <div class="page">
-            <div class="card loading-card">
-              <div class="loading-dot-group">
-                <div class="loading-dot"></div>
-                <div class="loading-dot"></div>
-                <div class="loading-dot"></div>
-              </div>
-              <div class="loading-title">loading......</div>
-              <div class="muted">AI 正在生成你的学习报告</div>
-            </div>
+          <div class="member-card">
+            <div class="member-title">报告中心<br>ALL NOTES REVIEW</div>
+            <div class="member-copy">The taste I had in my dream! Review what you learned with playful cards.</div>
           </div>
-        </div>
-      </article>
 
-      <article class="screen-card">
-        <div class="screen-label">06 学习报告</div>
-        <div class="phone">
-          <div class="status-bar"><span>8:42</span><span>5G ▰</span></div>
-          <div class="nav-bar"><span class="nav-back">‹</span>学习报告 <span class="nav-menu">••• ◉</span></div>
-          <div class="page">
-            <div class="card report-card">
-              <div class="report-title">我想学习端口、数据库和 Redis 的基础知识</div>
-              <div class="report-summary">本轮围绕“后端基础概念”完成 5 道题，答对 1 题。</div>
-              <div class="score-row">
-                <div class="score-box">
-                  <div class="score-number">1/5</div>
-                  <div class="score-label">答题得分</div>
-                </div>
-                <div class="score-box yellow-box">
-                  <div class="score-number">20%</div>
-                  <div class="score-label">掌握度</div>
-                </div>
-              </div>
-              <div class="block-title">薄弱点</div>
-              <div class="list-line">- 即时反馈</div>
-              <div class="list-line">- 学习复盘</div>
-              <div class="list-line">- 题目结构</div>
-              <div class="block-title">下一步建议</div>
-              <div class="list-line">- 复习错题对应的知识点。</div>
-              <div class="list-line">- 用自己的话重新解释本轮主题。</div>
-              <div class="share-row">
-                <div class="share-button share-button-wechat">分享到微信</div>
-                <div class="share-button share-button-qq">分享到QQ</div>
-              </div>
-            </div>
+          <div class="report-logo">
+            <span>Ju</span><span>Ju</span><span>ly</span><br>
+            <span>Learn</span>
           </div>
-        </div>
-      </article>
 
-      <article class="screen-card">
-        <div class="screen-label">07 学习记录</div>
-        <div class="phone">
-          <div class="status-bar"><span>8:43</span><span>5G ▰</span></div>
-          <div class="nav-bar">学习记录 <span class="nav-menu">••• ◉</span></div>
-          <div class="page">
-            <div class="profile-header">
-              <div class="profile-title">学习记录</div>
-              <div class="primary-button compact-button">新练习</div>
-            </div>
-            <div class="report-list">
-              <div class="card history-card">
-                <div class="history-title">端口、数据库和 Redis 入门</div>
-                <div class="history-summary">本轮完成 5 题，建议继续复习端口和缓存的区别。</div>
-                <div class="history-meta">
-                  <span class="tag">1/5</span>
-                  <span class="tag">20%</span>
-                </div>
-              </div>
-              <div class="card history-card">
-                <div class="history-title">HTTP 请求基础</div>
-                <div class="history-summary">已理解请求、响应、状态码的基础关系。</div>
-                <div class="history-meta">
-                  <span class="tag">4/5</span>
-                  <span class="tag">80%</span>
-                </div>
-              </div>
-            </div>
+          <div class="report-footer">
+            <span>水母diy学习助手<br>AI quiz report</span>
+            <span>Welcome to the sweet AI knowledge shop.</span>
           </div>
+
+          <nav class="bottom-tab">
+            <div><span class="tab-circle">⌂</span>首页</div>
+            <div><span class="tab-circle">♡</span>错题</div>
+            <div><span class="tab-circle">▣</span>题库</div>
+            <div><span class="tab-circle">▤</span>报告</div>
+            <div><span class="tab-circle">☺</span>我的</div>
+          </nav>
         </div>
       </article>
+    </section>
+
+    <section class="cta-strip">
+      <div>
+        <h2>HTML Demo · 按参考风格重做</h2>
+        <p>深色展板、奶油手机界面、蓝红黄强对比、手绘 IP、底部胶囊导航和小程序作品集式排版。</p>
+      </div>
+      <a class="cta-button" href="#top" onclick="window.scrollTo({ top: 0, behavior: 'smooth' }); return false;">回到顶部</a>
     </section>
   </main>
 </body>
