@@ -1,45 +1,70 @@
 .quiz-page,
 .complete-page {
-  position: relative;
+  min-height: 100vh;
+  padding: 28px 22px 48px;
+  background:
+    radial-gradient(circle at 16% 10%, rgba(255, 255, 255, 0.18), transparent 24%),
+    linear-gradient(180deg, #6246f2 0 38%, #fffdf7 38% 100%);
+  color: #15151f;
+  box-sizing: border-box;
 }
 
-.quiz-header {
+.quiz-hero {
+  color: #fffdf7;
+}
+
+.stage-title {
+  display: block;
+  font-size: 31px;
+  font-weight: 950;
+  line-height: 1;
+}
+
+.quiz-progress-row {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 20px;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.pill {
+  padding: 7px 13px;
+  border: 2px solid #111111;
+  border-radius: 999px;
+  background: #f7de61;
+  color: #15151f;
+  font-size: 13px;
+  font-weight: 950;
+  box-shadow: 0 4px 0 #111111;
 }
 
 .quiz-title {
-  flex: 1;
-  color: #2459d6;
-  font-size: 22px;
-  font-weight: 900;
-  line-height: 1.25;
+  display: block;
+  margin-top: 18px;
+  font-size: 18px;
+  font-weight: 950;
+  line-height: 1.35;
 }
 
 .question-card {
-  padding: 24px;
-}
-
-.question-meta {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 18px;
+  margin-top: 24px;
+  padding: 22px;
+  border: 3px solid #111111;
+  border-radius: 30px;
+  background: #fffdf7;
+  box-shadow: 0 8px 0 #111111;
 }
 
 .question-stem {
   display: block;
-  font-size: 21px;
-  font-weight: 900;
-  line-height: 1.55;
+  font-size: 22px;
+  font-weight: 950;
+  line-height: 1.5;
 }
 
 .option-list {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 13px;
   margin-top: 22px;
 }
 
@@ -47,39 +72,44 @@
   display: flex;
   align-items: flex-start;
   gap: 12px;
-  min-height: 56px;
+  min-height: 58px;
   padding: 14px;
-  border: 2px solid #111111;
+  border: 3px solid #111111;
   border-radius: 18px;
   background: #ffffff;
   box-sizing: border-box;
   transition: all 0.16s ease;
 }
 
-.option-active {
-  background: #fff06b;
-  box-shadow: 0 4px 0 #111111;
+.option-active,
+.option-correct {
+  background: #f7de61;
+  box-shadow: 0 5px 0 #111111;
   transform: translateY(-2px);
+}
+
+.option-wrong {
+  background: #f7c7c2;
 }
 
 .option-key {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 30px;
-  height: 30px;
+  width: 31px;
+  height: 31px;
   flex-shrink: 0;
   border: 2px solid #111111;
   border-radius: 50%;
-  background: #2459d6;
-  color: #ffffff;
-  font-weight: 900;
+  background: #6246f2;
+  color: #fffdf7;
+  font-weight: 950;
 }
 
 .option-text {
   flex: 1;
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.55;
 }
 
 .submit-button {
@@ -89,22 +119,22 @@
 .feedback {
   margin-top: 24px;
   padding: 18px;
-  border: 2px solid #111111;
-  border-radius: 18px;
+  border: 3px solid #111111;
+  border-radius: 22px;
 }
 
 .feedback-right {
-  background: #fff06b;
+  background: #f7de61;
 }
 
 .feedback-wrong {
-  background: #ffd9d5;
+  background: #f7c7c2;
 }
 
 .feedback-title {
   display: block;
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 950;
 }
 
 .feedback-line,
@@ -115,24 +145,103 @@
   line-height: 1.65;
 }
 
-.next-button {
+.feedback-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
   margin-top: 18px;
+}
+
+.action-button {
+  width: 100%;
+  font-size: 13px;
+}
+
+.sheet-mask {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-end;
+  background: rgba(21, 21, 31, 0.42);
+}
+
+.knowledge-sheet {
+  width: 100%;
+  max-height: 58vh;
+  padding: 24px 22px 32px;
+  border: 3px solid #111111;
+  border-bottom: 0;
+  border-radius: 30px 30px 0 0;
+  background: #fffdf7;
+  box-shadow: 0 -8px 0 #111111;
+  box-sizing: border-box;
+}
+
+.sheet-title {
+  display: block;
+  color: #4f39d8;
+  font-size: 24px;
+  font-weight: 950;
+}
+
+.sheet-scroll {
+  max-height: 45vh;
+  margin-top: 14px;
+}
+
+.knowledge-block {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 14px;
+  border: 2px solid #111111;
+  border-radius: 18px;
+  background: #ffffff;
+}
+
+.knowledge-block.correct {
+  background: #f7de61;
+}
+
+.knowledge-block.wrong {
+  background: #f7c7c2;
+}
+
+.knowledge-label {
+  font-size: 15px;
+  font-weight: 950;
+}
+
+.knowledge-copy {
+  font-size: 14px;
+  line-height: 1.62;
+}
+
+.complete-page {
+  position: relative;
+  overflow: hidden;
 }
 
 .complete-card {
   position: relative;
   z-index: 2;
-  margin-top: 86px;
-  padding: 34px 24px 26px;
+  margin-top: 90px;
+  padding: 36px 24px 28px;
+  border: 3px solid #111111;
+  border-radius: 32px;
+  background: #fffdf7;
+  box-shadow: 0 8px 0 #111111;
   text-align: center;
 }
 
 .complete-title {
   display: block;
-  margin-top: 20px;
-  color: #2459d6;
-  font-size: 34px;
-  font-weight: 900;
+  margin-top: 18px;
+  color: #4f39d8;
+  font-size: 36px;
+  font-weight: 950;
 }
 
 .complete-subtitle {
@@ -140,51 +249,52 @@
   margin: 14px 0 24px;
   color: #4b5563;
   font-size: 15px;
-  line-height: 1.7;
+  line-height: 1.65;
 }
 
 .complete-jellyfish {
   position: relative;
-  width: 110px;
-  height: 138px;
+  width: 112px;
+  height: 130px;
   margin: 0 auto;
   animation: completeFloat 2.6s ease-in-out infinite;
 }
 
-.complete-jelly-head {
+.complete-jelly-body {
   position: absolute;
-  left: 14px;
+  left: 8px;
   top: 0;
-  width: 82px;
-  height: 70px;
+  width: 96px;
+  height: 72px;
   border: 3px solid #111111;
-  border-radius: 44px 44px 30px 30px;
-  background: #8bb8ff;
-  box-shadow: inset -8px -7px 0 #5e8ee8;
+  border-radius: 54% 54% 46% 46% / 62% 62% 40% 40%;
+  background: linear-gradient(180deg, #ffd3ea, #f28abd);
 }
 
-.complete-eye {
+.complete-jelly-body::before,
+.complete-jelly-body::after {
+  content: '';
   position: absolute;
-  top: 29px;
-  width: 8px;
-  height: 10px;
+  top: 34px;
+  width: 7px;
+  height: 8px;
   border-radius: 50%;
   background: #111111;
 }
 
-.complete-eye-left {
-  left: 27px;
+.complete-jelly-body::before {
+  left: 32px;
 }
 
-.complete-eye-right {
-  right: 27px;
+.complete-jelly-body::after {
+  right: 32px;
 }
 
-.complete-mouth {
+.complete-smile {
   position: absolute;
-  left: 34px;
-  top: 44px;
-  width: 16px;
+  left: 38px;
+  top: 48px;
+  width: 20px;
   height: 9px;
   border-bottom: 3px solid #111111;
   border-radius: 0 0 20px 20px;
@@ -192,93 +302,43 @@
 
 .complete-tentacle {
   position: absolute;
-  top: 68px;
-  width: 12px;
-  border-left: 3px solid #111111;
-  border-radius: 50%;
+  top: 72px;
+  width: 7px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f6a4cc, #ffdaec);
+  box-shadow: 0 0 0 1px #111111;
   animation: completeWave 2s ease-in-out infinite;
 }
 
-.complete-tentacle-1 {
-  left: 34px;
-  height: 40px;
-}
-
-.complete-tentacle-2 {
-  left: 54px;
-  height: 48px;
-  animation-delay: 0.2s;
-}
-
-.complete-tentacle-3 {
-  right: 31px;
-  height: 38px;
-  animation-delay: 0.35s;
-}
+.complete-tentacle-1 { left: 28px; height: 34px; }
+.complete-tentacle-2 { left: 47px; height: 44px; animation-delay: 0.2s; }
+.complete-tentacle-3 { right: 42px; height: 43px; animation-delay: 0.35s; }
+.complete-tentacle-4 { right: 26px; height: 34px; animation-delay: 0.5s; }
 
 .bubble-celebrate {
   position: absolute;
   z-index: 1;
-  border: 2px solid #111111;
+  border: 3px solid #fffdf7;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.82);
+  background: rgba(255, 255, 255, 0.16);
   animation: celebrateBubble 2.8s ease-in-out infinite;
 }
 
-.bubble-one {
-  right: 34px;
-  top: 56px;
-  width: 25px;
-  height: 25px;
-}
-
-.bubble-two {
-  left: 42px;
-  top: 120px;
-  width: 15px;
-  height: 15px;
-  animation-delay: 0.3s;
-}
-
-.bubble-three {
-  right: 86px;
-  top: 168px;
-  width: 12px;
-  height: 12px;
-  animation-delay: 0.55s;
-}
+.bubble-one { right: 36px; top: 62px; width: 25px; height: 25px; }
+.bubble-two { left: 44px; top: 124px; width: 15px; height: 15px; animation-delay: 0.3s; }
+.bubble-three { right: 92px; top: 172px; width: 12px; height: 12px; animation-delay: 0.55s; }
 
 @keyframes completeFloat {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-
-  50% {
-    transform: translateY(-8px) rotate(2deg);
-  }
+  0%, 100% { transform: translateY(0) rotate(-2deg); }
+  50% { transform: translateY(-8px) rotate(2deg); }
 }
 
 @keyframes completeWave {
-  0%,
-  100% {
-    transform: rotate(-9deg);
-  }
-
-  50% {
-    transform: rotate(10deg);
-  }
+  0%, 100% { transform: rotate(-9deg); }
+  50% { transform: rotate(10deg); }
 }
 
 @keyframes celebrateBubble {
-  0%,
-  100% {
-    opacity: 0.85;
-    transform: translateY(0);
-  }
-
-  50% {
-    opacity: 0.45;
-    transform: translateY(-18px);
-  }
+  0%, 100% { opacity: 0.85; transform: translateY(0); }
+  50% { opacity: 0.45; transform: translateY(-18px); }
 }

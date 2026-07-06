@@ -6,20 +6,75 @@ import './index.css'
 
 const defaultPrompt = '例如：我想学习 HTTP 请求、端口、数据库和 Redis 的基础概念'
 
+interface LocalFile {
+  name: string
+  path: string
+}
+
 export default function CreatePage() {
   const [content, setContent] = useState('')
+  const [files, setFiles] = useState<LocalFile[]>([])
+  const [images, setImages] = useState<string[]>([])
   const [loading, setLoading] = useState(false)
+
+  async function chooseFiles() {
+    try {
+      const result = await Taro.chooseMessageFile({
+        count: 3,
+        type: 'file',
+        extension: ['txt', 'md', 'csv', 'json']
+      })
+      setFiles((result.tempFiles || []).slice(0, 3).map((file) => ({
+        name: file.name,
+        path: file.path
+      })))
+    } catch {
+      Taro.showToast({ title: '暂未选择文件', icon: 'none' })
+    }
+  }
+
+  async function chooseImages() {
+    try {
+      const result = await Taro.chooseImage({
+        count: 10,
+        sizeType: ['compressed'],
+        sourceType: ['album', 'camera']
+      })
+      setImages((result.tempFilePaths || []).slice(0, 10))
+    } catch {
+      Taro.showToast({ title: '暂未选择图片', icon: 'none' })
+    }
+  }
+
+  function buildLearningContent(trimmed: string) {
+    const parts = [trimmed]
+    if (files.length > 0) {
+      const fs = Taro.getFileSystemManager()
+      files.forEach((file) => {
+        try {
+          const text = fs.readFileSync(file.path, 'utf8')
+          parts.push(`\n\n【上传文件：${file.name}】\n${String(text).slice(0, 2000)}`)
+        } catch {
+          parts.push(`\n\n【上传文件：${file.name}】文件已选择，但小程序本地读取失败，请根据文件名辅助出题。`)
+        }
+      })
+    }
+    if (images.length > 0) {
+      parts.push(`\n\n【上传图片】用户选择了 ${images.length} 张图片。当前小程序版先记录图片数量；如果图片里有关键知识，请用户在文本里补充说明。`)
+    }
+    return parts.filter(Boolean).join('')
+  }
 
   async function handleGenerate() {
     const trimmed = content.trim()
-    if (!trimmed) {
-      Taro.showToast({ title: '先输入一个学习主题', icon: 'none' })
+    if (!trimmed && files.length === 0 && images.length === 0) {
+      Taro.showToast({ title: '先输入主题或选择素材', icon: 'none' })
       return
     }
 
     setLoading(true)
     try {
-      const quiz = await generateQuiz(trimmed)
+      const quiz = await generateQuiz(buildLearningContent(trimmed))
       Taro.setStorageSync('currentQuiz', quiz)
       Taro.navigateTo({ url: '/pages/quiz/index' })
     } catch (error) {
@@ -33,32 +88,46 @@ export default function CreatePage() {
   }
 
   return (
-    <View className='page create-page'>
-      <View className='hero'>
-        <View className='bubble bubble-small' />
-        <View className='bubble bubble-soft' />
+    <View className='create-page'>
+      <View className='brand-hero'>
         <View className='brand-row'>
-          <Text className='hand-logo'>Jelly Quest</Text>
-          <Text className='status-pill'>今日挑战 5 题</Text>
-        </View>
-        <Text className='hero-title'>水母 DIY 学习助手</Text>
-        <Text className='hero-subtitle'>把一段知识变成闯关练习，答完马上看到讲解和学习报告。</Text>
-        <View className='jellyfish-hero'>
-          <View className='jelly-head'>
-            <View className='jelly-eye jelly-eye-left' />
-            <View className='jelly-eye jelly-eye-right' />
-            <View className='jelly-mouth' />
+          <View className='brand-icon'>
+            <Text>J</Text>
           </View>
-          <View className='tentacle tentacle-1' />
-          <View className='tentacle tentacle-2' />
-          <View className='tentacle tentacle-3' />
-          <View className='tentacle tentacle-4' />
-          <View className='front-bubble front-bubble-1' />
-          <View className='front-bubble front-bubble-2' />
+          <Text className='brand-name'>Jelly Quest</Text>
+          <Text className='top-mark'>AI</Text>
+        </View>
+
+        <Text className='hero-title'>
+          <Text className='cyan-word'>水母</Text>
+          <Text> DIY </Text>
+          <Text className='yellow-word'>学习</Text>
+        </Text>
+        <Text className='hero-subtitle'>把零散知识变成 5 道闯关题，答完马上看到讲解和报告。</Text>
+
+        <View className='ocean-stage'>
+          <View className='ocean-bubble bubble-one' />
+          <View className='ocean-bubble bubble-two' />
+          <View className='ocean-bubble bubble-three' />
+          <View className='jellyfish'>
+            <View className='jelly-body'>
+              <View className='jelly-highlight' />
+              <View className='jelly-smile' />
+              <View className='jelly-cheek jelly-cheek-left' />
+              <View className='jelly-cheek jelly-cheek-right' />
+            </View>
+            <View className='jelly-arm jelly-arm-left' />
+            <View className='jelly-arm jelly-arm-right' />
+            <View className='tentacle tentacle-1' />
+            <View className='tentacle tentacle-2' />
+            <View className='tentacle tentacle-3' />
+            <View className='tentacle tentacle-4' />
+          </View>
+          <Text className='jelly-label'>今日水母挑战</Text>
         </View>
       </View>
 
-      <View className='card input-card'>
+      <View className='input-panel'>
         <Text className='section-title'>今天想学什么？</Text>
         <Textarea
           className='learning-input'
@@ -68,7 +137,11 @@ export default function CreatePage() {
           showConfirmBar={false}
           onInput={(event) => setContent(event.detail.value)}
         />
-        <Button className='primary-button generate-button' loading={loading} onClick={handleGenerate}>
+        <View className='upload-row'>
+          <Button className='upload-button' onClick={chooseFiles}>文件 {files.length}/3</Button>
+          <Button className='upload-button upload-image' onClick={chooseImages}>图片 {images.length}/10</Button>
+        </View>
+        <Button className='main-button' loading={loading} onClick={handleGenerate}>
           让水母生成题目
         </Button>
       </View>

@@ -1,271 +1,391 @@
 .create-page {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  min-height: 100vh;
+  padding: 28px 22px 44px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.18), transparent 24%),
+    radial-gradient(circle at 86% 16%, rgba(33, 230, 218, 0.16), transparent 26%),
+    linear-gradient(180deg, #6246f2 0 52%, #fffdf7 52% 100%);
+  color: #15151f;
+  box-sizing: border-box;
 }
 
-.hero {
+.brand-hero {
   position: relative;
-  min-height: 310px;
-  padding-top: 14px;
-  overflow: hidden;
+  min-height: 520px;
+  color: #fffdf7;
 }
 
 .brand-row {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  position: relative;
-  z-index: 3;
+  gap: 12px;
 }
 
-.hand-logo {
-  color: #2459d6;
-  font-size: 30px;
-  font-weight: 900;
-  line-height: 1;
-  transform: rotate(-2deg);
+.brand-icon {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 15px;
+  background: #fffdf7;
+  color: #6246f2;
+  font-size: 26px;
+  font-weight: 950;
+  box-shadow: 0 5px 0 #111111;
+  transform: rotate(-3deg);
 }
 
-.status-pill {
-  padding: 7px 12px;
-  border: 2px solid #111111;
-  border-radius: 999px;
-  background: #fff6a8;
-  font-size: 12px;
-  font-weight: 900;
+.brand-name {
+  flex: 1;
+  color: rgba(255, 253, 247, 0.78);
+  font-size: 21px;
+  font-weight: 950;
+}
+
+.top-mark {
+  color: rgba(255, 253, 247, 0.72);
+  font-size: 18px;
+  font-weight: 950;
+  letter-spacing: 2px;
 }
 
 .hero-title {
   display: block;
-  position: relative;
-  z-index: 3;
-  margin-top: 28px;
-  max-width: 235px;
-  color: #111111;
-  font-size: 38px;
-  font-weight: 900;
-  line-height: 1.12;
+  margin-top: 48px;
+  max-width: 300px;
+  font-size: 48px;
+  font-weight: 950;
+  line-height: 1.02;
+}
+
+.cyan-word {
+  color: #21e6da;
+  display: inline-block;
+  transform: rotate(-4deg);
+}
+
+.yellow-word {
+  color: #f7de61;
+  display: inline-block;
+  transform: rotate(2deg);
 }
 
 .hero-subtitle {
   display: block;
-  position: relative;
-  z-index: 3;
-  max-width: 230px;
-  margin-top: 14px;
-  color: #4b5563;
+  margin-top: 18px;
+  max-width: 255px;
+  color: rgba(255, 253, 247, 0.86);
   font-size: 15px;
-  line-height: 1.65;
+  font-weight: 850;
+  line-height: 1.55;
 }
 
-.bubble {
+.ocean-stage {
   position: absolute;
-  border: 2px solid #111111;
+  left: 50%;
+  top: 248px;
+  width: 180px;
+  height: 172px;
+  border: 4px solid #111111;
   border-radius: 50%;
-  background: #ffffff;
-  opacity: 0.9;
+  background: #1767c8;
+  box-shadow: 0 8px 0 #111111;
+  transform: translateX(-50%);
 }
 
-.bubble-small {
-  right: 78px;
-  top: 76px;
-  width: 22px;
-  height: 22px;
-}
-
-.bubble-soft {
-  right: 38px;
-  top: 38px;
-  width: 38px;
-  height: 38px;
-  background: #fff6a8;
-}
-
-.jellyfish-hero {
-  position: absolute;
-  right: 10px;
-  bottom: 6px;
-  width: 132px;
-  height: 168px;
-  animation: jellyFloat 3.4s ease-in-out infinite;
-}
-
-.jelly-head {
-  position: absolute;
-  left: 20px;
-  top: 12px;
-  width: 90px;
-  height: 78px;
-  border: 3px solid #111111;
-  border-radius: 48px 48px 34px 34px;
-  background: #8bb8ff;
-  box-shadow: inset -9px -8px 0 #5e8ee8;
-}
-
-.jelly-head::before {
+.ocean-stage::before {
   content: '';
   position: absolute;
-  left: 12px;
-  top: 10px;
-  width: 28px;
-  height: 14px;
+  left: -18px;
+  right: -18px;
+  bottom: 34px;
+  height: 32px;
+  border-top: 4px solid rgba(255, 253, 247, 0.68);
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.48);
+  transform: rotate(-8deg);
 }
 
-.jelly-eye {
+.ocean-bubble {
+  position: absolute;
+  z-index: 6;
+  border: 3px solid #fffdf7;
+  border-radius: 50%;
+  opacity: 0.86;
+  animation: bubbleRise 2.6s ease-in-out infinite;
+}
+
+.bubble-one {
+  left: 28px;
+  top: 42px;
+  width: 13px;
+  height: 13px;
+}
+
+.bubble-two {
+  right: 30px;
+  top: 70px;
+  width: 9px;
+  height: 9px;
+  animation-delay: 0.35s;
+}
+
+.bubble-three {
+  right: 56px;
+  top: 30px;
+  width: 11px;
+  height: 11px;
+  animation-delay: 0.7s;
+}
+
+.jellyfish {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 28px;
+  width: 112px;
+  height: 122px;
+  transform: translateX(-50%);
+  animation: jellyBounce 2.8s ease-in-out infinite;
+}
+
+.jelly-body {
+  position: absolute;
+  left: 7px;
+  top: 0;
+  z-index: 4;
+  width: 98px;
+  height: 74px;
+  border: 3px solid rgba(17, 17, 17, 0.92);
+  border-radius: 54% 54% 46% 46% / 62% 62% 40% 40%;
+  background:
+    radial-gradient(circle at 28% 22%, rgba(255, 255, 255, 0.68) 0 13px, transparent 14px),
+    linear-gradient(180deg, #ffd3ea 0%, #f6a4cc 58%, #f28abd 100%);
+  box-shadow: inset 0 -14px 0 rgba(247, 222, 97, 0.18), 0 5px 0 rgba(17, 17, 17, 0.16);
+}
+
+.jelly-body::before,
+.jelly-body::after {
+  content: '';
   position: absolute;
   top: 34px;
-  width: 8px;
-  height: 10px;
+  width: 7px;
+  height: 8px;
   border-radius: 50%;
   background: #111111;
 }
 
-.jelly-eye-left {
-  left: 30px;
+.jelly-body::before {
+  left: 33px;
 }
 
-.jelly-eye-right {
-  right: 30px;
+.jelly-body::after {
+  right: 33px;
 }
 
-.jelly-mouth {
+.jelly-highlight {
   position: absolute;
-  left: 38px;
+  left: 25px;
+  top: 13px;
+  width: 24px;
+  height: 12px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.46);
+  transform: rotate(-16deg);
+}
+
+.jelly-smile {
+  position: absolute;
+  left: 50%;
   top: 48px;
-  width: 17px;
+  width: 20px;
   height: 9px;
   border-bottom: 3px solid #111111;
   border-radius: 0 0 20px 20px;
+  transform: translateX(-50%);
+}
+
+.jelly-cheek {
+  position: absolute;
+  top: 44px;
+  width: 11px;
+  height: 7px;
+  border-radius: 50%;
+  background: rgba(255, 129, 176, 0.58);
+}
+
+.jelly-cheek-left {
+  left: 21px;
+}
+
+.jelly-cheek-right {
+  right: 21px;
 }
 
 .tentacle {
   position: absolute;
-  top: 82px;
-  width: 12px;
-  height: 52px;
-  border-left: 3px solid #111111;
-  border-radius: 50%;
-  transform-origin: top center;
-  animation: tentacleWave 2.2s ease-in-out infinite;
+  z-index: 2;
+  top: 72px;
+  width: 7px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, rgba(246, 164, 204, 0.98), rgba(255, 218, 236, 0.94));
+  box-shadow: 0 0 0 1px rgba(17, 17, 17, 0.68);
+  transform-origin: 50% 0;
+  animation: tentacleWave 2.55s ease-in-out infinite;
 }
 
 .tentacle-1 {
-  left: 37px;
-  height: 46px;
-  transform: rotate(13deg);
+  left: 25px;
+  height: 34px;
 }
 
 .tentacle-2 {
-  left: 56px;
-  height: 56px;
-  animation-delay: 0.18s;
+  left: 44px;
+  height: 44px;
+  animation-delay: 0.2s;
 }
 
 .tentacle-3 {
-  right: 47px;
-  height: 52px;
-  transform: rotate(-8deg);
-  animation-delay: 0.3s;
+  right: 40px;
+  height: 43px;
+  animation-delay: 0.35s;
 }
 
 .tentacle-4 {
-  right: 31px;
-  height: 43px;
-  transform: rotate(-16deg);
-  animation-delay: 0.46s;
+  right: 24px;
+  height: 34px;
+  animation-delay: 0.5s;
 }
 
-.front-bubble {
+.jelly-arm {
   position: absolute;
-  z-index: 5;
-  border: 2px solid #111111;
-  border-radius: 50%;
-  background: rgba(255, 255, 255, 0.86);
-  animation: bubbleRise 2.6s ease-in-out infinite;
+  z-index: 3;
+  top: 56px;
+  width: 24px;
+  height: 17px;
+  border: 2px solid rgba(17, 17, 17, 0.78);
+  border-top: 0;
+  border-radius: 0 0 22px 22px;
+  background: linear-gradient(180deg, rgba(246, 164, 204, 0.92), rgba(255, 211, 234, 0.82));
+  animation: armFloat 1.9s ease-in-out infinite;
 }
 
-.front-bubble-1 {
-  right: 8px;
-  top: 22px;
-  width: 18px;
-  height: 18px;
+.jelly-arm-left {
+  left: 0;
+  transform: rotate(31deg);
 }
 
-.front-bubble-2 {
-  right: 30px;
-  top: 2px;
-  width: 11px;
-  height: 11px;
-  animation-delay: 0.4s;
+.jelly-arm-right {
+  right: 0;
+  transform: rotate(-31deg);
+  animation-delay: 0.25s;
 }
 
-.input-card {
-  position: relative;
-  padding: 24px;
-  border-radius: 22px;
-  background: #ffffff;
+.jelly-label {
+  position: absolute;
+  z-index: 7;
+  left: 50%;
+  bottom: -20px;
+  min-width: 128px;
+  padding: 6px 9px;
+  border: 3px solid #111111;
+  border-radius: 999px;
+  background: #f7de61;
+  color: #111111;
+  font-size: 12px;
+  font-weight: 950;
+  text-align: center;
+  transform: translateX(-50%) rotate(-4deg);
+}
+
+.input-panel {
+  margin-top: -72px;
+  padding: 22px;
+  border: 3px solid #111111;
+  border-radius: 30px;
+  background: #fffdf7;
+  box-shadow: 0 8px 0 #111111;
 }
 
 .section-title {
   display: block;
-  margin-bottom: 14px;
-  color: #2459d6;
+  color: #4f39d8;
   font-size: 24px;
-  font-weight: 900;
+  font-weight: 950;
 }
 
 .learning-input {
   width: 100%;
-  min-height: 190px;
-  padding: 18px;
-  border: 2px solid #111111;
+  min-height: 132px;
+  margin-top: 14px;
+  padding: 15px;
+  border: 3px solid #111111;
   border-radius: 18px;
   box-sizing: border-box;
-  background: #fffdf4;
-  font-size: 15px;
-  line-height: 1.7;
+  background: #ffffff;
+  font-size: 14px;
+  line-height: 1.55;
+  box-shadow: 0 5px 0 #111111;
 }
 
-.generate-button {
-  margin-top: 20px;
+.upload-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 14px;
 }
 
-@keyframes jellyFloat {
-  0%,
-  100% {
-    transform: translateY(0) rotate(-2deg);
-  }
-
-  50% {
-    transform: translateY(-9px) rotate(2deg);
-  }
+.upload-button {
+  height: 40px;
+  line-height: 36px;
+  border: 2px solid #111111;
+  border-radius: 999px;
+  background: #fff2ad;
+  color: #15151f;
+  font-size: 12px;
+  font-weight: 950;
+  box-shadow: 0 3px 0 #111111;
 }
 
-@keyframes tentacleWave {
-  0%,
-  100% {
-    border-radius: 54% 46% 60% 40%;
-    transform: rotate(-8deg);
-  }
+.upload-image {
+  background: #d9f0ff;
+}
 
-  50% {
-    border-radius: 42% 58% 46% 54%;
-    transform: rotate(10deg);
-  }
+.upload-button::after,
+.main-button::after {
+  border: 0;
+}
+
+.main-button {
+  width: 100%;
+  height: 56px;
+  margin-top: 18px;
+  line-height: 52px;
+  border: 3px solid #111111;
+  border-radius: 18px;
+  background: #f7de61;
+  color: #111111;
+  font-size: 18px;
+  font-weight: 950;
+  box-shadow: 0 7px 0 #111111;
 }
 
 @keyframes bubbleRise {
-  0%,
-  100% {
-    opacity: 0.9;
-    transform: translateY(0);
-  }
+  0%, 100% { opacity: 0.86; transform: translateY(0); }
+  50% { opacity: 0.52; transform: translateY(-12px); }
+}
 
-  50% {
-    opacity: 0.55;
-    transform: translateY(-12px);
-  }
+@keyframes jellyBounce {
+  0%, 100% { transform: translateX(-50%) translateY(0) rotate(-2deg); }
+  50% { transform: translateX(-50%) translateY(-8px) rotate(2deg); }
+}
+
+@keyframes tentacleWave {
+  0%, 100% { transform: rotate(-9deg) translateX(0); }
+  50% { transform: rotate(10deg) translateX(2px); }
+}
+
+@keyframes armFloat {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: 5px; }
 }

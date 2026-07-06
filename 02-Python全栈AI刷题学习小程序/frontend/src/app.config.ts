@@ -7,14 +7,15 @@ export default defineAppConfig({
   ],
   window: {
     backgroundTextStyle: 'light',
-    navigationBarBackgroundColor: '#FFFDF4',
+    navigationBarBackgroundColor: '#6246F2',
     navigationBarTitleText: '水母 DIY 学习助手',
-    navigationBarTextStyle: 'black'
+    navigationBarTextStyle: 'white'
   },
   tabBar: {
     color: '#6B7280',
-    selectedColor: '#2459D6',
-    backgroundColor: '#FFFFFF',
+    selectedColor: '#6246F2',
+    backgroundColor: '#FFFDF7',
+    borderStyle: 'black',
     list: [
       {
         pagePath: 'pages/create/index',

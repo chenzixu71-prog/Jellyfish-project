@@ -44,12 +44,10 @@ export default function ReportPage() {
 
   if (loading) {
     return (
-      <View className='page report-page'>
-        <View className='card loading-card'>
+      <View className='report-page loading-page'>
+        <View className='loading-card'>
           <View className='mini-jelly'>
-            <View className='mini-jelly-head'>
-              <View className='mini-eye mini-eye-left' />
-              <View className='mini-eye mini-eye-right' />
+            <View className='mini-jelly-body'>
               <View className='mini-mouth' />
             </View>
           </View>
@@ -67,19 +65,20 @@ export default function ReportPage() {
 
   if (!report) {
     return (
-      <View className='page report-page'>
+      <View className='report-page'>
         <Text className='muted'>暂时没有报告。</Text>
       </View>
     )
   }
 
   return (
-    <View className='page report-page'>
+    <View className='report-page'>
       <View className='report-cover'>
         <Text className='cover-label'>REPORT CENTER</Text>
         <View className='cover-bubble' />
       </View>
-      <View className='card report-card'>
+
+      <View className='report-card'>
         <Text className='report-title'>水母学习报告</Text>
         <Text className='report-summary'>{report.summary}</Text>
 
@@ -94,11 +93,25 @@ export default function ReportPage() {
           </View>
         </View>
 
+        <View className='report-section yellow'>
+          <Text className='block-title'>本次总览</Text>
+          <Text className='list-line'>- 完成 {report.total} 道题，答对 {report.score} 道。</Text>
+          <Text className='list-line'>- 掌握度：{report.mastery}%。</Text>
+          <Text className='list-line'>- 主题：{report.title}</Text>
+        </View>
+
         <View className='report-section'>
           <Text className='block-title'>薄弱点</Text>
           {report.weakPoints.map((item) => (
             <Text key={item} className='list-line'>- {item}</Text>
           ))}
+        </View>
+
+        <View className='report-section blue'>
+          <Text className='block-title'>知识拆解</Text>
+          <Text className='list-line'>- 先复盘错题对应的概念。</Text>
+          <Text className='list-line'>- 再用自己的话解释正确答案。</Text>
+          <Text className='list-line'>- 最后重新生成一组薄弱点练习。</Text>
         </View>
 
         <View className='report-section'>
