@@ -10,8 +10,8 @@
 
 当前明确不优先做：
 
-- 用户登录注册。
-- 复杂数据库和账号体系。
+- MVP 阶段不做用户登录注册；核心闭环完成后，用户系统作为下一阶段扩展。
+- MVP 阶段不做复杂数据库和账号体系；用户系统阶段正式采用 MySQL。
 - 充值 VIP。
 - 多人 PK。
 - 视频/文档/网页全量解析。
@@ -52,17 +52,17 @@
 Taro 4.x 小程序前端
   -> Python HTTP API 后端
     -> AI 模型服务
-    -> 本地 JSON / SQLite 临时存储
+    -> MySQL 主数据库
 ```
 
-第一阶段不用复杂中间件。
+MVP 阶段已经优先跑通核心闭环。用户系统扩展阶段开始引入 MySQL，用于保存用户、学习记录、报告、错题、成长值、AI 调用日志等关系型数据。
 
 ```text
 不引入 Redis
-不引入正式 MySQL/PostgreSQL
-不引入登录态
 不引入对象存储
 不引入消息队列
+不引入手机号/密码注册
+不引入支付系统
 ```
 
 ### 2.2 分阶段架构演进
@@ -70,10 +70,10 @@ Taro 4.x 小程序前端
 | 阶段 | 目标 | 前端 | 后端 | 存储 | AI |
 | --- | --- | --- | --- | --- | --- |
 | P0 工程骨架 | 能启动、能请求接口 | Taro 4.x + React + TypeScript | Python 标准库/轻量 HTTP | 无持久化或 JSON | mock 数据 |
-| P1 核心闭环 | 输入、生成、答题、报告 | Taro 4.x + React + TypeScript | FastAPI | SQLite | 大模型 API |
-| P2 可复盘 | 学习记录、错题、报告历史 | Taro 4.x + React + TypeScript | FastAPI | SQLite/MySQL | 题目生成 + 报告生成 |
-| P3 增强版 | URL/文档解析、分享、勋章 | Taro 4.x，可扩展 H5/多端 | FastAPI | MySQL/PostgreSQL | AI + 搜索/解析 |
-| P4 商业化 | 登录、VIP、额度、排行榜 | 小程序 + 管理后台 | FastAPI/Spring Boot | PostgreSQL/MySQL + Redis | 多模型路由 |
+| P1 核心闭环 | 输入、生成、答题、报告 | Taro 4.x + React + TypeScript | FastAPI | 内存/临时存储 | 大模型 API |
+| P2 用户系统 | 微信登录、游客数据绑定、学习记录、错题、报告历史 | Taro 4.x + React + TypeScript | FastAPI | MySQL | 题目生成 + 报告生成 |
+| P3 增强版 | URL/文档解析、分享、勋章 | Taro 4.x，可扩展 H5/多端 | FastAPI | MySQL | AI + 搜索/解析 |
+| P4 商业化 | VIP、额度、排行榜、好友关系 | 小程序 + 管理后台 | FastAPI/Spring Boot | MySQL + Redis | 多模型路由 |
 
 ## 3. 小程序技术选型对比
 
@@ -102,7 +102,7 @@ Taro 4.x + React + TypeScript + Python FastAPI 后端
 - Taro 4.x 可使用 React + TypeScript，把页面状态、接口请求、AI 生成流程拆得更清楚，利于后续交给 Codex 迭代。
 - 现在已经安装 Node.js，具备 Taro 前端工程的基础环境。
 - 当前虽然先做微信小程序，但后续如果要扩展 H5、其他小程序或运营页，Taro 比原生小程序迁移成本低。
-- 第一版仍然严格收敛业务范围，只用 Taro 做工程框架，不提前做复杂状态管理、登录注册或多端适配。
+- MVP 阶段严格收敛业务范围，只用 Taro 做工程框架，不提前做复杂状态管理、登录注册或多端适配；核心闭环完成后，用户系统进入 P2 扩展。
 
 ### 3.3 Taro 4.x 使用边界
 
@@ -184,7 +184,7 @@ Python 3.12 + FastAPI + Pydantic
 
 - AI 调用、Prompt 编排、JSON 处理在 Python 生态更顺。
 - FastAPI 天然适合 HTTP API。
-- 后续接 SQLite/MySQL、文件上传、异步任务都比较自然。
+- 后续接 MySQL、文件上传、异步任务都比较自然。
 
 ## 5. AI 技术方案
 
@@ -544,40 +544,100 @@ POST /api/generate-report
 }
 ```
 
+### 8.5 用户系统接口草案
+
+用户系统作为 P2 扩展进入方案确认阶段，接口草案如下，详细设计见 `docs/user-system-design.md`。
+
+```text
+POST /api/auth/wechat-login
+GET /api/me
+POST /api/auth/logout
+```
+
+现有学习接口保持路径不变，但支持身份兼容：
+
+```text
+未登录：sessionId -> guest_session_id
+已登录：Authorization token -> userId
+登录成功：sessionId 下的游客数据绑定到 userId
+```
+
 ## 9. 数据设计
 
-### 9.1 MVP 临时存储
+### 9.1 存储选型
 
-第一版可以用 JSON 文件或 SQLite。
+MVP 验证阶段可以使用内存或临时存储跑通流程。进入用户系统阶段后，正式存储采用 MySQL。
 
 推荐：
 
 ```text
-P1 demo: JSON 文件
-P2 可复盘: SQLite
-P3 多用户: MySQL/PostgreSQL
+P1 核心闭环: 内存/临时存储
+P2 用户系统: MySQL
+P3 增强版: MySQL
+P4 商业化: MySQL + Redis
 ```
+
+不建议在用户系统阶段使用 SQLite，原因是后续会保存大量关系型数据，包括用户、微信身份、登录态、题组、题目、选项、答题记录、错题、报告、成长值、勋章、文件解析记录和 AI 调用日志。MySQL 更适合作为后续长期演进的主数据库。
 
 ### 9.2 核心业务对象
 
 | 对象 | 说明 |
 | --- | --- |
+| User | 登录用户 |
+| WechatAuth | 微信 openid/unionid 绑定 |
+| AuthSession | 后端自定义登录态 |
+| GuestSession | 游客 session |
 | LearningSession | 一次学习会话 |
 | Quiz | 一组 AI 生成题 |
 | Question | 单道题 |
+| QuestionOption | 题目选项 |
 | AnswerRecord | 用户答题记录 |
+| WrongQuestion | 错题记录 |
 | Report | 复盘报告 |
+| UserStats | 用户累计统计 |
+| UserBadge | 用户勋章 |
 | GenerationLog | AI 调用日志 |
 
-### 9.3 为什么暂不设计 User 表
+### 9.3 用户系统数据边界
 
-因为当前最核心的问题不是“用户是谁”，而是：
+核心闭环阶段已经验证后，用户系统需要正式设计用户表和登录态表。第一版只做微信一键登录，不做手机号、密码注册和复杂资料编辑。
 
 ```text
-用户能不能从输入内容完成一轮高质量学习。
+微信 code -> 后端 code2Session -> openid -> userId -> 后端 token
 ```
 
-等核心闭环跑通后，再加微信登录和用户表。
+游客模式继续保留：
+
+```text
+无 token 请求 -> 使用 sessionId
+有 token 请求 -> 使用 userId
+登录成功 -> 将 sessionId 下的游客数据绑定到 userId
+```
+
+详细表结构、接口和测试方案见：
+
+```text
+docs/user-system-design.md
+```
+
+### 9.4 用户系统核心表
+
+| 表名 | 说明 |
+| --- | --- |
+| `users` | 用户主表 |
+| `user_auth_wechat` | 微信身份绑定表 |
+| `auth_sessions` | 登录态表 |
+| `guest_sessions` | 游客 session 表 |
+| `learning_sessions` | 学习会话表 |
+| `quizzes` | 题组表 |
+| `questions` | 题目表 |
+| `question_options` | 选项表 |
+| `answer_records` | 答题记录表 |
+| `wrong_questions` | 错题表 |
+| `reports` | 学习报告表 |
+| `user_stats` | 用户统计表 |
+| `user_badges` | 用户勋章表 |
+| `generation_logs` | AI 调用日志表 |
 
 ## 10. 开发流程与实现顺序
 
@@ -762,41 +822,51 @@ Taro 4.x dev:weapp + 微信开发者工具 + 本地 Python 后端
 | 风险 | 表现 | 应对 |
 | --- | --- | --- |
 | AI 题目质量不稳定 | 题目不相关、答案错 | 结构化 prompt + JSON 校验 + 用户反馈 |
-| 范围膨胀 | 一开始做登录、RAG、PK | 严格按 P1 核心闭环推进 |
+| 范围膨胀 | 用户系统阶段顺手扩到 VIP、PK、好友、排行 | P2 只做微信登录、游客数据绑定、我的页面和学习数据持久化 |
 | 小程序请求限制 | 本地接口或域名无法请求 | 开发阶段用本地调试，发布前配置合法域名 |
 | 模型成本不可控 | 每次生成消耗额度 | 限制题数、记录 GenerationLog |
 | 用户输入质量差 | 输入太短无法出题 | 前端提示补充材料 |
 | 版权和内容来源风险 | 抓取网页/视频内容 | 第一版只处理用户输入文本 |
+| 用户数据丢失 | 内存存储或本地缓存无法长期保存 | 用户系统阶段使用 MySQL 作为主数据库 |
+| 微信登录配置错误 | code2Session 失败或登录态不可用 | AppID/AppSecret 只放后端环境变量，保留开发环境 mock |
 
 ## 15. 待人工确认
 
 以下问题不阻塞方案设计，但会影响后续实现：
 
 1. 复盘报告第一版只做文本，还是必须做图片海报？
-2. 是否已经有微信小程序 AppID？
-3. 后端线上部署优先用 Render/Railway，还是国内云服务器？
+2. 后端线上部署优先用 Render/Railway，还是国内云服务器？
+3. MySQL 使用本地 Docker、云数据库，还是云服务器自建 MySQL？
+4. 微信 AppID/AppSecret 是否由开发者手动写入 `.env`？
 
 已确认决策：
 
 - 第一版只做微信小程序。
 - 第一版输入只支持文本，不做 URL/文档/视频解析。
-- 第一版不做登录注册。
+- 核心闭环完成后，用户系统作为 P2 扩展进入方案确认。
+- 用户系统第一版采用微信一键登录 + 游客数据绑定。
+- 用户系统阶段采用 MySQL 作为主数据库，不使用 SQLite 作为正式存储。
+- 用户资料第一版只做基础展示，不做手机号、密码注册和复杂资料编辑。
 - 第一版题型固定为 5 题：3 道单选题、1 道多选题、1 道判断题。
 - 第一版 AI 供应商使用 DeepSeek，默认模型为 `deepseek-v4-flash`，保留 `deepseek-v4-pro` 切换能力。
 
 ## 16. 推荐下一步
 
-下一步不要继续写登录注册，也不要扩展数据库。
+核心闭环完成后，下一步进入 P2 用户系统。当前不直接启动开发，先等待人工确认 `docs/user-system-design.md`。
 
-建议直接进入 P1：
+确认后建议按以下顺序开发：
 
 ```text
-实现 POST /api/generate-quiz
-实现 POST /api/submit-answer
-实现 POST /api/generate-report
-初始化 Taro 4.x frontend 工程
-新增 Taro 页面 pages/create 和 pages/report
-用 mock AI 跑通完整闭环
+1. 增加 MySQL 配置和数据迁移脚本
+2. TDD 编写用户登录、token、游客数据绑定测试
+3. 实现 POST /api/auth/wechat-login、GET /api/me、POST /api/auth/logout
+4. 改造现有学习接口，兼容 token 和 sessionId
+5. Taro 前端新增 authService，并改造“我的”页面
+6. 运行后端 pytest、Taro 构建和微信开发者工具验证
 ```
 
-当 mock 闭环跑通后，再接真实大模型。
+详细方案见：
+
+```text
+docs/user-system-design.md
+```
