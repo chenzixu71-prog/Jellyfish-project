@@ -911,6 +911,11 @@
       overflow: hidden;
       border-radius: 999px;
       background: rgba(98, 70, 242, 0.13);
+      transition: transform 180ms ease;
+    }
+
+    .daily-progress:hover .progress-track {
+      transform: scaleX(1.015);
     }
 
     .progress-fill {
@@ -983,6 +988,12 @@
       font-size: 12px;
       line-height: 1.3;
       font-weight: 800;
+      transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease;
+    }
+
+    .option:hover {
+      transform: translateX(4px);
+      background: #ebe6ff;
     }
 
     .option.active {
@@ -1314,6 +1325,16 @@
       text-align: center;
       font-size: 10px;
       font-weight: 850;
+    }
+
+    .bottom-tab > div {
+      border-radius: 16px;
+      transition: transform 160ms ease, background 160ms ease, color 160ms ease;
+    }
+
+    .bottom-tab > div:hover {
+      transform: translateY(-3px);
+      background: rgba(98, 70, 242, 0.08);
     }
 
     .tab-circle {
