@@ -673,19 +673,19 @@
       position: absolute;
       z-index: 2;
       top: 70px;
-      width: 16px;
-      height: 44px;
+      width: 9px;
+      height: 48px;
       border: 0;
       border-radius: 999px;
       background:
         radial-gradient(circle at 50% 88%, rgba(255, 255, 255, 0.42) 0 4px, transparent 5px),
         linear-gradient(180deg, rgba(246, 164, 204, 0.98) 0%, rgba(255, 218, 236, 0.94) 100%);
       box-shadow:
-        inset 2px 0 0 rgba(255, 255, 255, 0.38),
-        inset -2px 0 0 rgba(17, 17, 17, 0.1),
-        0 0 0 2px rgba(17, 17, 17, 0.78);
+        inset 1px 0 0 rgba(255, 255, 255, 0.44),
+        inset -1px 0 0 rgba(17, 17, 17, 0.08),
+        0 0 0 1.5px rgba(17, 17, 17, 0.72);
       transform-origin: 50% 0;
-      animation: tentacleWave 1.8s ease-in-out infinite;
+      animation: tentacleWave 2.35s ease-in-out infinite;
     }
 
     .tentacle::before {
@@ -693,41 +693,49 @@
       position: absolute;
       left: 50%;
       top: -7px;
-      width: 13px;
-      height: 12px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background: #f6a4cc;
-      box-shadow: 0 0 0 2px rgba(17, 17, 17, 0.72);
+      box-shadow: 0 0 0 1.5px rgba(17, 17, 17, 0.66);
       transform: translateX(-50%);
     }
 
     .tentacle.t1 {
-      left: 20px;
-      height: 38px;
-      --base-rotate: 15deg;
+      left: 24px;
+      height: 43px;
+      --base-rotate: 18deg;
+      --wave-rotate: 9deg;
+      --wave-x: -4px;
       transform: rotate(var(--base-rotate));
     }
 
     .tentacle.t2 {
-      left: 39px;
-      height: 52px;
-      --base-rotate: 4deg;
+      left: 43px;
+      height: 55px;
+      --base-rotate: 5deg;
+      --wave-rotate: 7deg;
+      --wave-x: -2px;
       transform: rotate(var(--base-rotate));
       animation-delay: 0.2s;
     }
 
     .tentacle.t3 {
-      right: 35px;
-      height: 50px;
-      --base-rotate: -4deg;
+      right: 39px;
+      height: 53px;
+      --base-rotate: -5deg;
+      --wave-rotate: -7deg;
+      --wave-x: 2px;
       transform: rotate(var(--base-rotate));
       animation-delay: 0.35s;
     }
 
     .tentacle.t4 {
-      right: 18px;
-      height: 38px;
-      --base-rotate: -15deg;
+      right: 23px;
+      height: 43px;
+      --base-rotate: -18deg;
+      --wave-rotate: -9deg;
+      --wave-x: 4px;
       transform: rotate(var(--base-rotate));
       animation-delay: 0.5s;
     }
@@ -1229,12 +1237,12 @@
 
     .complete-jelly .tentacle {
       top: 57px;
-      height: 31px;
-      width: 12px;
+      height: 34px;
+      width: 7px;
       box-shadow:
-        inset 2px 0 0 rgba(255, 255, 255, 0.36),
-        inset -2px 0 0 rgba(17, 17, 17, 0.08),
-        0 0 0 2px rgba(17, 17, 17, 0.68);
+        inset 1px 0 0 rgba(255, 255, 255, 0.38),
+        inset -1px 0 0 rgba(17, 17, 17, 0.08),
+        0 0 0 1.3px rgba(17, 17, 17, 0.62);
     }
 
     .complete-jelly .tentacle.t1 {
@@ -1473,11 +1481,15 @@
 
     @keyframes tentacleWave {
       0%, 100% {
-        transform: translateY(0) rotate(var(--base-rotate, 0deg));
+        transform: translate(0, 0) rotate(var(--base-rotate, 0deg));
       }
 
-      50% {
-        transform: translateY(5px) rotate(calc(var(--base-rotate, 0deg) + 5deg));
+      35% {
+        transform: translate(var(--wave-x, 0), 5px) rotate(calc(var(--base-rotate, 0deg) + var(--wave-rotate, 7deg)));
+      }
+
+      70% {
+        transform: translate(calc(var(--wave-x, 0) * -0.6), 2px) rotate(calc(var(--base-rotate, 0deg) - var(--wave-rotate, 7deg) * 0.55));
       }
     }
 
