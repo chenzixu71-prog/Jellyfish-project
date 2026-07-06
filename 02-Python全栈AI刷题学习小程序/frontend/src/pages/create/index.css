@@ -14,7 +14,7 @@
 
 .brand-hero {
   position: relative;
-  min-height: 468px;
+  min-height: 540px;
   color: #fffdf7;
 }
 
@@ -81,12 +81,15 @@
 }
 
 .challenge-card {
-  position: relative;
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 420px;
   z-index: 2;
-  width: 210px;
-  margin-top: 20px;
-  padding: 15px;
-  border-radius: 24px;
+  width: auto;
+  margin-top: 0;
+  padding: 12px 14px;
+  border-radius: 22px;
   background: #dfeeff;
   color: #15151f;
   box-shadow: 0 8px 0 rgba(20, 17, 40, 0.2);
@@ -96,7 +99,7 @@
 .challenge-title {
   display: block;
   color: #4f39d8;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 950;
   line-height: 1.28;
 }
@@ -104,8 +107,8 @@
 .challenge-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 9px;
-  margin-top: 12px;
+  gap: 8px;
+  margin-top: 10px;
 }
 
 .stat-pill {
@@ -113,18 +116,18 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  min-height: 42px;
+  min-height: 34px;
   border-radius: 15px;
   background: rgba(255, 253, 247, 0.72);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 950;
 }
 
 .stat-dot {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 21px;
+  height: 21px;
   border-radius: 50%;
   background: #6246f2;
   color: #fffdf7;
@@ -138,6 +141,7 @@
 
 .ocean-stage {
   position: absolute;
+  z-index: 4;
   left: 50%;
   top: 246px;
   width: 164px;
@@ -405,7 +409,7 @@
 .input-panel {
   position: relative;
   z-index: 3;
-  margin-top: -64px;
+  margin-top: -58px;
   padding: 18px;
   border: 0;
   border-radius: 28px;
