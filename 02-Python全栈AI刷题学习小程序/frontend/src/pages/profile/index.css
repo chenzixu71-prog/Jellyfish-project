@@ -550,3 +550,70 @@
 .history-pill {
   border-radius: 999px;
 }
+
+.profile-page {
+  padding-top: 82px;
+}
+
+.profile-hero {
+  min-height: 264px;
+  padding: 34px 24px 86px;
+}
+
+.hero-copy {
+  max-width: 300px;
+}
+
+.profile-title {
+  font-size: 34px;
+}
+
+.profile-subtitle {
+  width: 270px;
+  max-width: 62%;
+}
+
+.profile-jelly {
+  right: 28px;
+  top: 82px;
+  width: 74px;
+  height: 56px;
+  opacity: 0.96;
+}
+
+.profile-action {
+  right: 24px;
+  bottom: 24px;
+}
+
+.login-card {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  align-items: center;
+  column-gap: 16px;
+  row-gap: 16px;
+}
+
+.login-avatar {
+  grid-row: 1 / span 2;
+  width: 64px;
+  height: 64px;
+}
+
+.login-copy {
+  min-width: 0;
+  width: 100%;
+}
+
+.login-button {
+  grid-column: 2;
+  width: 100%;
+  max-width: 220px;
+}
+
+.login-title,
+.login-subtitle,
+.login-error {
+  word-break: normal;
+  overflow-wrap: break-word;
+}

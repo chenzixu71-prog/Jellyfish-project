@@ -210,6 +210,76 @@
   box-sizing: border-box;
 }
 
+.wrong-copy {
+  width: 300px;
+  max-width: 68%;
+}
+
+.wrong-subtitle {
+  max-width: 286px;
+}
+
+.wrong-jelly {
+  right: 18px;
+  bottom: 18px;
+  width: 88px;
+  height: 98px;
+  z-index: 1;
+  opacity: 0.96;
+}
+
+.wrong-jelly-body {
+  left: 10px;
+  width: 68px;
+  height: 58px;
+}
+
+.wrong-jelly-body::before,
+.wrong-jelly-body::after {
+  top: 30px;
+}
+
+.wrong-jelly-body::before { left: 21px; }
+.wrong-jelly-body::after { right: 21px; }
+
+.wrong-jelly-mouth {
+  left: 28px;
+  top: 40px;
+}
+
+.wrong-tentacle {
+  top: 54px;
+  width: 8px;
+  height: 32px;
+  border-width: 2px;
+}
+
+.wrong-tentacle-1 {
+  left: 23px;
+}
+
+.wrong-tentacle-2 {
+  left: 40px;
+  height: 36px;
+}
+
+.wrong-tentacle-3 {
+  left: 57px;
+}
+
+.wrong-panel {
+  margin-top: 18px;
+  padding-top: 0;
+}
+
+.wrong-panel-head {
+  align-items: flex-start;
+}
+
+.weak-button {
+  width: 164px;
+}
+
 .empty-card {
   background: linear-gradient(135deg, #fffdf7, #eef9ff);
 }

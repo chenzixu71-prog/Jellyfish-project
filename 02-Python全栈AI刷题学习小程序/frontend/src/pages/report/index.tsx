@@ -103,7 +103,7 @@ export default function ReportPage() {
           <View className='cover-bubble' />
         </View>
 
-        <View className='report-card'>
+        <View className='report-card report-history-panel'>
           <Text className='report-title'>报告历史</Text>
           <Text className='report-summary'>完成闯关并生成报告后，可以在这里重新打开最近的学习报告。</Text>
 
