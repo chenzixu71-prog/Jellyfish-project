@@ -8,6 +8,7 @@ from app.schemas import (
     CurrentUserProfile,
     LearningProfile,
     LoginUser,
+    MergedGuestData,
     Quiz,
     Report,
     WrongQuestion,
@@ -23,6 +24,7 @@ class MemoryStore:
         self.profile_stats: dict[str, dict[str, object]] = {}
         self.wechat_users: dict[str, LoginUser] = {}
         self.auth_sessions: dict[str, dict[str, object]] = {}
+        self.merged_guest_sessions: set[tuple[str, str]] = set()
 
     def get_or_create_wechat_user(self, openid: str) -> LoginUser:
         existing = self.wechat_users.get(openid)
@@ -87,6 +89,83 @@ class MemoryStore:
             totalCorrect=profile.totalCorrect,
             totalSessions=len(reports),
             accuracy=accuracy,
+        )
+
+    def merge_guest_session_into_user(self, session_id: str, user_id: str) -> MergedGuestData:
+        if not session_id or session_id == user_id:
+            return MergedGuestData()
+
+        merge_key = (session_id, user_id)
+        if merge_key in self.merged_guest_sessions:
+            return MergedGuestData()
+
+        copied_answers = 0
+        for (owner_id, quiz_id), guest_answers in list(self.answers.items()):
+            if owner_id != session_id:
+                continue
+            target_key = (user_id, quiz_id)
+            target_answers = self.answers.setdefault(target_key, [])
+            existing_question_ids = {item.questionId for item in target_answers}
+            for answer in guest_answers:
+                if answer.questionId not in existing_question_ids:
+                    target_answers.append(answer)
+                    existing_question_ids.add(answer.questionId)
+                    copied_answers += 1
+
+        copied_wrong_questions = 0
+        user_wrong_questions = self.wrong_questions.setdefault(user_id, [])
+        existing_wrong_keys = {
+            (item.quizId, item.questionId) for item in user_wrong_questions
+        }
+        for item in self.wrong_questions.get(session_id, []):
+            key = (item.quizId, item.questionId)
+            if key not in existing_wrong_keys:
+                user_wrong_questions.append(item)
+                existing_wrong_keys.add(key)
+                copied_wrong_questions += 1
+        self.wrong_questions[user_id] = user_wrong_questions[:50]
+
+        copied_reports = 0
+        user_reports = self.reports.setdefault(user_id, [])
+        existing_report_ids = {item.quizId for item in user_reports}
+        for report in self.reports.get(session_id, []):
+            if report.quizId not in existing_report_ids:
+                user_reports.append(report)
+                existing_report_ids.add(report.quizId)
+                copied_reports += 1
+        self.reports[user_id] = user_reports[:10]
+
+        copied_profile_stats = False
+        guest_stats = self.profile_stats.get(session_id)
+        if guest_stats:
+            user_stats = self.profile_stats.setdefault(
+                user_id,
+                {
+                    "exp": 0,
+                    "streak_days": 1,
+                    "total_answered": 0,
+                    "total_correct": 0,
+                },
+            )
+            user_stats["exp"] = int(user_stats["exp"]) + int(guest_stats.get("exp", 0))
+            user_stats["streak_days"] = max(
+                int(user_stats["streak_days"]),
+                int(guest_stats.get("streak_days", 1)),
+            )
+            user_stats["total_answered"] = int(user_stats["total_answered"]) + int(
+                guest_stats.get("total_answered", 0)
+            )
+            user_stats["total_correct"] = int(user_stats["total_correct"]) + int(
+                guest_stats.get("total_correct", 0)
+            )
+            copied_profile_stats = True
+
+        self.merged_guest_sessions.add(merge_key)
+        return MergedGuestData(
+            answers=copied_answers,
+            wrongQuestions=copied_wrong_questions,
+            reports=copied_reports,
+            profileStats=copied_profile_stats,
         )
 
     def save_quiz(self, session_id: str, quiz: Quiz) -> None:

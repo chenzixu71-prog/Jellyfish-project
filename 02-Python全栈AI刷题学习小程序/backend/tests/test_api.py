@@ -110,6 +110,102 @@ def test_me_returns_business_error_with_invalid_token():
     assert body["data"] is None
 
 
+def test_wechat_login_binds_guest_learning_data_once():
+    session_id = "bind-guest-session"
+    generated = client.post(
+        "/api/generate-quiz",
+        json={
+            "sessionId": session_id,
+            "inputType": "text",
+            "content": "learn ports and databases",
+            "questionCount": 5,
+        },
+    ).json()["data"]
+
+    for question in generated["questions"]:
+        client.post(
+            "/api/submit-answer",
+            json={
+                "sessionId": session_id,
+                "quizId": generated["quizId"],
+                "questionId": question["id"],
+                "answer": question["answer"],
+            },
+        )
+
+    client.post(
+        "/api/generate-report",
+        json={"sessionId": session_id, "quizId": generated["quizId"]},
+    )
+
+    first_login = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "bind-guest-code", "sessionId": session_id},
+    ).json()["data"]
+    assert first_login["merged"]["answers"] == 5
+    assert first_login["merged"]["reports"] == 1
+    assert first_login["merged"]["profileStats"] is True
+
+    profile = client.get(
+        "/api/me",
+        headers={"Authorization": f"Bearer {first_login['token']}"},
+    ).json()["data"]
+    assert profile["totalAnswered"] == 5
+    assert profile["totalCorrect"] == 5
+    assert profile["totalSessions"] == 1
+
+    second_login = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "bind-guest-code", "sessionId": session_id},
+    ).json()["data"]
+    assert second_login["merged"]["answers"] == 0
+    assert second_login["merged"]["reports"] == 0
+    assert second_login["merged"]["profileStats"] is False
+
+    profile_after_repeat_login = client.get(
+        "/api/me",
+        headers={"Authorization": f"Bearer {second_login['token']}"},
+    ).json()["data"]
+    assert profile_after_repeat_login["totalAnswered"] == 5
+    assert profile_after_repeat_login["totalCorrect"] == 5
+    assert profile_after_repeat_login["totalSessions"] == 1
+
+
+def test_learning_endpoints_use_authenticated_user_identity():
+    login = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "owner-learning-code", "sessionId": "owner-guest-session"},
+    ).json()["data"]
+    headers = {"Authorization": f"Bearer {login['token']}"}
+
+    generated = client.post(
+        "/api/generate-quiz",
+        headers=headers,
+        json={
+            "sessionId": "owner-local-session",
+            "inputType": "text",
+            "content": "learn HTTP requests",
+            "questionCount": 5,
+        },
+    ).json()["data"]
+
+    first_question = generated["questions"][0]
+    client.post(
+        "/api/submit-answer",
+        headers=headers,
+        json={
+            "sessionId": "owner-local-session",
+            "quizId": generated["quizId"],
+            "questionId": first_question["id"],
+            "answer": first_question["answer"],
+        },
+    )
+
+    profile = client.get("/api/me", headers=headers).json()["data"]
+    assert profile["totalAnswered"] == 1
+    assert profile["totalCorrect"] == 1
+
+
 def test_generate_quiz_returns_five_mixed_questions():
     response = client.post(
         "/api/generate-quiz",

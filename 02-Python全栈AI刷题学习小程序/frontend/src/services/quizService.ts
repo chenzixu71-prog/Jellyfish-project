@@ -105,6 +105,8 @@ export async function request<T>(
   extraHeader: Record<string, string> = {}
 ): Promise<T> {
   let lastError: unknown
+  const token = Taro.getStorageSync<string>('authToken')
+  const authHeader = token ? { Authorization: `Bearer ${token}` } : {}
 
   for (const baseUrl of API_BASE_URLS) {
     try {
@@ -114,6 +116,7 @@ export async function request<T>(
         data,
         header: {
           'Content-Type': 'application/json',
+          ...authHeader,
           ...extraHeader
         }
       })

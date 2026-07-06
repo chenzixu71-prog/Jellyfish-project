@@ -48,9 +48,17 @@ class LoginUser(BaseModel):
     loginType: Literal["wechat"] = "wechat"
 
 
+class MergedGuestData(BaseModel):
+    answers: int = 0
+    wrongQuestions: int = 0
+    reports: int = 0
+    profileStats: bool = False
+
+
 class WechatLoginResponse(BaseModel):
     token: str
     user: LoginUser
+    merged: MergedGuestData | None = None
 
 
 class CurrentUserProfile(LoginUser):

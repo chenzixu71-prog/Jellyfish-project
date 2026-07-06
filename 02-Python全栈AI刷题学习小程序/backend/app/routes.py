@@ -63,6 +63,17 @@ def ok(data=None, message="ok") -> ApiResponse:
     return ApiResponse(code=0, message=message, data=data)
 
 
+def resolve_learning_owner(session_id: str, authorization: str | None = None) -> str:
+    if not authorization:
+        return session_id
+    try:
+        token = get_bearer_token(authorization)
+        user = store.get_user_by_token(token)
+        return user.id if user else session_id
+    except AuthError:
+        return session_id
+
+
 @router.get("/health", response_model=ApiResponse)
 def health():
     return ok(
@@ -107,8 +118,9 @@ def current_user(authorization: str | None = Header(default=None)):
 
 
 @router.post("/api/generate-quiz", response_model=ApiResponse)
-def generate_quiz(payload: GenerateQuizRequest):
-    quiz = create_quiz(payload.sessionId, payload.content)
+def generate_quiz(payload: GenerateQuizRequest, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(payload.sessionId, authorization)
+    quiz = create_quiz(owner_id, payload.content)
     return ok(quiz.model_dump())
 
 
@@ -118,9 +130,11 @@ async def generate_quiz_from_assets(
     content: str = Form(""),
     files: list[UploadFile] = File(default=[]),
     images: list[UploadFile] = File(default=[]),
+    authorization: str | None = Header(default=None),
 ):
     parsed = await parse_learning_assets(content, files, images)
-    quiz = create_quiz(sessionId, parsed.content)
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    quiz = create_quiz(owner_id, parsed.content)
     payload = quiz.model_dump()
     payload["source"] = {
         "fileCount": parsed.file_count,
@@ -131,9 +145,10 @@ async def generate_quiz_from_assets(
 
 
 @router.post("/api/submit-answer", response_model=ApiResponse)
-def answer_question(payload: SubmitAnswerRequest):
+def answer_question(payload: SubmitAnswerRequest, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(payload.sessionId, authorization)
     result = submit_answer(
-        payload.sessionId,
+        owner_id,
         payload.quizId,
         payload.questionId,
         payload.answer,
@@ -142,32 +157,38 @@ def answer_question(payload: SubmitAnswerRequest):
 
 
 @router.post("/api/generate-report", response_model=ApiResponse)
-def report(payload: GenerateReportRequest):
-    generated_report = generate_report(payload.sessionId, payload.quizId)
+def report(payload: GenerateReportRequest, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(payload.sessionId, authorization)
+    generated_report = generate_report(owner_id, payload.quizId)
     return ok(generated_report.model_dump())
 
 
 @router.get("/api/wrong-questions", response_model=ApiResponse)
-def wrong_questions(sessionId: str):
-    return ok([item.model_dump() for item in get_wrong_questions(sessionId)])
+def wrong_questions(sessionId: str, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    return ok([item.model_dump() for item in get_wrong_questions(owner_id)])
 
 
 @router.post("/api/regenerate-weak-quiz", response_model=ApiResponse)
-def weak_quiz(payload: RegenerateWeakQuizRequest):
-    quiz = regenerate_weak_quiz(payload.sessionId, payload.quizId)
+def weak_quiz(payload: RegenerateWeakQuizRequest, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(payload.sessionId, authorization)
+    quiz = regenerate_weak_quiz(owner_id, payload.quizId)
     return ok(quiz.model_dump())
 
 
 @router.get("/api/report-history", response_model=ApiResponse)
-def report_history(sessionId: str):
-    return ok([item.model_dump() for item in get_report_history(sessionId)])
+def report_history(sessionId: str, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    return ok([item.model_dump() for item in get_report_history(owner_id)])
 
 
 @router.get("/api/daily-challenge", response_model=ApiResponse)
-def daily_challenge(sessionId: str):
-    return ok(get_daily_challenge(sessionId).model_dump())
+def daily_challenge(sessionId: str, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    return ok(get_daily_challenge(owner_id).model_dump())
 
 
 @router.get("/api/profile", response_model=ApiResponse)
-def profile(sessionId: str):
-    return ok(get_learning_profile(sessionId).model_dump())
+def profile(sessionId: str, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    return ok(get_learning_profile(owner_id).model_dump())

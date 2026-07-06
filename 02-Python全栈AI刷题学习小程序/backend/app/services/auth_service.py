@@ -60,11 +60,11 @@ def exchange_wechat_code(code: str) -> WechatSession:
 
 
 def login_with_wechat(code: str, session_id: str) -> WechatLoginResponse:
-    _ = session_id
     wechat_session = exchange_wechat_code(code)
     user = store.get_or_create_wechat_user(wechat_session.openid)
     token = store.create_auth_token(user.id)
-    return WechatLoginResponse(token=token, user=user)
+    merged = store.merge_guest_session_into_user(session_id, user.id)
+    return WechatLoginResponse(token=token, user=user, merged=merged)
 
 
 def get_bearer_token(authorization: str | None) -> str:
