@@ -1506,6 +1506,21 @@
       box-shadow: 0 14px 30px rgba(45, 31, 114, 0.18);
     }
 
+    .report-card.report-full {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      top: 72px;
+      bottom: 22px;
+      margin: 0;
+      overflow-y: auto;
+      padding: 18px 16px 20px;
+      border-radius: 26px;
+      background:
+        radial-gradient(circle at 86% 8%, rgba(33, 230, 218, 0.12), transparent 26%),
+        rgba(255, 253, 247, 0.98);
+    }
+
     .report-title {
       color: var(--purple-deep);
       font-size: 22px;
@@ -1525,13 +1540,46 @@
       padding: 13px;
       border: 0;
       border-radius: 18px;
-      background: var(--lime);
+      background: var(--yellow);
       animation: scoreBreathe 2.4s ease-in-out infinite;
     }
 
-    .score-box.yellow {
-      background: var(--yellow);
+    .score-box.mastery {
+      background: #bfeeff;
       animation-delay: 0.2s;
+    }
+
+    .report-section {
+      margin-top: 12px;
+      padding: 12px;
+      border-radius: 20px;
+      background: #f4f1ff;
+      font-size: 12px;
+      line-height: 1.55;
+      font-weight: 800;
+    }
+
+    .report-section h3 {
+      margin: 0 0 8px;
+      color: var(--purple-deep);
+      font-family: var(--font-title);
+      font-size: 16px;
+      line-height: 1.15;
+    }
+
+    .report-section ul {
+      display: grid;
+      gap: 6px;
+      margin: 0;
+      padding-left: 17px;
+    }
+
+    .report-section.yellow {
+      background: #fff2ad;
+    }
+
+    .report-section.blue {
+      background: #e1f4ff;
     }
 
     .score-num {
@@ -2115,37 +2163,52 @@
           <div class="capsule">••• ◎</div>
           <div class="content">
             <div class="script-logo">REPORT<br>CENTER</div>
-            <div class="report-card">
+            <div class="report-card report-full">
               <div class="report-title">水母学习报告</div>
               <div class="score-row">
                 <div class="score-box">
                   <div class="score-num">1/5</div>
                   <div class="score-label">答题得分</div>
                 </div>
-                <div class="score-box yellow">
+                <div class="score-box mastery">
                   <div class="score-num">20%</div>
                   <div class="score-label">掌握度</div>
                 </div>
               </div>
-              <div class="report-list">
-                <strong>薄弱点</strong><br>
-                - 端口和服务的对应关系<br>
-                - 数据库与 Redis 的区别<br>
-                - 用自己的话复述知识点
+              <div class="report-section yellow">
+                <h3>本次总览</h3>
+                <ul>
+                  <li>主题：端口、数据库、Redis 的基础概念。</li>
+                  <li>完成：5 道题，答对 1 道。</li>
+                  <li>状态：知道“端口像房间号”，但还需要区分服务与入口。</li>
+                </ul>
               </div>
-              <div class="report-list">
-                <strong>下一步建议</strong><br>
-                复习错题，再让水母用同一主题生成一轮新题。
+              <div class="report-section">
+                <h3>薄弱点</h3>
+                <ul>
+                  <li>端口和服务的对应关系还不稳定。</li>
+                  <li>容易把 Redis、数据库和端口混为一类。</li>
+                  <li>还不能用自己的话解释“请求怎么找到服务”。</li>
+                </ul>
               </div>
-              <div class="share-button">分享到微信</div>
+              <div class="report-section blue">
+                <h3>知识拆解</h3>
+                <ul>
+                  <li>IP：先找到哪一台电脑。</li>
+                  <li>端口：再找到这台电脑上的哪个程序。</li>
+                  <li>数据库/Redis：是被访问的具体服务，不是入口编号。</li>
+                </ul>
+              </div>
+              <div class="report-section">
+                <h3>下一步行动</h3>
+                <ul>
+                  <li>先复习错题中的“端口 vs 服务”。</li>
+                  <li>再用同一主题生成 5 道新题。</li>
+                  <li>答题前先默念：IP 找电脑，端口找服务。</li>
+                </ul>
+              </div>
+              <div class="share-button">分享到微信 / QQ</div>
             </div>
-            <nav class="bottom-tab">
-              <div><span class="tab-circle">⌂</span>首页</div>
-              <div><span class="tab-circle">✓</span>闯关</div>
-              <div><span class="tab-circle">▤</span>报告</div>
-              <div><span class="tab-circle">♡</span>错题</div>
-              <div><span class="tab-circle">☺</span>我的</div>
-            </nav>
           </div>
         </div>
       </article>
