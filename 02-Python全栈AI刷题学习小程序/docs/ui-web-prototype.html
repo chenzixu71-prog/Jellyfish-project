@@ -827,6 +827,11 @@
       font-size: 12px;
       line-height: 1.5;
       box-shadow: 0 5px 0 #111111;
+      outline: none;
+    }
+
+    .input-box:focus {
+      box-shadow: 0 5px 0 #111111, 0 0 0 4px rgba(247, 222, 97, 0.42);
     }
 
     .main-button {
@@ -846,6 +851,23 @@
       font-family: var(--font-title);
       box-shadow: 0 6px 0 #111111;
       transition: transform 160ms ease, box-shadow 160ms ease, filter 160ms ease;
+    }
+
+    .main-button.is-disabled {
+      opacity: 0.68;
+      pointer-events: none;
+      filter: grayscale(0.12);
+    }
+
+    .status-line {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 10px;
+      color: #6f6a80;
+      font-size: 11px;
+      font-weight: 850;
+      text-align: center;
     }
 
     .main-button:hover,
@@ -2152,8 +2174,8 @@
               </div>
               <div class="jelly-label">JELLY QUIZ</div>
             </div>
-            <div class="input-box">我想学习端口、数据库和 Redis：帮我变成一组轻松闯关题。</div>
-            <div class="main-button">让水母生成题目</div>
+            <div class="input-box" id="js-user-input" contenteditable="true">我想学习端口、数据库和 Redis：帮我变成一组轻松闯关题。</div>
+            <div class="main-button" id="js-generate-btn">让水母生成题目</div>
           </div>
         </div>
         <div class="flow-arrow">›</div>
@@ -2171,8 +2193,8 @@
                 <span class="loading-dot"></span>
                 <span class="loading-dot"></span>
               </div>
-              <div class="loading-title">水母正在出题...</div>
-              <div class="loading-copy">正在阅读你的学习内容，提取知识点、设计选项和讲解。</div>
+              <div class="loading-title" id="js-loading-title">水母正在出题...</div>
+              <div class="loading-copy" id="js-loading-copy">正在阅读你的学习内容，提取知识点、设计选项和讲解。</div>
               <div class="loading-bar"><div class="loading-fill"></div></div>
             </div>
           </div>
@@ -2188,8 +2210,8 @@
           <div class="content">
             <div class="opening-title">Jelly<span>Quest</span></div>
             <div class="stage-card">
-              <div class="stage-title">今日水母挑战已准备</div>
-              <div class="stage-summary">围绕端口、数据库和 Redis 生成 5 道题。答完每题都会收到即时讲解。</div>
+              <div class="stage-title" id="js-quiz-title">今日水母挑战已准备</div>
+              <div class="stage-summary" id="js-quiz-summary">围绕端口、数据库和 Redis 生成 5 道题。答完每题都会收到即时讲解。</div>
               <div class="topic-strip">
                 <span class="topic-chip">端口</span>
                 <span class="topic-chip">数据库</span>
@@ -2197,9 +2219,9 @@
               </div>
               <div class="question-list">
                 <div class="daily-progress">
-                  <div class="progress-meta"><span>今日题目</span><span>5 / 20</span></div>
+                  <div class="progress-meta"><span>今日题目</span><span id="js-progress-count">5 / 20</span></div>
                   <div class="progress-track"><div class="progress-fill"></div></div>
-                  <div class="progress-note">今天共有 20 个小挑战，先完成当前 5 题闯关。</div>
+                  <div class="progress-note" id="js-progress-note">今天共有 20 个小挑战，先完成当前 5 题闯关。</div>
                 </div>
               </div>
             </div>
@@ -2228,15 +2250,15 @@
                 <span class="pill">1/5</span>
                 <span class="pill">单选题</span>
               </div>
-              <div class="question">端口在网络通信中主要负责什么？</div>
-              <div class="options">
+              <div class="question" id="js-question-stem">端口在网络通信中主要负责什么？</div>
+              <div class="options" id="js-options">
                 <div class="option active"><span class="option-key">A</span>区分同一台电脑上的不同服务</div>
                 <div class="option"><span class="option-key">B</span>保存所有用户数据</div>
                 <div class="option"><span class="option-key">C</span>替代数据库完成查询</div>
               </div>
-              <div class="feedback">
-                <strong>答对了，水母点头！</strong>
-                端口像房间号，帮助请求找到具体的软件服务。
+              <div class="feedback" id="js-feedback">
+                <strong id="js-feedback-title">答对了，水母点头！</strong>
+                <span id="js-feedback-copy">端口像房间号，帮助请求找到具体的软件服务。</span>
               </div>
             </div>
             <input class="knowledge-toggle" id="knowledge-toggle" type="checkbox">
@@ -2245,9 +2267,9 @@
             <section class="knowledge-sheet" aria-label="知识详情">
               <div class="sheet-handle"></div>
               <div class="sheet-head">
-                <div class="sheet-title">端口知识拆解</div>
+                <div class="sheet-title" id="js-sheet-title">端口知识拆解</div>
               </div>
-              <div class="sheet-scroll">
+              <div class="sheet-scroll" id="js-sheet-scroll">
                 <div class="knowledge-block correct">
                   <strong>结论</strong>
                   端口的作用是：在同一台电脑里，帮网络请求找到具体的软件服务。
@@ -2283,7 +2305,7 @@
                 </div>
               </div>
             </section>
-            <div class="main-button">下一题</div>
+            <div class="main-button" id="js-next-question-btn">下一题</div>
           </div>
         </div>
         <div class="flow-arrow">›</div>
@@ -2316,7 +2338,7 @@
               </div>
               <div class="complete-title">恭喜通关！</div>
               <div class="complete-copy">5 道题已经完成，水母帮你把表现整理成复盘报告。</div>
-              <div class="main-button" style="position: static;">查看水母报告</div>
+              <div class="main-button" id="js-report-btn" style="position: static;">查看水母报告</div>
             </div>
           </div>
         </div>
@@ -2331,15 +2353,15 @@
           <div class="content report-screen">
             <div class="script-logo">REPORT<br>CENTER</div>
             <div class="report-card report-full">
-              <div class="report-title">水母学习报告</div>
-              <div class="report-subtitle">本报告根据本轮 5 道题的答题结果自动生成，帮助你知道下一步该复习哪里。</div>
+              <div class="report-title" id="js-report-title">水母学习报告</div>
+              <div class="report-subtitle" id="js-report-summary">本报告根据本轮 5 道题的答题结果自动生成，帮助你知道下一步该复习哪里。</div>
               <div class="score-row">
                 <div class="score-box">
-                  <div class="score-num">1/5</div>
+                  <div class="score-num" id="js-report-score">1/5</div>
                   <div class="score-label">答题得分</div>
                 </div>
                 <div class="score-box mastery">
-                  <div class="score-num">20%</div>
+                  <div class="score-num" id="js-report-mastery">20%</div>
                   <div class="score-label">掌握度</div>
                 </div>
               </div>
@@ -2382,5 +2404,235 @@
       </article>
     </section>
   </main>
+  <script>
+    const API_BASE_URL = "http://127.0.0.1:8010";
+    const state = {
+      sessionId: `html-demo-${Date.now()}-${Math.random().toString(16).slice(2)}`,
+      quiz: null,
+      currentIndex: 0,
+      selectedAnswers: {},
+      answerResults: {},
+      report: null
+    };
+
+    const $ = (selector) => document.querySelector(selector);
+
+    function escapeHtml(value) {
+      return String(value ?? "")
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+
+    async function apiPost(path, payload) {
+      const response = await fetch(`${API_BASE_URL}${path}`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      const body = await response.json().catch(() => null);
+      if (!response.ok || !body || body.code !== 0) {
+        throw new Error(body?.message || body?.detail || `HTTP ${response.status}`);
+      }
+      return body.data;
+    }
+
+    function setButtonLoading(button, isLoading, text) {
+      if (!button) return;
+      if (isLoading) {
+        button.dataset.originalText = button.textContent;
+        button.textContent = text;
+        button.classList.add("is-disabled");
+      } else {
+        button.textContent = button.dataset.originalText || button.textContent;
+        button.classList.remove("is-disabled");
+      }
+    }
+
+    function setLoadingState(title, copy) {
+      $("#js-loading-title").textContent = title;
+      $("#js-loading-copy").textContent = copy;
+    }
+
+    function questionTypeLabel(type) {
+      return type === "multiple" ? "多选题" : type === "judge" ? "判断题" : "单选题";
+    }
+
+    function renderQuiz(quiz) {
+      $("#js-quiz-title").textContent = quiz.title || "今日水母挑战已准备";
+      $("#js-quiz-summary").textContent = quiz.summary || "题目已生成，答完每题都会收到即时讲解。";
+      $("#js-progress-count").textContent = `${quiz.questions.length} / ${quiz.questions.length}`;
+      $("#js-progress-note").textContent = `本轮共有 ${quiz.questions.length} 道题，先完成当前闯关。`;
+      renderCurrentQuestion();
+    }
+
+    function renderCurrentQuestion() {
+      if (!state.quiz) return;
+      const question = state.quiz.questions[state.currentIndex];
+      const answered = state.answerResults[question.id];
+      const selected = state.selectedAnswers[question.id] || [];
+      document.querySelector(".quiz-top .pill:first-child").textContent = `${state.currentIndex + 1}/${state.quiz.questions.length}`;
+      document.querySelector(".quiz-top .pill:last-child").textContent = questionTypeLabel(question.type);
+      $("#js-question-stem").textContent = question.stem;
+      $("#js-options").innerHTML = question.options.map((option) => {
+        const isSelected = selected.includes(option.key);
+        const isCorrect = answered && answered.correctAnswer.includes(option.key);
+        const isWrong = answered && isSelected && !isCorrect;
+        const classes = ["option"];
+        if (isCorrect) classes.push("active");
+        if (isWrong) classes.push("wrong");
+        return `<div class="${classes.join(" ")}" data-answer="${escapeHtml(option.key)}"><span class="option-key">${escapeHtml(option.key)}</span>${escapeHtml(option.text)}</div>`;
+      }).join("");
+
+      $("#js-feedback-title").textContent = answered
+        ? answered.isCorrect ? "答对了，水母点头！" : "答错了，水母帮你补一补"
+        : question.type === "multiple" ? "请选择多个答案" : "请选择一个答案";
+      $("#js-feedback-copy").textContent = answered
+        ? answered.explanation
+        : question.type === "multiple"
+          ? "多选题选够答案数量后会提交，并显示正确答案和讲解。"
+          : "选择后会立刻显示正确答案和适合初学者的讲解。";
+      renderKnowledgeSheet(question, answered);
+      bindOptionClicks();
+    }
+
+    function renderKnowledgeSheet(question, result) {
+      const correctAnswer = result?.correctAnswer || question.answer;
+      const explanation = result?.explanation || question.explanation;
+      const point = result?.knowledge_point || question.knowledge_point;
+      $("#js-sheet-title").textContent = `${point || "知识点"}拆解`;
+      $("#js-sheet-scroll").innerHTML = `
+        <div class="knowledge-block ${result?.isCorrect ? "correct" : "wrong"}">
+          <strong>${result ? result.isCorrect ? "答对时看这里" : "答错时看这里" : "答题后看这里"}</strong>
+          ${escapeHtml(explanation)}
+        </div>
+        <div class="knowledge-block">
+          <strong>正确答案</strong>
+          ${escapeHtml(correctAnswer.join("、"))}
+        </div>
+        <div class="knowledge-block">
+          <strong>知识点标签</strong>
+          ${escapeHtml(point)}
+        </div>
+        <div class="knowledge-block">
+          <strong>下一步练习</strong>
+          用自己的话复述这道题为什么选 ${escapeHtml(correctAnswer.join("、"))}，再进入下一题。
+        </div>
+      `;
+    }
+
+    function bindOptionClicks() {
+      document.querySelectorAll("#js-options .option").forEach((optionNode) => {
+        optionNode.addEventListener("click", async () => {
+          if (!state.quiz) return;
+          const question = state.quiz.questions[state.currentIndex];
+          if (state.answerResults[question.id]) return;
+          const selectedKey = optionNode.dataset.answer;
+          let answer = state.selectedAnswers[question.id] || [];
+          if (question.type === "multiple") {
+            answer = answer.includes(selectedKey)
+              ? answer.filter((key) => key !== selectedKey)
+              : [...answer, selectedKey];
+            state.selectedAnswers[question.id] = answer;
+            if (answer.length < question.answer.length) {
+              renderCurrentQuestion();
+              return;
+            }
+          } else {
+            answer = [selectedKey];
+            state.selectedAnswers[question.id] = answer;
+          }
+          try {
+            const result = await apiPost("/api/submit-answer", {
+              sessionId: state.sessionId,
+              quizId: state.quiz.quizId,
+              questionId: question.id,
+              answer
+            });
+            state.answerResults[question.id] = result;
+            renderCurrentQuestion();
+          } catch (error) {
+            $("#js-feedback-title").textContent = "提交失败";
+            $("#js-feedback-copy").textContent = `${error.message}。请确认后端服务运行在 127.0.0.1:8010。`;
+          }
+        });
+      });
+    }
+
+    function renderReport(report) {
+      $("#js-report-title").textContent = report.title || "水母学习报告";
+      $("#js-report-summary").textContent = report.summary || "本报告根据本轮答题结果自动生成。";
+      $("#js-report-score").textContent = `${report.score}/${report.total}`;
+      $("#js-report-mastery").textContent = `${report.mastery}%`;
+      const sections = document.querySelectorAll(".report-section");
+      if (sections[0]) {
+        sections[0].innerHTML = `<h3>本次总览</h3><ul><li>完成：${report.total} 道题，答对 ${report.score} 道。</li><li>掌握度：${report.mastery}%。</li><li>主题：${escapeHtml(report.title)}</li></ul>`;
+      }
+      if (sections[1]) {
+        sections[1].innerHTML = `<h3>薄弱点</h3><ul>${report.weakPoints.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+      }
+      if (sections[3]) {
+        sections[3].innerHTML = `<h3>下一步行动</h3><ul>${report.nextSteps.map((item) => `<li>${escapeHtml(item)}</li>`).join("")}</ul>`;
+      }
+    }
+
+    $("#js-generate-btn").addEventListener("click", async () => {
+      const content = $("#js-user-input").innerText.trim();
+      if (!content) {
+        setLoadingState("请输入学习内容", "先在首页输入你想学习的知识，再让水母出题。");
+        return;
+      }
+      setButtonLoading($("#js-generate-btn"), true, "生成中...");
+      setLoadingState("水母正在出题...", "正在调用后端 API，生成题目和讲解。");
+      try {
+        const quiz = await apiPost("/api/generate-quiz", {
+          sessionId: state.sessionId,
+          inputType: "text",
+          content,
+          questionCount: 5
+        });
+        state.quiz = quiz;
+        state.currentIndex = 0;
+        state.selectedAnswers = {};
+        state.answerResults = {};
+        renderQuiz(quiz);
+        setLoadingState("题目生成完成", "后端已经返回题目，可以开始闯关。");
+      } catch (error) {
+        setLoadingState("生成失败", `${error.message}。请确认后端服务运行在 127.0.0.1:8010。`);
+      } finally {
+        setButtonLoading($("#js-generate-btn"), false);
+      }
+    });
+
+    $("#js-next-question-btn").addEventListener("click", () => {
+      if (!state.quiz) return;
+      state.currentIndex = Math.min(state.currentIndex + 1, state.quiz.questions.length - 1);
+      renderCurrentQuestion();
+    });
+
+    $("#js-report-btn").addEventListener("click", async () => {
+      if (!state.quiz) {
+        setLoadingState("还没有题目", "请先生成并完成题目，再查看报告。");
+        return;
+      }
+      setButtonLoading($("#js-report-btn"), true, "报告生成中...");
+      try {
+        const report = await apiPost("/api/generate-report", {
+          sessionId: state.sessionId,
+          quizId: state.quiz.quizId
+        });
+        state.report = report;
+        renderReport(report);
+      } catch (error) {
+        $("#js-report-summary").textContent = `${error.message}。请确认后端服务运行在 127.0.0.1:8010。`;
+      } finally {
+        setButtonLoading($("#js-report-btn"), false);
+      }
+    });
+
+    bindOptionClicks();
+  </script>
 </body>
 </html>
