@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import Taro from '@tarojs/taro'
-import { Button, Text, Textarea, View } from '@tarojs/components'
+import { Button, Image, Text, Textarea, View } from '@tarojs/components'
 import { generateQuiz } from '../../services/quizService'
+import jellyLogo from '../../assets/jelly-logo.jpg'
 import './index.css'
 
 const defaultPrompt = '例如我想学习英语'
@@ -91,6 +92,7 @@ export default function CreatePage() {
     <View className='create-page'>
       <View className='brand-hero'>
         <View className='brand-row'>
+          <Image className='brand-logo-image' src={jellyLogo} mode='aspectFill' />
           <Text className='brand-main'>Jelly</Text>
           <Text className='brand-quest'>Quest</Text>
           <Text className='top-mark'>AI</Text>
