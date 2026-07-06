@@ -204,8 +204,12 @@
 
     .flow-note {
       max-width: 1240px;
-      margin: 0 auto 24px;
-      color: #aaa5bb;
+      margin: 0 auto 28px;
+      padding: 16px 22px;
+      border: 1px solid rgba(255, 253, 247, 0.34);
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.045);
+      color: #b9b4c8;
       font-size: 16px;
       line-height: 1.7;
     }
@@ -1242,6 +1246,18 @@
       font-size: 13px;
     }
 
+    .bottom-tab div:first-child,
+    .bottom-tab div:nth-child(2) {
+      color: var(--purple);
+    }
+
+    .bottom-tab div:first-child .tab-circle,
+    .bottom-tab div:nth-child(2) .tab-circle {
+      border-color: var(--purple);
+      background: var(--purple);
+      color: var(--paper);
+    }
+
     .flow-arrow {
       position: absolute;
       top: 340px;
@@ -1455,6 +1471,10 @@
 
       .phone {
         height: 650px;
+      }
+
+      .flow-note {
+        border-radius: 24px;
       }
     }
 
