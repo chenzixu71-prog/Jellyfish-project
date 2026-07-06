@@ -98,33 +98,6 @@ export default function CreatePage() {
           <Text className='top-mark'>AI</Text>
         </View>
 
-        <Text className='hero-title'>
-          <Text className='cyan-word'>水母</Text>
-          <Text> DIY </Text>
-          <Text className='yellow-word'>学习</Text>
-        </Text>
-        <Text className='hero-subtitle'>把零散知识变成 5 道闯关题，答完马上看到讲解和报告。</Text>
-
-        <View className='challenge-card'>
-          <Text className='challenge-title'>今日水母挑战已准备</Text>
-          <Text className='challenge-copy'>围绕端口、数据库和 Redis 生成 5 道题。答完每题都会收到即时讲解。</Text>
-          <View className='tag-row'>
-            <Text className='topic-tag'>端口</Text>
-            <Text className='topic-tag'>数据库</Text>
-            <Text className='topic-tag'>Redis</Text>
-          </View>
-          <View className='progress-card'>
-            <View className='progress-head'>
-              <Text className='progress-title'>今日题目</Text>
-              <Text className='progress-count'>5 / 20</Text>
-            </View>
-            <View className='progress-track'>
-              <View className='progress-fill' />
-            </View>
-            <Text className='progress-copy'>今天共有 20 个小挑战，先完成当前 5 题闯关。</Text>
-          </View>
-        </View>
-
         <View className='ocean-stage'>
           <View className='ocean-bubble bubble-one' />
           <View className='ocean-bubble bubble-two' />
@@ -147,23 +120,45 @@ export default function CreatePage() {
         </View>
       </View>
 
-      <View className='input-panel'>
-        <Text className='section-title'>今天想学什么？</Text>
-        <Textarea
-          className='learning-input'
-          value={content}
-          placeholder={defaultPrompt}
-          maxlength={1000}
-          showConfirmBar={false}
-          onInput={(event) => setContent(event.detail.value)}
-        />
-        <View className='upload-row'>
-          <Button className='upload-button' onClick={chooseFiles}>文件 {files.length}/3</Button>
-          <Button className='upload-button upload-image' onClick={chooseImages}>图片 {images.length}/10</Button>
+      <View className='home-board'>
+        <View className='challenge-card'>
+          <Text className='challenge-title'>今日水母挑战已准备</Text>
+          <Text className='challenge-copy'>围绕端口、数据库和 Redis 生成 5 道题。答完每题都会收到即时讲解。</Text>
+          <View className='tag-row'>
+            <Text className='topic-tag'>端口</Text>
+            <Text className='topic-tag'>数据库</Text>
+            <Text className='topic-tag'>Redis</Text>
+          </View>
+          <View className='progress-card'>
+            <View className='progress-head'>
+              <Text className='progress-title'>今日题目</Text>
+              <Text className='progress-count'>5 / 20</Text>
+            </View>
+            <View className='progress-track'>
+              <View className='progress-fill' />
+            </View>
+            <Text className='progress-copy'>今天共有 20 个小挑战，先完成当前 5 题闯关。</Text>
+          </View>
         </View>
-        <Button className='main-button' loading={loading} onClick={handleGenerate}>
-          让水母生成题目
-        </Button>
+
+        <View className='input-panel'>
+          <Text className='section-title'>今天想学什么？</Text>
+          <Textarea
+            className='learning-input'
+            value={content}
+            placeholder={defaultPrompt}
+            maxlength={1000}
+            showConfirmBar={false}
+            onInput={(event) => setContent(event.detail.value)}
+          />
+          <View className='upload-row'>
+            <Button className='upload-button' onClick={chooseFiles}>文件 {files.length}/3</Button>
+            <Button className='upload-button upload-image' onClick={chooseImages}>图片 {images.length}/10</Button>
+          </View>
+          <Button className='main-button' loading={loading} onClick={handleGenerate}>
+            让水母生成题目
+          </Button>
+        </View>
       </View>
 
       {loading && (
