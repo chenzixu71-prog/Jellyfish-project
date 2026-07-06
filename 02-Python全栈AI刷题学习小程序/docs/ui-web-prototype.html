@@ -1211,6 +1211,42 @@
       font-weight: 950;
     }
 
+    .knowledge-list {
+      display: grid;
+      gap: 7px;
+      margin: 7px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .knowledge-list li {
+      position: relative;
+      padding-left: 18px;
+    }
+
+    .knowledge-list li::before {
+      content: "";
+      position: absolute;
+      left: 2px;
+      top: 8px;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--yellow);
+      box-shadow: 0 0 0 2px rgba(98, 70, 242, 0.12);
+    }
+
+    .memory-card {
+      padding: 11px 12px;
+      border-radius: 18px;
+      background: var(--purple);
+      color: var(--paper);
+      font-family: var(--font-hand);
+      font-size: 15px;
+      font-weight: 950;
+      line-height: 1.35;
+    }
+
     .celebration-bubble {
       position: absolute;
       left: 50%;
@@ -1962,24 +1998,37 @@
               </div>
               <div class="sheet-scroll">
                 <div class="knowledge-block correct">
-                  <strong>答对时看这里</strong>
-                  你已经抓住了核心：端口用来区分同一台电脑上的不同服务。
+                  <strong>结论</strong>
+                  端口的作用是：在同一台电脑里，帮网络请求找到具体的软件服务。
                 </div>
                 <div class="knowledge-block wrong">
-                  <strong>答错时看这里</strong>
-                  不要把端口理解成数据库或缓存。端口更像门牌号，数据库和 Redis 是门后面的具体服务。
+                  <strong>答错时怎么纠正</strong>
+                  如果选了数据库或 Redis，说明你把“入口编号”和“服务本身”混在一起了。端口是入口，数据库和 Redis 是入口后面的服务。
                 </div>
                 <div class="knowledge-block">
-                  <strong>一句话解释</strong>
-                  IP 地址负责找到哪一台电脑，端口负责找到这台电脑里的哪一个程序。
+                  <strong>为什么是这样</strong>
+                  <ul class="knowledge-list">
+                    <li>IP 地址负责找到哪一台电脑。</li>
+                    <li>端口负责找到这台电脑里的哪一个程序。</li>
+                    <li>不同服务通常监听不同端口，避免请求走错地方。</li>
+                  </ul>
                 </div>
                 <div class="knowledge-block">
                   <strong>生活类比</strong>
-                  一栋楼是服务器，房间号是端口。访问 80 号房间可能是网页服务，访问 3306 号房间可能是数据库服务。
+                  一栋楼是服务器，房间号是端口。你先找到这栋楼，再根据房间号找到具体房间。
                 </div>
                 <div class="knowledge-block">
-                  <strong>容易混淆</strong>
-                  端口不是数据本身，也不是数据库。它只是网络请求进入具体服务的入口编号。
+                  <strong>例子</strong>
+                  <ul class="knowledge-list">
+                    <li>80：常见网页服务入口。</li>
+                    <li>3306：常见 MySQL 数据库入口。</li>
+                    <li>6379：常见 Redis 服务入口。</li>
+                  </ul>
+                </div>
+                <div class="memory-card">记忆口诀：IP 找电脑，端口找服务。</div>
+                <div class="knowledge-block">
+                  <strong>下一步练习</strong>
+                  看到一个地址时，先问自己两个问题：它要访问哪台机器？它要进入哪个服务？
                 </div>
               </div>
             </section>
