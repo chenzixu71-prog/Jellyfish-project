@@ -567,7 +567,8 @@
       width: 108px;
       height: 112px;
       transform: translateX(-50%);
-      animation: jellyBounce 2.4s ease-in-out infinite;
+      filter: drop-shadow(0 10px 0 rgba(17, 17, 17, 0.16));
+      animation: jellyBounce 2.8s ease-in-out infinite;
     }
 
     .jellyfish::before {
@@ -605,6 +606,7 @@
         inset 0 -14px 0 rgba(247, 222, 97, 0.2),
         inset 14px 10px 0 rgba(255, 255, 255, 0.16),
         0 5px 0 rgba(17, 17, 17, 0.16);
+      animation: jellySquish 2.8s ease-in-out infinite;
     }
 
     .jellyfish-body::before,
@@ -1142,6 +1144,7 @@
       width: 92px;
       height: 92px;
       margin: 0 auto;
+      filter: drop-shadow(0 8px 0 rgba(17, 17, 17, 0.14));
       animation: happy 1.3s ease-in-out infinite;
     }
 
@@ -1450,11 +1453,21 @@
 
     @keyframes jellyBounce {
       0%, 100% {
-        transform: translateX(-50%) translateY(0) rotate(-2deg);
+        transform: translateX(-50%) translateY(0) rotate(-1deg);
       }
 
       50% {
-        transform: translateX(-50%) translateY(-10px) rotate(2deg);
+        transform: translateX(-50%) translateY(-9px) rotate(1.5deg);
+      }
+    }
+
+    @keyframes jellySquish {
+      0%, 100% {
+        transform: scaleX(1) scaleY(1);
+      }
+
+      50% {
+        transform: scaleX(1.035) scaleY(0.975);
       }
     }
 
