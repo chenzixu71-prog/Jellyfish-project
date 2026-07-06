@@ -1,5 +1,5 @@
 import { useMemo, useState } from 'react'
-import Taro, { useLoad } from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import { Button, ScrollView, Text, View } from '@tarojs/components'
 import { AnswerResult, Question, Quiz, submitAnswer } from '../../services/quizService'
 import './index.css'
@@ -28,13 +28,22 @@ export default function QuizPage() {
   const [completed, setCompleted] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
 
-  useLoad(() => {
+  useDidShow(() => {
     const storedQuiz = Taro.getStorageSync<Quiz>('currentQuiz')
     if (!storedQuiz) {
-      Taro.redirectTo({ url: '/pages/create/index' })
+      Taro.switchTab({ url: '/pages/create/index' })
       return
     }
-    setQuiz(storedQuiz)
+    if (quiz?.quizId !== storedQuiz.quizId) {
+      setQuiz(storedQuiz)
+      setCurrentIndex(0)
+      setSelected([])
+      setResult(null)
+      setCompleted(false)
+      setSheetOpen(false)
+    } else if (!quiz) {
+      setQuiz(storedQuiz)
+    }
   })
 
   const question = quiz?.questions[currentIndex]
@@ -91,7 +100,7 @@ export default function QuizPage() {
 
   function goReport() {
     if (!quiz) return
-    Taro.navigateTo({ url: `/pages/report/index?quizId=${quiz.quizId}` })
+    Taro.switchTab({ url: '/pages/report/index' })
   }
 
   if (!quiz || !question) {

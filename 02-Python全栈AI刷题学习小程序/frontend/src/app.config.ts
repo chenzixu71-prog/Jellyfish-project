@@ -3,6 +3,7 @@ export default defineAppConfig({
     'pages/create/index',
     'pages/quiz/index',
     'pages/report/index',
+    'pages/wrong/index',
     'pages/profile/index'
   ],
   window: {
@@ -20,11 +21,23 @@ export default defineAppConfig({
     list: [
       {
         pagePath: 'pages/create/index',
-        text: '学习'
+        text: '首页'
+      },
+      {
+        pagePath: 'pages/quiz/index',
+        text: '闯关'
+      },
+      {
+        pagePath: 'pages/report/index',
+        text: '报告'
+      },
+      {
+        pagePath: 'pages/wrong/index',
+        text: '错题'
       },
       {
         pagePath: 'pages/profile/index',
-        text: '记录'
+        text: '我的'
       }
     ]
   }

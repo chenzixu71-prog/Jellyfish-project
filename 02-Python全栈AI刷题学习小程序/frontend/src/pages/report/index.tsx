@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import Taro, { useLoad, useRouter, useShareAppMessage } from '@tarojs/taro'
+import Taro, { useDidShow, useRouter, useShareAppMessage } from '@tarojs/taro'
 import { Button, Text, View } from '@tarojs/components'
 import { generateReport, Quiz, Report } from '../../services/quizService'
 import './index.css'
@@ -14,11 +14,12 @@ export default function ReportPage() {
     path: '/pages/create/index'
   }))
 
-  useLoad(async () => {
+  useDidShow(async () => {
     const storedQuiz = Taro.getStorageSync<Quiz>('currentQuiz')
     const quizId = router.params.quizId || storedQuiz?.quizId
     if (!quizId) {
-      Taro.redirectTo({ url: '/pages/create/index' })
+      setReport(null)
+      setLoading(false)
       return
     }
 

@@ -76,7 +76,7 @@ export default function CreatePage() {
     try {
       const quiz = await generateQuiz(buildLearningContent(trimmed))
       Taro.setStorageSync('currentQuiz', quiz)
-      Taro.navigateTo({ url: '/pages/quiz/index' })
+      Taro.switchTab({ url: '/pages/quiz/index' })
     } catch (error) {
       Taro.showToast({
         title: error instanceof Error ? error.message : '生成失败',
