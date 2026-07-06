@@ -367,9 +367,18 @@
 
     .script-logo {
       color: var(--paper);
-      font-size: 30px;
+      display: inline-flex;
+      flex-direction: column;
+      gap: 2px;
+      padding: 9px 12px;
+      border: 2px solid rgba(255, 253, 247, 0.7);
+      border-radius: 18px;
+      background: rgba(255, 253, 247, 0.12);
+      font-size: 27px;
       font-weight: 950;
-      line-height: 0.95;
+      line-height: 0.92;
+      letter-spacing: 0;
+      box-shadow: inset 0 -12px 24px rgba(255, 255, 255, 0.08);
     }
 
     .script-logo .red-word {
@@ -785,17 +794,26 @@
     }
 
     .opening-title {
-      color: #1767c8;
-      font-size: 46px;
+      display: inline-flex;
+      align-items: flex-end;
+      gap: 6px;
+      padding: 8px 11px 9px;
+      border: 2px solid rgba(255, 253, 247, 0.74);
+      border-radius: 18px;
+      background: rgba(255, 253, 247, 0.13);
+      color: var(--paper);
+      font-size: 32px;
       font-weight: 950;
-      line-height: 0.82;
+      line-height: 0.9;
       letter-spacing: 0;
+      text-shadow: 0 3px 0 rgba(17, 17, 17, 0.18);
     }
 
     .opening-title span {
-      display: block;
-      color: #e22020;
-      font-size: 28px;
+      display: inline-block;
+      color: var(--yellow);
+      font-size: 18px;
+      transform: rotate(-3deg);
     }
 
     .ticket {
@@ -1615,8 +1633,7 @@
           <div class="status"><span>11:34</span><span>▮▮▮ 5G ▱</span></div>
           <div class="capsule">••• ◎</div>
           <div class="content">
-            <div class="opening-title">Jelly<span>QUEST</span></div>
-            <div class="ticket">GOOD<br>DAY</div>
+            <div class="opening-title">Jelly<span>Quest</span></div>
             <div class="stage-card">
               <div class="stage-title">今日水母挑战已准备</div>
               <div class="stage-summary">围绕端口、数据库和 Redis 生成 5 道题。答完每题都会收到即时讲解。</div>
