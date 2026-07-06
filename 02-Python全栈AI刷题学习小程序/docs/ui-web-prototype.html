@@ -196,9 +196,9 @@
 
     .screens {
       display: grid;
-      grid-template-columns: repeat(5, minmax(230px, 1fr));
-      gap: 24px;
-      max-width: 1360px;
+      grid-template-columns: repeat(5, minmax(240px, 1fr));
+      gap: 26px;
+      max-width: 1420px;
       margin: 0 auto;
       align-items: start;
     }
@@ -280,6 +280,15 @@
       line-height: 0.95;
     }
 
+    .script-logo .red-word {
+      color: #e22020;
+    }
+
+    .script-logo .yellow-word {
+      color: #ffe142;
+      -webkit-text-stroke: 1px #111111;
+    }
+
     .small-copy {
       margin-top: 10px;
       max-width: 190px;
@@ -316,68 +325,166 @@
       transform: rotate(12deg);
     }
 
-    .round-hero {
+    .ocean-stage {
       position: absolute;
-      left: 35px;
-      top: 225px;
-      width: 190px;
-      height: 190px;
+      left: 50%;
+      top: 183px;
+      width: 188px;
+      height: 178px;
+      transform: translateX(-50%);
       border-radius: 50%;
       background: #1767c8;
+      border: 4px solid #111111;
+      box-shadow: 0 7px 0 #111111;
+      overflow: visible;
     }
 
-    .arc-text {
+    .ocean-stage::before {
+      content: "";
       position: absolute;
-      inset: -34px;
-      color: #1767c8;
-      font-size: 26px;
+      left: -20px;
+      right: -20px;
+      bottom: 24px;
+      height: 36px;
+      border-top: 4px solid rgba(255, 253, 244, 0.7);
+      border-radius: 50%;
+      transform: rotate(-8deg);
+    }
+
+    .bubble {
+      position: absolute;
+      width: 13px;
+      height: 13px;
+      border: 3px solid #fffdf4;
+      border-radius: 50%;
+      opacity: 0.85;
+      animation: bubbleRise 2.6s ease-in-out infinite;
+    }
+
+    .bubble.one {
+      left: 24px;
+      top: 40px;
+    }
+
+    .bubble.two {
+      right: 28px;
+      top: 66px;
+      width: 9px;
+      height: 9px;
+      animation-delay: 0.35s;
+    }
+
+    .bubble.three {
+      right: 52px;
+      top: 28px;
+      width: 11px;
+      height: 11px;
+      animation-delay: 0.7s;
+    }
+
+    .jellyfish {
+      position: absolute;
+      left: 50%;
+      top: 35px;
+      width: 108px;
+      height: 112px;
+      transform: translateX(-50%);
+      animation: jellyBounce 2.4s ease-in-out infinite;
+    }
+
+    .jellyfish-body {
+      position: absolute;
+      left: 6px;
+      top: 0;
+      width: 96px;
+      height: 72px;
+      border: 4px solid #111111;
+      border-radius: 58% 58% 43% 43%;
+      background: #ff7bd3;
+      box-shadow: inset 0 -12px 0 rgba(255, 225, 66, 0.45);
+    }
+
+    .jellyfish-body::before,
+    .jellyfish-body::after {
+      content: "";
+      position: absolute;
+      top: 31px;
+      width: 8px;
+      height: 10px;
+      border-radius: 50%;
+      background: #111111;
+    }
+
+    .jellyfish-body::before {
+      left: 31px;
+    }
+
+    .jellyfish-body::after {
+      right: 31px;
+    }
+
+    .jelly-smile {
+      position: absolute;
+      left: 41px;
+      top: 47px;
+      width: 22px;
+      height: 10px;
+      border-bottom: 4px solid #111111;
+      border-radius: 0 0 20px 20px;
+    }
+
+    .tentacle {
+      position: absolute;
+      top: 68px;
+      width: 13px;
+      height: 42px;
+      border-left: 4px solid #111111;
+      border-bottom: 4px solid #111111;
+      border-radius: 0 0 0 16px;
+      animation: tentacleWave 1.8s ease-in-out infinite;
+    }
+
+    .tentacle.t1 {
+      left: 19px;
+      border-color: #111111;
+      transform: rotate(6deg);
+    }
+
+    .tentacle.t2 {
+      left: 43px;
+      height: 48px;
+      transform: rotate(-4deg);
+      animation-delay: 0.2s;
+    }
+
+    .tentacle.t3 {
+      right: 33px;
+      transform: rotate(7deg);
+      animation-delay: 0.35s;
+    }
+
+    .tentacle.t4 {
+      right: 12px;
+      height: 36px;
+      transform: rotate(-7deg);
+      animation-delay: 0.5s;
+    }
+
+    .jelly-label {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: -18px;
+      min-width: 126px;
+      padding: 6px 9px;
+      border: 3px solid #111111;
+      border-radius: 999px;
+      background: #ffe142;
+      color: #111111;
+      font-size: 12px;
       font-weight: 950;
       text-align: center;
-      transform: rotate(-15deg);
-    }
-
-    .arc-text .red {
-      color: #e22020;
-    }
-
-    .arc-text .yellow {
-      color: #ffe142;
-    }
-
-    .kid {
-      position: absolute;
-      left: 38px;
-      top: 42px;
-      width: 112px;
-      height: 135px;
-      border: 4px solid #111111;
-      border-radius: 43% 48% 50% 45%;
-      background: #fffdf4;
-      transform: rotate(7deg);
-      animation: floaty 2.6s ease-in-out infinite;
-    }
-
-    .kid::before {
-      content: "";
-      position: absolute;
-      top: -19px;
-      left: 21px;
-      width: 68px;
-      height: 33px;
-      border: 4px solid #111111;
-      border-radius: 50% 50% 44% 44%;
-      background: #ffe142;
-    }
-
-    .kid::after {
-      content: "";
-      position: absolute;
-      left: 33px;
-      top: 52px;
-      width: 40px;
-      height: 20px;
-      border-bottom: 4px solid #111111;
-      border-radius: 0 0 50px 50px;
+      transform: translateX(-50%) rotate(-4deg);
     }
 
     .kid-eye {
@@ -401,8 +508,8 @@
       position: absolute;
       left: 20px;
       right: 20px;
-      bottom: 96px;
-      min-height: 92px;
+      bottom: 90px;
+      min-height: 82px;
       padding: 14px;
       border: 3px solid #111111;
       border-radius: 18px;
@@ -427,6 +534,10 @@
       font-size: 16px;
       font-weight: 950;
       box-shadow: 0 6px 0 #111111;
+    }
+
+    .main-button.above-tab {
+      bottom: 92px;
     }
 
     .opening-title {
@@ -455,12 +566,29 @@
     }
 
     .stage-card {
-      margin-top: 22px;
+      margin-top: 18px;
       padding: 15px;
       border: 3px solid #111111;
       border-radius: 18px;
       background: #ffffff;
       box-shadow: 0 5px 0 #111111;
+    }
+
+    .topic-strip {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .topic-chip {
+      padding: 5px 8px;
+      border: 2px solid #111111;
+      border-radius: 999px;
+      background: #fffdf4;
+      color: #111111;
+      font-size: 11px;
+      font-weight: 900;
     }
 
     .stage-title {
@@ -503,6 +631,14 @@
     .question-dot:nth-child(3) {
       background: #1767c8;
       color: #fffdf4;
+    }
+
+    .question-dot:nth-child(4) {
+      background: #ff7bd3;
+    }
+
+    .question-dot:nth-child(5) {
+      background: #d7ef45;
     }
 
     .quiz-card {
@@ -561,7 +697,7 @@
     }
 
     .option.active {
-      background: #d8f36a;
+      background: #d7ef45;
       box-shadow: 0 4px 0 #111111;
     }
 
@@ -584,7 +720,7 @@
       padding: 12px;
       border: 3px solid #111111;
       border-radius: 16px;
-      background: #d8f36a;
+      background: #d7ef45;
       font-size: 12px;
       line-height: 1.45;
       font-weight: 800;
@@ -597,41 +733,103 @@
       font-weight: 950;
     }
 
-    .confetti {
+    .party-popper {
       position: absolute;
-      top: 82px;
-      width: 10px;
+      left: 26px;
+      top: 322px;
+      width: 66px;
+      height: 88px;
+      z-index: 4;
+      transform: rotate(-26deg);
+    }
+
+    .party-popper::before {
+      content: "";
+      position: absolute;
+      left: 14px;
+      top: 24px;
+      width: 38px;
+      height: 58px;
+      border: 4px solid #111111;
+      border-radius: 8px 8px 22px 22px;
+      background: linear-gradient(135deg, #1767c8 0 33%, #ffe142 33% 66%, #e22020 66%);
+      clip-path: polygon(50% 0, 100% 100%, 0 100%);
+      box-shadow: 0 5px 0 #111111;
+    }
+
+    .party-popper::after {
+      content: "";
+      position: absolute;
+      left: 24px;
+      top: 10px;
+      width: 18px;
       height: 18px;
+      border: 4px solid #111111;
+      border-radius: 50%;
+      background: #fffdf4;
+    }
+
+    .burst-piece {
+      position: absolute;
+      left: 58px;
+      top: 315px;
+      width: 10px;
+      height: 15px;
       border: 1px solid #111111;
-      animation: confetti 1.4s ease-out infinite;
+      z-index: 3;
+      animation: burst 1.45s ease-out infinite;
     }
 
-    .confetti:nth-child(1) {
-      left: 10%;
+    .burst-piece.p1 {
       background: #1767c8;
+      --x: 130px;
+      --y: -145px;
+      --r: 220deg;
     }
 
-    .confetti:nth-child(2) {
-      left: 30%;
+    .burst-piece.p2 {
       background: #ffe142;
+      --x: 84px;
+      --y: -180px;
+      --r: -180deg;
       animation-delay: 0.08s;
     }
 
-    .confetti:nth-child(3) {
-      left: 53%;
+    .burst-piece.p3 {
       background: #e22020;
+      --x: 180px;
+      --y: -82px;
+      --r: 280deg;
       animation-delay: 0.16s;
     }
 
-    .confetti:nth-child(4) {
-      left: 76%;
-      background: #d8f36a;
+    .burst-piece.p4 {
+      background: #d7ef45;
+      --x: 150px;
+      --y: -210px;
+      --r: -260deg;
       animation-delay: 0.24s;
+    }
+
+    .burst-piece.p5 {
+      background: #ff7bd3;
+      --x: 214px;
+      --y: -154px;
+      --r: 320deg;
+      animation-delay: 0.32s;
+    }
+
+    .burst-piece.p6 {
+      background: #fffdf4;
+      --x: 105px;
+      --y: -92px;
+      --r: -220deg;
+      animation-delay: 0.4s;
     }
 
     .complete-panel {
       position: relative;
-      margin-top: 100px;
+      margin-top: 118px;
       padding: 24px 18px;
       border: 3px solid #111111;
       border-radius: 22px;
@@ -640,35 +838,58 @@
       box-shadow: 0 7px 0 #111111;
     }
 
-    .happy-kid {
+    .complete-jelly {
       position: relative;
-      width: 78px;
-      height: 78px;
+      width: 92px;
+      height: 92px;
       margin: 0 auto;
-      border: 4px solid #111111;
-      border-radius: 50%;
-      background: #ffe142;
       animation: happy 1.3s ease-in-out infinite;
     }
 
-    .happy-kid::before,
-    .happy-kid::after {
+    .complete-jelly::before {
       content: "";
       position: absolute;
-      top: -9px;
-      width: 25px;
-      height: 25px;
+      left: 13px;
+      top: 2px;
+      width: 66px;
+      height: 50px;
       border: 3px solid #111111;
-      border-radius: 50%;
-      background: #e22020;
+      border-radius: 58% 58% 42% 42%;
+      background: #ff7bd3;
     }
 
-    .happy-kid::before {
-      left: 8px;
+    .complete-jelly::after {
+      content: "";
+      position: absolute;
+      left: 37px;
+      top: 33px;
+      width: 18px;
+      height: 9px;
+      border-bottom: 3px solid #111111;
+      border-radius: 0 0 20px 20px;
     }
 
-    .happy-kid::after {
-      right: 8px;
+    .complete-jelly .tentacle {
+      top: 51px;
+      height: 34px;
+      border-left-width: 3px;
+      border-bottom-width: 3px;
+    }
+
+    .complete-jelly .tentacle.t1 {
+      left: 18px;
+    }
+
+    .complete-jelly .tentacle.t2 {
+      left: 39px;
+    }
+
+    .complete-jelly .tentacle.t3 {
+      right: 24px;
+    }
+
+    .complete-jelly .tentacle.t4 {
+      right: 9px;
     }
 
     .complete-title {
@@ -713,7 +934,7 @@
       padding: 13px;
       border: 3px solid #111111;
       border-radius: 16px;
-      background: #d8f36a;
+      background: #d7ef45;
     }
 
     .score-box.yellow {
@@ -823,19 +1044,49 @@
       }
     }
 
-    @keyframes confetti {
+    @keyframes burst {
       0% {
         opacity: 1;
         transform: translateY(0) rotate(0deg);
       }
 
-      80% {
+      70% {
         opacity: 1;
       }
 
       100% {
         opacity: 0;
-        transform: translateY(290px) rotate(280deg);
+        transform: translate(var(--x), var(--y)) rotate(var(--r));
+      }
+    }
+
+    @keyframes jellyBounce {
+      0%, 100% {
+        transform: translateX(-50%) translateY(0) rotate(-2deg);
+      }
+
+      50% {
+        transform: translateX(-50%) translateY(-10px) rotate(2deg);
+      }
+    }
+
+    @keyframes tentacleWave {
+      0%, 100% {
+        border-radius: 0 0 0 16px;
+      }
+
+      50% {
+        transform: translateX(2px) rotate(3deg);
+      }
+    }
+
+    @keyframes bubbleRise {
+      0%, 100% {
+        transform: translateY(0) scale(1);
+      }
+
+      50% {
+        transform: translateY(-14px) scale(1.12);
       }
     }
 
@@ -903,7 +1154,7 @@
       }
 
       .phone {
-        height: 620px;
+        height: 640px;
       }
     }
   </style>
@@ -946,12 +1197,21 @@
           <div class="status"><span>11:33</span><span>▮▮▮ 5G ▱</span></div>
           <div class="capsule">••• ◎</div>
           <div class="content">
-            <div class="script-logo">Jellyfish<br>Learn</div>
+            <div class="script-logo">Jellyfish<br><span class="yellow-word">Learn</span></div>
             <div class="small-copy">The knowledge I had in my dream! Turn notes into quiz stages.</div>
             <div class="doodle"></div>
-            <div class="round-hero">
-              <div class="arc-text">JELLY <span class="yellow">QUIZ</span> <span class="red">OPENING</span></div>
-              <div class="kid"><span class="kid-eye left"></span><span class="kid-eye right"></span></div>
+            <div class="ocean-stage">
+              <span class="bubble one"></span>
+              <span class="bubble two"></span>
+              <span class="bubble three"></span>
+              <div class="jellyfish">
+                <div class="jellyfish-body"><span class="jelly-smile"></span></div>
+                <span class="tentacle t1"></span>
+                <span class="tentacle t2"></span>
+                <span class="tentacle t3"></span>
+                <span class="tentacle t4"></span>
+              </div>
+              <div class="jelly-label">JELLY QUIZ</div>
             </div>
             <div class="input-box">我想学习端口、数据库和 Redis 的基础知识，并希望用题目来复习。</div>
             <div class="main-button">生成闯关题</div>
@@ -971,6 +1231,11 @@
             <div class="stage-card">
               <div class="stage-title">端口、数据库和 Redis 入门题库</div>
               <div class="stage-summary">AI 已生成 5 道闯关题：3 道单选、1 道多选、1 道判断。每题都会给出即时讲解。</div>
+              <div class="topic-strip">
+                <span class="topic-chip">端口</span>
+                <span class="topic-chip">数据库</span>
+                <span class="topic-chip">Redis</span>
+              </div>
               <div class="question-list">
                 <div class="question-dot">1</div>
                 <div class="question-dot">2</div>
@@ -979,7 +1244,7 @@
                 <div class="question-dot">5</div>
               </div>
             </div>
-            <div class="main-button">开始答题</div>
+            <div class="main-button above-tab">开始答题</div>
             <nav class="bottom-tab">
               <div><span class="tab-circle">⌂</span>首页</div>
               <div><span class="tab-circle">✓</span>闯关</div>
@@ -998,7 +1263,7 @@
           <div class="status"><span>11:35</span><span>▮▮▮ 5G ▱</span></div>
           <div class="capsule">••• ◎</div>
           <div class="content">
-            <div class="script-logo">QUIZ<br>STAGE</div>
+            <div class="script-logo">QUIZ<br><span class="red-word">STAGE</span></div>
             <div class="quiz-card">
               <div class="quiz-top">
                 <span class="pill">1/5</span>
@@ -1027,12 +1292,20 @@
           <div class="status"><span>11:36</span><span>▮▮▮ 5G ▱</span></div>
           <div class="capsule">••• ◎</div>
           <div class="content">
-            <div class="confetti"></div>
-            <div class="confetti"></div>
-            <div class="confetti"></div>
-            <div class="confetti"></div>
+            <div class="party-popper"></div>
+            <div class="burst-piece p1"></div>
+            <div class="burst-piece p2"></div>
+            <div class="burst-piece p3"></div>
+            <div class="burst-piece p4"></div>
+            <div class="burst-piece p5"></div>
+            <div class="burst-piece p6"></div>
             <div class="complete-panel">
-              <div class="happy-kid"><span class="kid-eye left"></span><span class="kid-eye right"></span></div>
+              <div class="complete-jelly">
+                <span class="tentacle t1"></span>
+                <span class="tentacle t2"></span>
+                <span class="tentacle t3"></span>
+                <span class="tentacle t4"></span>
+              </div>
               <div class="complete-title">恭喜通关！</div>
               <div class="complete-copy">你的 5 道题答题记录已经保存，可以生成一份学习复盘报告。</div>
               <div class="main-button" style="position: static;">查看学习报告</div>
