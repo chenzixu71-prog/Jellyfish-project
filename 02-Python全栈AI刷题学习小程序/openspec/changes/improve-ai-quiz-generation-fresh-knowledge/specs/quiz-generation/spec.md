@@ -2,30 +2,31 @@
 
 ## ADDED Requirements
 
-### Requirement: Topic Risk Analysis
+### Requirement: Web Search Toggle
 
-The system SHALL analyze the user's learning input before quiz generation to detect whether the topic is ordinary, too broad, too short, fresh, niche, or ambiguous.
+The system SHALL support a web search switch for quiz generation.
 
-#### Scenario: Ambiguous new term
+#### Scenario: Search disabled
 
-- WHEN the user enters `Harness Engineering`
-- AND the system cannot confidently map it to one domain
-- THEN the system SHALL either retrieve supporting sources or ask the user to clarify the intended domain.
+- GIVEN `webSearchEnabled=false`
+- WHEN the user requests quiz generation
+- THEN the backend SHALL skip Tavily and use an empty search context.
 
-#### Scenario: Stable topic
+#### Scenario: Search enabled
 
-- WHEN the user enters a stable topic such as `Git commit push pull`
-- THEN the system MAY generate directly from user input without external retrieval.
+- GIVEN `webSearchEnabled=true`
+- WHEN the user requests quiz generation
+- THEN the backend SHALL call Tavily with configured timeout and result limit.
 
-### Requirement: Source-Aware Generation
+### Requirement: Tavily Search Formatting
 
-The system SHALL support generating quizzes from explicit source context when the topic is fresh, niche, or ambiguous.
+The system SHALL format successful Tavily search results into concise prompt context.
 
-#### Scenario: Source context exists
+#### Scenario: Tavily returns results
 
-- GIVEN source context about Harness.io pipelines
-- WHEN quiz generation runs
-- THEN the generated questions SHALL be about Harness.io / DevOps / CI-CD concepts, not unrelated harness meanings.
+- WHEN Tavily returns search results
+- THEN the backend SHALL format title, URL, and summary/snippet with length limits
+- AND include the formatted search context in the DeepSeek quiz prompt.
 
 ### Requirement: Tavily Search Provider
 
@@ -36,13 +37,29 @@ The system SHALL support Tavily as the first real search provider for fresh-know
 - GIVEN `SEARCH_PROVIDER=tavily`
 - AND `TAVILY_API_KEY` is configured on the backend
 - WHEN the system needs fresh external sources
-- THEN the backend SHALL query Tavily and convert the results into source documents.
+- THEN the backend SHALL query Tavily and convert the results into formatted search context.
 
 #### Scenario: Tavily is not configured
 
 - GIVEN Tavily is selected but `TAVILY_API_KEY` is missing
 - WHEN the system needs external search
-- THEN the backend SHALL return a controlled configuration error or fall back to a mock/local provider in development mode.
+- THEN the backend SHALL log a warning and continue quiz generation with empty search context in development mode.
+
+### Requirement: Search Failure Degradation
+
+Search failure SHALL NOT block quiz generation in the first version.
+
+#### Scenario: Tavily timeout
+
+- WHEN Tavily times out
+- THEN the backend SHALL log a warning
+- AND continue DeepSeek quiz generation with empty search context.
+
+#### Scenario: Tavily request fails
+
+- WHEN Tavily returns an error
+- THEN the backend SHALL log a warning
+- AND continue DeepSeek quiz generation with empty search context.
 
 ### Requirement: Trusted Domain Filtering
 
@@ -51,26 +68,7 @@ The system SHALL support filtering search sources by trusted domains when the qu
 #### Scenario: Wikipedia-only request
 
 - WHEN the user asks for only Wikipedia sources
-- THEN the source collector SHALL only accept results from Wikipedia domains or return insufficient evidence.
-
-### Requirement: Source References
-
-For source-aware generation, each generated question SHALL include one or more `source_refs` that map to collected source metadata.
-
-#### Scenario: Question has no source
-
-- WHEN a source-aware generated question lacks `source_refs`
-- THEN backend validation SHALL reject the quiz or retry generation.
-
-### Requirement: Insufficient Evidence Handling
-
-The system SHALL not silently generate confident questions when evidence is insufficient.
-
-#### Scenario: Not enough reliable source material
-
-- GIVEN the system cannot find enough relevant source material
-- WHEN the user asks to generate a quiz
-- THEN the system SHALL return a clarification or “please provide material” response.
+- THEN the source collector SHALL only accept results from Wikipedia domains or use empty search context.
 
 ### Requirement: Prompt Injection Resistance
 
@@ -84,18 +82,18 @@ The system SHALL treat retrieved source content as data only and SHALL NOT follo
 
 ### Requirement: Generation Quality Metadata
 
-The system SHALL record generation metadata including source mode, model, confidence, and source count.
+The system SHALL record generation metadata including web search switch, Tavily status, warning message, model, and source count.
 
-#### Scenario: Source-aware quiz generated
+#### Scenario: Search enabled but failed
 
-- WHEN a quiz is generated with external sources
-- THEN the generation log SHALL include source mode, source count, confidence, and model name.
+- WHEN a quiz is generated after Tavily fails
+- THEN the generation log SHALL include `webSearchEnabled=true`, Tavily failure status, warning message, and model name.
 
 ## MODIFIED Requirements
 
 ### Requirement: Quiz JSON Output
 
-The existing quiz JSON output SHALL remain backward compatible with `title`, `summary`, and `questions`, while allowing optional source metadata.
+The existing quiz JSON output SHALL remain backward compatible with `title`, `summary`, and `questions`, while allowing optional search metadata later.
 
 #### Scenario: Existing frontend reads quiz
 
@@ -105,14 +103,14 @@ The existing quiz JSON output SHALL remain backward compatible with `title`, `su
 
 ### Requirement: AI Failure Handling
 
-The existing AI failure handling SHALL distinguish between technical failure and knowledge-confidence failure.
+The existing AI failure handling SHALL distinguish between search failure and DeepSeek generation failure.
 
-#### Scenario: Technical failure
+#### Scenario: DeepSeek technical failure
 
 - WHEN model timeout or JSON parsing fails
 - THEN the system SHALL show retry guidance.
 
-#### Scenario: Knowledge-confidence failure
+#### Scenario: Search technical failure
 
-- WHEN source evidence is insufficient or topic is ambiguous
-- THEN the system SHALL ask for clarification or material, not show a generic AI failure.
+- WHEN Tavily search fails or times out
+- THEN the system SHALL continue generation with empty search context and not show a generic AI failure.

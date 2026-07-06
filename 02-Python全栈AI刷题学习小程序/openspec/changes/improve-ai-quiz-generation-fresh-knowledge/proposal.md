@@ -42,15 +42,17 @@
 - Prompt 加强：要求模型不得超出提供来源编造事实。
 - JSON 扩展：增加 generation metadata，但保持 questions 主结构兼容。
 
-### P1: Source-Aware Quiz Generation
+### P1: Search-Optional Quiz Generation
 
-- 引入来源上下文：
+- 引入可选搜索上下文：
   - 用户输入文本。
   - 用户上传文件解析文本。
   - 用户粘贴 URL 或指定资料 URL 后的网页文本。
-  - 后端检索结果摘要。
-- 题目生成必须基于 `source_context`。
-- 每题增加 `source_refs`，指向来源编号。
+  - 后端 Tavily 搜索结果摘要。
+- 出题接口增加“联网搜索开关”。
+- 搜索关闭时，搜索上下文为空，直接走现有出题链路。
+- 搜索开启时，后端调用 Tavily；搜索失败、超时或无结果时，只记录 warning 并降级为空搜索上下文，不阻断出题。
+- 第一版不强制每题展示来源，先把搜索资料作为 Prompt 参考资料进入 DeepSeek。
 
 ### P2: Fresh Knowledge Retrieval
 
@@ -82,6 +84,18 @@ tavily_search_tool = TavilySearch(
 
 检索结果必须进入来源记录，不允许前端直接调用 Tavily。
 
+### Confirmed First-Version Flow
+
+```text
+用户输入主题 -> 接口收到请求 -> 判断“联网搜索开关”是否开启
+  ├─ 关闭：搜索上下文为空，直接走出题
+  └─ 开启：调 Tavily 搜索，设置超时和条数上限
+        ├─ 搜到：格式化结果，标题 + 摘要，限长，作为参考资料
+        └─ 失败/超时：记 warning 日志，搜索上下文为空，降级
+-> 组装 Prompt：系统角色 + 用户输入 + 搜索资料 + 出题要求
+-> DeepSeek 生成题目 -> 校验 JSON 结构 -> 返回给前端
+```
+
 ## User Experience
 
 用户输入新知识主题后：
@@ -104,6 +118,6 @@ tavily_search_tool = TavilySearch(
 ## Open Questions
 
 - 第一版是否只允许用户粘贴 URL，而不做全网搜索？
+- 联网搜索开关第一版默认开启还是默认关闭？
 - Tavily 默认搜索范围是否需要限制官方文档、Wikipedia、GitHub、产品官网等可信域名？
-- 是否允许生成“来源不足但可基于用户输入出题”的低置信度题组？
 - 前端是否第一版展示来源，还是先只在后端记录？

@@ -1,4 +1,4 @@
-# Design: Source-Aware AI Quiz Generation
+# Design: Search-Optional AI Quiz Generation
 
 ## Current State
 
@@ -14,39 +14,33 @@ This is enough for stable/basic topics, but weak for fresh or ambiguous knowledg
 
 ```text
 user input
-  -> topic analysis
-  -> source planning
-  -> source collection
-  -> source cleaning and chunking
-  -> relevance scoring
-  -> quiz generation with source_context
-  -> structured validation
-  -> factual grounding validation
-  -> save quiz + sources + generation log
+  -> API receives generate request
+  -> check web_search_enabled
+      -> false: search_context = empty
+      -> true: call Tavily with timeout and max_results
+          -> success: format title + summary snippets with length limits
+          -> failure/timeout: log warning and use empty search_context
+  -> assemble prompt: system role + user input + search context + quiz requirements
+  -> DeepSeek generates quiz JSON
+  -> validate JSON structure
+  -> save quiz + generation warning metadata
+  -> return quiz to frontend
 ```
 
 ## Backend Components
 
-### 1. Topic Analyzer
+### 1. Search Toggle And Request Policy
 
-Purpose: decide whether generation can rely on user-provided content or needs source enrichment.
+Purpose: keep the first version simple and controllable. The API receives an explicit or default search switch.
 
-Output:
+Request policy:
 
-```json
-{
-  "topic": "Harness Engineering",
-  "riskLevel": "high",
-  "reason": "专有名词且可能有多个含义",
-  "needsSources": true,
-  "clarificationOptions": [
-    "Harness.io / DevOps / CI-CD 平台",
-    "机械/安全带/线束工程"
-  ]
-}
-```
+- `webSearchEnabled=false`: do not call Tavily; continue with empty `search_context`.
+- `webSearchEnabled=true`: call Tavily with configured timeout and result limit.
+- If Tavily fails, times out, or returns no useful results, log a warning and continue with empty `search_context`.
+- Do not block quiz generation only because search failed.
 
-### 2. Source Collector
+### 2. Tavily Search Collector
 
 Source types:
 
@@ -86,76 +80,62 @@ SEARCH_DEPTH=basic
 
 For narrow source requirements, the backend should support domain filters when the provider supports them, for example “only Wikipedia sources” or “prefer official docs”.
 
-### 3. Source Processor
+Operational limits:
+
+- Search timeout: configurable, recommended 5-8 seconds.
+- Result limit: configurable, default 5.
+- Context length: format only title + summary/snippet + URL; truncate each item.
+- Failure behavior: warning log + empty search context.
+
+### 3. Search Context Formatter
 
 Responsibilities:
 
-- Strip navigation/noise.
-- Chunk long content.
-- Preserve `source_id`, `url`, `title`, `published_at` when available.
-- Score relevance to topic.
-- Reject low-quality or unrelated sources.
+- Convert Tavily results into concise prompt context.
+- Preserve title, URL, and summary/snippet.
+- Truncate each result to avoid prompt bloat.
+- Do not include raw pages in the first version unless explicitly enabled later.
 
 LangChain fit:
 
-- Use document loaders or custom loaders for web/text content.
-- Use `RecursiveCharacterTextSplitter` for chunking.
-- Use retriever/vector store pattern only when source text is long enough to need retrieval.
-- Treat retrieved documents as data only, not instructions.
+- Use `langchain-tavily` for Tavily Search.
+- Do not introduce vector store/retriever in the first implementation.
+- Treat search snippets as data only, not instructions.
 
 ### 4. Quiz Generator
 
 Prompt changes:
 
-- State that the model must generate only from `source_context` and user-provided material.
-- If context is insufficient, return `needs_clarification=true`.
-- Require each question to include `source_refs`.
-- Require `confidence` and `generation_notes`.
+- Include system role, user input, optional search context, and existing quiz requirements.
+- Tell the model to prefer search context when present.
+- Tell the model not to invent facts beyond user input/search context when the topic is fresh or specific.
+- Keep the existing quiz JSON shape required by frontend.
 
-Proposed response shape:
+Prompt assembly shape:
 
-```json
-{
-  "title": "学习主题",
-  "summary": "主题摘要",
-  "source_summary": "本题组基于哪些资料生成",
-  "confidence": "high",
-  "needs_clarification": false,
-  "clarification_question": "",
-  "sources": [
-    {
-      "id": "s1",
-      "title": "Source title",
-      "url": "https://example.com",
-      "type": "url"
-    }
-  ],
-  "questions": [
-    {
-      "id": "q1",
-      "type": "single",
-      "stem": "题干",
-      "options": [],
-      "answer": ["A"],
-      "explanation": "讲解",
-      "knowledge_point": "知识点",
-      "difficulty": "easy",
-      "source_refs": ["s1"]
-    }
-  ]
-}
+```text
+system_role
+
+用户学习内容：
+{user_input}
+
+联网搜索资料：
+{formatted_search_context or "无"}
+
+出题要求：
+{existing_quiz_requirements}
 ```
 
 Compatibility:
 
 - Existing frontend can continue reading `title`, `summary`, `questions`.
-- Source metadata can be hidden at first and surfaced later.
+- Search warning/source metadata can be hidden at first and surfaced later.
 
 Agent boundary:
 
-- Tavily can be used as a LangChain tool inside a controlled retrieval step.
-- The first version should avoid letting an autonomous agent directly decide final quiz content without backend validation.
-- The model may use Tavily results to collect context, but final quiz JSON still goes through the same schema and grounding validator.
+- Tavily should be used inside a controlled search step, not as an autonomous quiz-writing agent.
+- DeepSeek remains the final quiz generator.
+- Final quiz JSON still goes through the same schema validator.
 
 ### 5. Grounding Validator
 
@@ -165,8 +145,7 @@ Validation checks:
 - 3 single, 1 multiple, 1 judge.
 - Answers refer to valid options.
 - Each question has explanation and knowledge point.
-- For source-aware mode, each question has at least one source ref.
-- If `confidence=low`, return a safe error/clarification instead of storing normal quiz.
+- In web-search mode, generation log records whether search succeeded, failed, timed out, or returned no results.
 
 ## API Impact
 
@@ -184,31 +163,11 @@ Request can be extended:
   "inputType": "text",
   "content": "Harness Engineering",
   "questionCount": 5,
-  "sourceMode": "auto"
+  "webSearchEnabled": true
 }
 ```
 
-Possible `sourceMode` values:
-
-- `off`: current behavior, no retrieval.
-- `auto`: detect if sources are needed.
-- `required`: must use sources or ask for clarification.
-
-Response remains compatible when quiz is generated.
-
-Clarification response:
-
-```json
-{
-  "code": 1001,
-  "message": "需要补充资料或澄清主题",
-  "data": {
-    "needsClarification": true,
-    "question": "你想学的是 Harness.io 平台，还是机械/线束工程？",
-    "options": ["Harness.io / DevOps / CI-CD 平台", "机械/安全带/线束工程"]
-  }
-}
-```
+Response remains compatible when quiz is generated. Search failure does not change response shape; it is recorded in logs and optional metadata.
 
 ## Data Impact
 
@@ -219,14 +178,14 @@ Future MySQL tables should support:
 - `question_sources`: question_id, source_id.
 - `quality_feedback`: quiz_id, question_id, reason, user_comment.
 
-Current in-memory store can add optional fields first.
+Current in-memory store can add optional generation warning/source fields first.
 
 ## Frontend Impact
 
 Taro pages keep current service pattern:
 
 - Create page shows loading copy based on source mode.
-- If clarification is returned, show a small choice panel instead of failing.
+- Search switch can be added later; first version may use backend default.
 - Quiz/report pages can later expose source chips.
 
 No heavy frontend state library is needed.
@@ -235,7 +194,7 @@ No heavy frontend state library is needed.
 
 - Never execute instructions from retrieved pages.
 - Do not crawl private, paid, or login-required content without explicit user-provided access.
-- Log source metadata, not full copyrighted page text where avoidable.
+- Log source metadata and short snippets, not full copyrighted page text where avoidable.
 - Rate-limit retrieval and generation.
 
 ## Testing Strategy
@@ -243,16 +202,16 @@ No heavy frontend state library is needed.
 Backend TDD first:
 
 - Topic analyzer detects ambiguous fresh terms.
-- Source collector mock returns deterministic sources.
+- Tavily source provider mock returns deterministic sources.
 - Quiz prompt includes source context.
-- Low-confidence source set returns clarification.
-- Generated quiz validates `source_refs`.
+- Tavily failure/timeout logs warning and still generates with empty context.
 - Existing simple topics still generate normally.
 
 Regression examples:
 
 - `Git commit push pull`: should generate without retrieval.
-- `Harness Engineering`: should trigger disambiguation or source lookup.
-- `Harness.io pipeline templates`: should generate DevOps/Harness-specific questions with sources.
+- `Harness Engineering` with search enabled: should include Tavily search context in prompt.
+- `Harness Engineering` with Tavily timeout: should generate normally with warning metadata.
+- `Harness.io pipeline templates`: should use Tavily snippets when available.
 - Very short input `AI`: should ask user to narrow topic.
 - `What nation hosted the Euro 2024? Include only wikipedia sources.`: Tavily provider should support domain-constrained retrieval or return only accepted sources after filtering.

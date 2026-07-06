@@ -3,18 +3,20 @@
 ## 1. Specification Review
 
 - [x] Confirm search provider: Tavily is accepted for search.
-- [ ] Confirm whether first version supports Tavily search, user-provided URL only, or both.
+- [x] Confirm first-version flow: search toggle controls Tavily; search failure degrades to empty context.
+- [ ] Confirm default value of `webSearchEnabled`: on or off.
 - [ ] Confirm Tavily domain policy: unrestricted search, official-docs-first, or allowlist per query.
 - [ ] Confirm whether source citations are shown in frontend immediately or only stored in backend.
-- [ ] Confirm fallback behavior when sources are insufficient.
+- [x] Confirm fallback behavior: log warning and continue generation with empty search context.
 
 ## 2. Backend TDD
 
 - [ ] Add tests for topic analyzer: normal, fresh, ambiguous, too-short input.
 - [ ] Add tests for source provider interface with mock sources.
 - [ ] Add tests for source-aware prompt construction.
-- [ ] Add tests for quiz validation requiring `source_refs` in source-aware mode.
-- [ ] Add tests for clarification response when evidence is insufficient.
+- [ ] Add tests for `webSearchEnabled=false` skipping Tavily.
+- [ ] Add tests for Tavily success formatting title + summary snippets with length limits.
+- [ ] Add tests for Tavily timeout/failure warning and empty-context fallback.
 - [ ] Add regression tests for current mock/deepseek request shape.
 
 ## 3. Backend Implementation
@@ -25,17 +27,17 @@
 - [ ] Add mock source provider for local tests.
 - [ ] Add Tavily source provider using `langchain-tavily`.
 - [ ] Add backend env vars: `TAVILY_API_KEY`, `SEARCH_PROVIDER`, `SEARCH_MAX_RESULTS`, `SEARCH_DEPTH`.
+- [ ] Add search timeout and formatted-context length limits.
 - [ ] Add source domain filtering support for trusted-source queries.
 - [ ] Add source-aware quiz generation prompt.
 - [ ] Extend quiz response parsing with optional source metadata.
-- [ ] Add grounding validation.
-- [ ] Record generation source metadata in existing store/log path.
+- [ ] Record Tavily warning/source metadata in existing store/log path.
 
 ## 4. Frontend Implementation
 
-- [ ] Extend `generateQuiz` request with `sourceMode`.
+- [ ] Extend `generateQuiz` request with `webSearchEnabled`.
 - [ ] Add loading copy: “水母正在查找可靠资料”.
-- [ ] Add clarification UI state on create page.
+- [ ] Add optional联网搜索开关 UI if first version exposes the switch.
 - [ ] Keep existing quiz page compatible with old question shape.
 - [ ] Optionally show source chips in report page.
 
