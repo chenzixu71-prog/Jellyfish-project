@@ -868,10 +868,50 @@
     }
 
     .question-list {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 7px;
+      display: block;
       margin-top: 16px;
+    }
+
+    .daily-progress {
+      padding: 12px;
+      border-radius: 18px;
+      background: #f4f1ff;
+      box-shadow: inset 0 0 0 1px rgba(98, 70, 242, 0.1);
+    }
+
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      color: var(--purple-deep);
+      font-size: 12px;
+      font-weight: 950;
+    }
+
+    .progress-track {
+      position: relative;
+      height: 14px;
+      margin-top: 10px;
+      overflow: hidden;
+      border-radius: 999px;
+      background: rgba(98, 70, 242, 0.13);
+    }
+
+    .progress-fill {
+      width: 25%;
+      height: 100%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, var(--yellow), #f5c76c);
+      box-shadow: 0 0 18px rgba(247, 222, 97, 0.42);
+      animation: progressShine 2.4s ease-in-out infinite;
+    }
+
+    .progress-note {
+      margin-top: 8px;
+      color: #5c6070;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.35;
     }
 
     .question-dot {
@@ -1433,6 +1473,16 @@
       }
     }
 
+    @keyframes progressShine {
+      0%, 100% {
+        filter: saturate(0.96);
+      }
+
+      50% {
+        filter: saturate(1.12) brightness(1.03);
+      }
+    }
+
     @keyframes selectedPulse {
       0%, 100% {
         transform: translateY(0);
@@ -1643,11 +1693,11 @@
                 <span class="topic-chip">Redis</span>
               </div>
               <div class="question-list">
-                <div class="question-dot">1</div>
-                <div class="question-dot">2</div>
-                <div class="question-dot">3</div>
-                <div class="question-dot">4</div>
-                <div class="question-dot">5</div>
+                <div class="daily-progress">
+                  <div class="progress-meta"><span>今日题目</span><span>5 / 20</span></div>
+                  <div class="progress-track"><div class="progress-fill"></div></div>
+                  <div class="progress-note">今天共有 20 个小挑战，先完成当前 5 题闯关。</div>
+                </div>
               </div>
             </div>
             <div class="main-button above-tab">进入挑战</div>
