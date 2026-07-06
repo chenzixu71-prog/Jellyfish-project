@@ -4,7 +4,7 @@ import { Button, Text, Textarea, View } from '@tarojs/components'
 import { generateQuiz } from '../../services/quizService'
 import './index.css'
 
-const defaultPrompt = '例如：我想学习 HTTP 请求、端口、数据库和 Redis 的基础概念'
+const defaultPrompt = '例如我想学习英语'
 
 interface LocalFile {
   name: string
@@ -92,7 +92,12 @@ export default function CreatePage() {
       <View className='brand-hero'>
         <View className='brand-row'>
           <View className='brand-icon'>
-            <Text>J</Text>
+            <View className='brand-logo-body'>
+              <View className='brand-logo-smile' />
+            </View>
+            <View className='brand-logo-tentacle brand-logo-tentacle-1' />
+            <View className='brand-logo-tentacle brand-logo-tentacle-2' />
+            <View className='brand-logo-tentacle brand-logo-tentacle-3' />
           </View>
           <Text className='brand-name'>Jelly Quest</Text>
           <Text className='top-mark'>AI</Text>

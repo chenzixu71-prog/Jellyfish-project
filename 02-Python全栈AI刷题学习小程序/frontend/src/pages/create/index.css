@@ -2,6 +2,7 @@
   min-height: 100vh;
   padding: 54px 20px 108px;
   overflow: hidden;
+  font-family: "Comic Sans MS", "Kaiti SC", "STKaiti", "KaiTi", cursive, sans-serif;
   background:
     radial-gradient(circle at 18% 10%, rgba(255, 255, 255, 0.18), transparent 24%),
     radial-gradient(circle at 86% 16%, rgba(33, 230, 218, 0.16), transparent 26%),
@@ -14,35 +15,111 @@
 
 .brand-hero {
   position: relative;
-  min-height: 540px;
+  min-height: 600px;
   color: #fffdf7;
 }
 
 .brand-row {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 14px;
+  min-height: 62px;
 }
 
 .brand-icon {
-  display: grid;
-  place-items: center;
-  width: 48px;
-  height: 48px;
-  border-radius: 15px;
+  position: relative;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  border: 3px solid #111111;
+  border-radius: 18px;
   background: #fffdf7;
-  color: #6246f2;
-  font-size: 26px;
-  font-weight: 950;
-  box-shadow: 0 5px 0 rgba(0, 0, 0, 0.85);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.85);
   transform: rotate(-3deg);
+  overflow: hidden;
+}
+
+.brand-logo-body {
+  position: absolute;
+  left: 11px;
+  top: 10px;
+  width: 30px;
+  height: 25px;
+  border: 2px solid #111111;
+  border-radius: 50% 50% 42% 42% / 62% 62% 42% 42%;
+  background:
+    radial-gradient(circle at 28% 24%, rgba(255, 255, 255, 0.72) 0 5px, transparent 6px),
+    linear-gradient(180deg, #ffd3ea, #f28abd);
+}
+
+.brand-logo-body::before,
+.brand-logo-body::after {
+  content: "";
+  position: absolute;
+  top: 13px;
+  width: 3px;
+  height: 4px;
+  border-radius: 50%;
+  background: #111111;
+}
+
+.brand-logo-body::before {
+  left: 10px;
+}
+
+.brand-logo-body::after {
+  right: 10px;
+}
+
+.brand-logo-smile {
+  position: absolute;
+  left: 50%;
+  top: 17px;
+  width: 8px;
+  height: 5px;
+  border-bottom: 2px solid #111111;
+  border-radius: 0 0 10px 10px;
+  transform: translateX(-50%);
+}
+
+.brand-logo-tentacle {
+  position: absolute;
+  top: 34px;
+  width: 4px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #f6a4cc, #ffdaec);
+  box-shadow: 0 0 0 1px #111111;
+  transform-origin: 50% 0;
+  animation: brandTentacle 1.9s ease-in-out infinite;
+}
+
+.brand-logo-tentacle-1 {
+  left: 19px;
+  height: 12px;
+  transform: rotate(8deg);
+}
+
+.brand-logo-tentacle-2 {
+  left: 27px;
+  height: 15px;
+  animation-delay: 0.18s;
+}
+
+.brand-logo-tentacle-3 {
+  left: 35px;
+  height: 12px;
+  transform: rotate(-8deg);
+  animation-delay: 0.32s;
 }
 
 .brand-name {
   flex: 1;
-  color: rgba(255, 253, 247, 0.78);
-  font-size: 21px;
+  color: rgba(255, 253, 247, 0.9);
+  font-size: 22px;
   font-weight: 950;
+  letter-spacing: 1px;
+  line-height: 1.1;
+  text-shadow: 0 2px 0 rgba(17, 17, 17, 0.16);
 }
 
 .top-mark {
@@ -51,23 +128,27 @@
 
 .hero-title {
   display: block;
-  margin-top: 34px;
-  max-width: 300px;
-  font-size: 48px;
+  margin-top: 28px;
+  max-width: 310px;
+  font-size: 47px;
   font-weight: 950;
-  line-height: 1.02;
+  line-height: 1.06;
+  letter-spacing: 2px;
+  text-shadow: 0 4px 0 rgba(17, 17, 17, 0.1);
 }
 
 .cyan-word {
   color: #21e6da;
   display: inline-block;
   transform: rotate(-4deg);
+  margin-right: 14px;
 }
 
 .yellow-word {
   color: #f7de61;
   display: inline-block;
   transform: rotate(2deg);
+  margin-left: 0;
 }
 
 .hero-subtitle {
@@ -84,12 +165,12 @@
   position: absolute;
   left: 0;
   right: 0;
-  top: 420px;
-  z-index: 2;
+  top: 452px;
+  z-index: 8;
   width: auto;
   margin-top: 0;
-  padding: 12px 14px;
-  border-radius: 22px;
+  padding: 16px 18px 18px;
+  border-radius: 26px;
   background: #dfeeff;
   color: #15151f;
   box-shadow: 0 8px 0 rgba(20, 17, 40, 0.2);
@@ -99,7 +180,7 @@
 .challenge-title {
   display: block;
   color: #4f39d8;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 950;
   line-height: 1.28;
 }
@@ -107,8 +188,8 @@
 .challenge-stats {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 8px;
-  margin-top: 10px;
+  gap: 12px;
+  margin-top: 14px;
 }
 
 .stat-pill {
@@ -116,10 +197,10 @@
   align-items: center;
   justify-content: center;
   gap: 5px;
-  min-height: 34px;
-  border-radius: 15px;
+  min-height: 42px;
+  border-radius: 18px;
   background: rgba(255, 253, 247, 0.72);
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 950;
 }
 
@@ -409,8 +490,8 @@
 .input-panel {
   position: relative;
   z-index: 3;
-  margin-top: -58px;
-  padding: 18px;
+  margin-top: -26px;
+  padding: 22px 18px 18px;
   border: 0;
   border-radius: 28px;
   background: rgba(255, 253, 247, 0.96);
@@ -545,14 +626,16 @@
 .section-title {
   display: block;
   color: #4f39d8;
-  font-size: 22px;
+  font-size: 25px;
   font-weight: 950;
+  letter-spacing: 1px;
+  line-height: 1.25;
 }
 
 .learning-input {
   width: 100%;
-  min-height: 118px;
-  margin-top: 14px;
+  min-height: 142px;
+  margin-top: 18px;
   padding: 15px;
   border: 3px solid #111111;
   border-radius: 18px;
@@ -654,6 +737,11 @@
 @keyframes loadingFill {
   0%, 100% { width: 42%; }
   50% { width: 76%; }
+}
+
+@keyframes brandTentacle {
+  0%, 100% { margin-top: 0; }
+  50% { margin-top: 3px; }
 }
 
 @keyframes sheetPop {
