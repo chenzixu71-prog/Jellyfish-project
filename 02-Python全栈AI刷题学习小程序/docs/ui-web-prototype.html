@@ -818,7 +818,7 @@
       position: absolute;
       left: 20px;
       right: 20px;
-      bottom: 94px;
+      bottom: 142px;
       min-height: 78px;
       padding: 14px;
       border: 3px solid #111111;
@@ -832,6 +832,40 @@
 
     .input-box:focus {
       box-shadow: 0 5px 0 #111111, 0 0 0 4px rgba(247, 222, 97, 0.42);
+    }
+
+    .upload-row {
+      position: absolute;
+      left: 20px;
+      right: 20px;
+      bottom: 92px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+    }
+
+    .upload-trigger {
+      display: grid;
+      place-items: center;
+      min-height: 34px;
+      border: 2px solid #111111;
+      border-radius: 999px;
+      background: #fff2ad;
+      color: #151515;
+      font-size: 10px;
+      font-weight: 950;
+      box-shadow: 0 3px 0 #111111;
+      cursor: pointer;
+      user-select: none;
+      text-align: center;
+    }
+
+    .upload-trigger input {
+      display: none;
+    }
+
+    .upload-trigger.image {
+      background: #d9f0ff;
     }
 
     .main-button {
@@ -2275,6 +2309,16 @@
               <div class="jelly-label">JELLY QUIZ</div>
             </div>
             <div class="input-box" id="js-user-input" contenteditable="true">我想学习端口、数据库和 Redis：帮我变成一组轻松闯关题。</div>
+            <div class="upload-row">
+              <label class="upload-trigger">
+                <span id="js-file-label">上传文件 0/3</span>
+                <input id="js-file-input" type="file" multiple accept=".txt,.md,.csv,.json,text/plain,text/markdown,text/csv,application/json">
+              </label>
+              <label class="upload-trigger image">
+                <span id="js-image-label">上传图片 0/10</span>
+                <input id="js-image-input" type="file" multiple accept="image/*">
+              </label>
+            </div>
             <div class="main-button" id="js-generate-btn">让水母生成题目</div>
           </div>
         </div>
@@ -2576,6 +2620,40 @@
       return body.data;
     }
 
+    async function apiUploadQuiz(content) {
+      const files = Array.from($("#js-file-input").files || []);
+      const images = Array.from($("#js-image-input").files || []);
+      if (files.length > 3) throw new Error("最多只能上传 3 个文件");
+      if (images.length > 10) throw new Error("最多只能上传 10 张图片");
+
+      const formData = new FormData();
+      formData.append("sessionId", state.sessionId);
+      formData.append("content", content);
+      files.forEach((file) => formData.append("files", file));
+      images.forEach((image) => formData.append("images", image));
+
+      const response = await fetch(`${API_BASE_URL}/api/generate-quiz-from-assets`, {
+        method: "POST",
+        body: formData
+      });
+      const body = await response.json().catch(() => null);
+      if (!response.ok || !body || body.code !== 0) {
+        throw new Error(body?.message || body?.detail || `HTTP ${response.status}`);
+      }
+      return body.data;
+    }
+
+    function hasUploadAssets() {
+      return ($("#js-file-input").files?.length || 0) > 0 || ($("#js-image-input").files?.length || 0) > 0;
+    }
+
+    function refreshUploadLabels() {
+      const files = $("#js-file-input").files?.length || 0;
+      const images = $("#js-image-input").files?.length || 0;
+      $("#js-file-label").textContent = `上传文件 ${files}/3`;
+      $("#js-image-label").textContent = `上传图片 ${images}/10`;
+    }
+
     function setButtonLoading(button, isLoading, text) {
       if (!button) return;
       if (isLoading) {
@@ -2764,19 +2842,21 @@
 
     $("#js-generate-btn").addEventListener("click", async () => {
       const content = $("#js-user-input").innerText.trim();
-      if (!content) {
-        setLoadingState("请输入学习内容", "先在首页输入你想学习的知识，再让水母出题。");
+      if (!content && !hasUploadAssets()) {
+        setLoadingState("请输入学习内容", "先输入文字，或上传最多 3 个文本文件 / 10 张图片。");
         return;
       }
       setButtonLoading($("#js-generate-btn"), true, "生成中...");
-      setLoadingState("水母正在出题...", "正在调用后端 API，生成题目和讲解。");
+      setLoadingState("水母正在解析素材...", "正在读取文字和上传素材，再调用后端 API 生成题目。");
       try {
-        const quiz = await apiPost("/api/generate-quiz", {
-          sessionId: state.sessionId,
-          inputType: "text",
-          content,
-          questionCount: 5
-        });
+        const quiz = hasUploadAssets()
+          ? await apiUploadQuiz(content)
+          : await apiPost("/api/generate-quiz", {
+              sessionId: state.sessionId,
+              inputType: "text",
+              content,
+              questionCount: 5
+            });
         state.quiz = quiz;
         state.currentIndex = 0;
         state.selectedAnswers = {};
@@ -2840,6 +2920,9 @@
     });
 
     bindOptionClicks();
+    $("#js-file-input").addEventListener("change", refreshUploadLabels);
+    $("#js-image-input").addEventListener("change", refreshUploadLabels);
+    refreshUploadLabels();
     refreshIterationState();
   </script>
 </body>

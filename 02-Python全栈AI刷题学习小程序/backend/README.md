@@ -43,9 +43,21 @@ http://127.0.0.1:8010/api/questions?levelId=level-1
 
 ```text
 POST /api/generate-quiz
+POST /api/generate-quiz-from-assets
 POST /api/submit-answer
 POST /api/generate-report
 ```
+
+## 上传素材出题
+
+`POST /api/generate-quiz-from-assets` 使用 `multipart/form-data`：
+
+- `sessionId`：必填，会话 ID。
+- `content`：可选，用户补充的文字说明。
+- `files`：最多 3 个，当前支持 `.txt`、`.md`、`.csv`、`.json`，单个文件不超过 2MB。
+- `images`：最多 10 张，当前会完成接收和数量校验。
+
+当前 DeepSeek 官方 API 模型列表为 `deepseek-v4-flash` / `deepseek-v4-pro`，官方文档列出的能力是文本 Chat Completions、JSON Output、Tool Calls 等，没有图片输入能力。因此第一版使用 `deepseek-v4-flash` 处理解析出的文本内容；图片会作为素材清单记录。若要识别图片里的文字，需要后续接入 OCR 或视觉模型。
 
 ## DeepSeek 配置
 

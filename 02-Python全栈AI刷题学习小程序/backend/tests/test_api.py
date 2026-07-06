@@ -63,6 +63,71 @@ def test_generate_quiz_rejects_empty_content():
     assert response.status_code == 422
 
 
+def test_generate_quiz_from_assets_accepts_text_files_and_images():
+    response = client.post(
+        "/api/generate-quiz-from-assets",
+        data={"sessionId": "asset-session", "content": "请结合上传素材出题"},
+        files=[
+            ("files", ("note.txt", b"Redis is an in-memory data store.", "text/plain")),
+            ("images", ("diagram.png", b"fake-image-bytes", "image/png")),
+        ],
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    quiz = body["data"]
+    assert body["code"] == 0
+    assert len(quiz["questions"]) == 5
+    assert quiz["source"]["fileCount"] == 1
+    assert quiz["source"]["imageCount"] == 1
+    assert quiz["source"]["notes"]
+
+
+def test_generate_quiz_from_assets_rejects_more_than_three_files():
+    files = [
+        ("files", (f"note-{index}.txt", b"hello", "text/plain"))
+        for index in range(4)
+    ]
+
+    response = client.post(
+        "/api/generate-quiz-from-assets",
+        data={"sessionId": "too-many-files"},
+        files=files,
+    )
+
+    assert response.status_code == 400
+    assert "3" in response.json()["detail"]
+
+
+def test_generate_quiz_from_assets_rejects_more_than_ten_images():
+    files = [
+        ("images", (f"image-{index}.png", b"image", "image/png"))
+        for index in range(11)
+    ]
+
+    response = client.post(
+        "/api/generate-quiz-from-assets",
+        data={"sessionId": "too-many-images", "content": "图片学习资料"},
+        files=files,
+    )
+
+    assert response.status_code == 400
+    assert "10" in response.json()["detail"]
+
+
+def test_generate_quiz_from_assets_rejects_unsupported_file_type():
+    response = client.post(
+        "/api/generate-quiz-from-assets",
+        data={"sessionId": "bad-file"},
+        files=[
+            ("files", ("slides.pptx", b"binary", "application/vnd.ms-powerpoint")),
+        ],
+    )
+
+    assert response.status_code == 400
+    assert "txt/md/csv/json" in response.json()["detail"]
+
+
 def test_submit_answer_scores_and_returns_explanation():
     generated = client.post(
         "/api/generate-quiz",

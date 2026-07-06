@@ -1,4 +1,4 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, File, Form, UploadFile
 
 from app.config import AI_MODEL
 from app.schemas import (
@@ -8,6 +8,7 @@ from app.schemas import (
     RegenerateWeakQuizRequest,
     SubmitAnswerRequest,
 )
+from app.services.asset_parser import parse_learning_assets
 from app.services.quiz_service import (
     create_quiz,
     generate_report,
@@ -85,6 +86,24 @@ def list_questions(levelId: str = "level-1"):
 def generate_quiz(payload: GenerateQuizRequest):
     quiz = create_quiz(payload.sessionId, payload.content)
     return ok(quiz.model_dump())
+
+
+@router.post("/api/generate-quiz-from-assets", response_model=ApiResponse)
+async def generate_quiz_from_assets(
+    sessionId: str = Form(...),
+    content: str = Form(""),
+    files: list[UploadFile] = File(default=[]),
+    images: list[UploadFile] = File(default=[]),
+):
+    parsed = await parse_learning_assets(content, files, images)
+    quiz = create_quiz(sessionId, parsed.content)
+    payload = quiz.model_dump()
+    payload["source"] = {
+        "fileCount": parsed.file_count,
+        "imageCount": parsed.image_count,
+        "notes": parsed.notes,
+    }
+    return ok(payload)
 
 
 @router.post("/api/submit-answer", response_model=ApiResponse)
