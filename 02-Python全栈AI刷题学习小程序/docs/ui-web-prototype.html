@@ -1144,6 +1144,22 @@
       background: #4f39d8;
     }
 
+    .sheet-backdrop {
+      position: absolute;
+      inset: 0;
+      z-index: 11;
+      background: rgba(21, 21, 31, 0);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 220ms ease, background 220ms ease;
+    }
+
+    .knowledge-toggle:checked ~ .sheet-backdrop {
+      opacity: 1;
+      pointer-events: auto;
+      background: rgba(21, 21, 31, 0.22);
+    }
+
     .knowledge-sheet {
       position: absolute;
       left: 0;
@@ -1161,7 +1177,7 @@
 
     .knowledge-toggle:checked ~ .knowledge-sheet {
       transform: translateY(0);
-      box-shadow: 0 -18px 44px rgba(33, 18, 84, 0.3), 0 -240px 0 rgba(21, 21, 31, 0.18);
+      box-shadow: 0 -18px 44px rgba(33, 18, 84, 0.3);
     }
 
     .sheet-handle {
@@ -1173,10 +1189,7 @@
     }
 
     .sheet-head {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
+      display: block;
       margin-bottom: 10px;
     }
 
@@ -1186,19 +1199,6 @@
       font-size: 20px;
       font-weight: 950;
       line-height: 1.1;
-    }
-
-    .sheet-close {
-      display: grid;
-      place-items: center;
-      width: 30px;
-      height: 30px;
-      flex: 0 0 auto;
-      border-radius: 50%;
-      background: #f0ecff;
-      color: var(--purple-deep);
-      font-weight: 950;
-      cursor: pointer;
     }
 
     .sheet-scroll {
@@ -2026,11 +2026,11 @@
             </div>
             <input class="knowledge-toggle" id="knowledge-toggle" type="checkbox">
             <label class="more-button" for="knowledge-toggle">展开知识详情</label>
+            <label class="sheet-backdrop" for="knowledge-toggle" aria-label="关闭知识详情"></label>
             <section class="knowledge-sheet" aria-label="知识详情">
               <div class="sheet-handle"></div>
               <div class="sheet-head">
                 <div class="sheet-title">端口知识拆解</div>
-                <label class="sheet-close" for="knowledge-toggle">×</label>
               </div>
               <div class="sheet-scroll">
                 <div class="knowledge-block correct">
