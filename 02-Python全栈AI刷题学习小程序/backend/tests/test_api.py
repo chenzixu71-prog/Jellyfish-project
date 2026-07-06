@@ -59,6 +59,57 @@ def test_wechat_login_returns_business_error_when_code_exchange_fails():
     assert body["data"] is None
 
 
+def test_me_returns_current_user_profile_with_valid_token():
+    login = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "profile-code", "sessionId": "profile-session"},
+    ).json()["data"]
+
+    response = client.get(
+        "/api/me",
+        headers={"Authorization": f"Bearer {login['token']}"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    profile = body["data"]
+    assert body["code"] == 0
+    assert profile["id"] == login["user"]["id"]
+    assert profile["displayName"] == "水母学员"
+    assert profile["avatarUrl"] == ""
+    assert profile["loginType"] == "wechat"
+    assert profile["level"] == 1
+    assert profile["exp"] == 0
+    assert profile["streakDays"] == 1
+    assert profile["totalAnswered"] == 0
+    assert profile["totalCorrect"] == 0
+    assert profile["totalSessions"] == 0
+    assert profile["accuracy"] == 0
+
+
+def test_me_returns_business_error_without_token():
+    response = client.get("/api/me")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["code"] == 1002
+    assert "登录已失效" in body["message"]
+    assert body["data"] is None
+
+
+def test_me_returns_business_error_with_invalid_token():
+    response = client.get(
+        "/api/me",
+        headers={"Authorization": "Bearer invalid-token"},
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["code"] == 1002
+    assert "登录已失效" in body["message"]
+    assert body["data"] is None
+
+
 def test_generate_quiz_returns_five_mixed_questions():
     response = client.post(
         "/api/generate-quiz",

@@ -65,3 +65,12 @@ def login_with_wechat(code: str, session_id: str) -> WechatLoginResponse:
     user = store.get_or_create_wechat_user(wechat_session.openid)
     token = store.create_auth_token(user.id)
     return WechatLoginResponse(token=token, user=user)
+
+
+def get_bearer_token(authorization: str | None) -> str:
+    if not authorization:
+        raise AuthError("missing authorization header")
+    scheme, _, token = authorization.partition(" ")
+    if scheme.lower() != "bearer" or not token:
+        raise AuthError("invalid authorization header")
+    return token

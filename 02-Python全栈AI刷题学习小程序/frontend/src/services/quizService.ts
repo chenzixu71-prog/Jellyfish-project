@@ -98,7 +98,12 @@ interface ApiResponse<T> {
   data: T
 }
 
-export async function request<T>(url: string, method: 'GET' | 'POST', data?: unknown): Promise<T> {
+export async function request<T>(
+  url: string,
+  method: 'GET' | 'POST',
+  data?: unknown,
+  extraHeader: Record<string, string> = {}
+): Promise<T> {
   let lastError: unknown
 
   for (const baseUrl of API_BASE_URLS) {
@@ -108,7 +113,8 @@ export async function request<T>(url: string, method: 'GET' | 'POST', data?: unk
         method,
         data,
         header: {
-          'Content-Type': 'application/json'
+          'Content-Type': 'application/json',
+          ...extraHeader
         }
       })
 

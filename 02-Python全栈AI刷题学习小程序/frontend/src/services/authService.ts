@@ -11,6 +11,16 @@ export interface LoginUser {
   loginType: 'wechat'
 }
 
+export interface CurrentUserProfile extends LoginUser {
+  level: number
+  exp: number
+  streakDays: number
+  totalAnswered: number
+  totalCorrect: number
+  totalSessions: number
+  accuracy: number
+}
+
 export interface AuthSession {
   token: string
   user: LoginUser
@@ -41,4 +51,15 @@ export async function loginWithWechat(): Promise<AuthSession> {
   })
   saveAuth(auth)
   return auth
+}
+
+export async function getCurrentUser(): Promise<CurrentUserProfile> {
+  const auth = getStoredAuth()
+  if (!auth) {
+    throw new Error('请先登录')
+  }
+
+  return request<CurrentUserProfile>('/api/me', 'GET', undefined, {
+    Authorization: `Bearer ${auth.token}`
+  })
 }

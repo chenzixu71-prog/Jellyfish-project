@@ -53,6 +53,16 @@ class WechatLoginResponse(BaseModel):
     user: LoginUser
 
 
+class CurrentUserProfile(LoginUser):
+    level: int
+    exp: int
+    streakDays: int
+    totalAnswered: int
+    totalCorrect: int
+    totalSessions: int
+    accuracy: int
+
+
 class Quiz(BaseModel):
     quizId: str
     title: str

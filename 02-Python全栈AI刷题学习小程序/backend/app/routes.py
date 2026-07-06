@@ -1,4 +1,4 @@
-from fastapi import APIRouter, File, Form, UploadFile
+from fastapi import APIRouter, File, Form, Header, UploadFile
 
 from app.config import AI_MODEL
 from app.schemas import (
@@ -10,7 +10,7 @@ from app.schemas import (
     WechatLoginRequest,
 )
 from app.services.asset_parser import parse_learning_assets
-from app.services.auth_service import AuthError, login_with_wechat
+from app.services.auth_service import AuthError, get_bearer_token, login_with_wechat
 from app.services.quiz_service import (
     create_quiz,
     generate_report,
@@ -21,6 +21,7 @@ from app.services.quiz_service import (
     regenerate_weak_quiz,
     submit_answer,
 )
+from app.storage.memory_store import store
 
 
 LEVELS = [
@@ -91,6 +92,18 @@ def wechat_login(payload: WechatLoginRequest):
         return ok(result.model_dump())
     except AuthError:
         return ApiResponse(code=1001, message="登录失败，请稍后重试", data=None)
+
+
+@router.get("/api/me", response_model=ApiResponse)
+def current_user(authorization: str | None = Header(default=None)):
+    try:
+        token = get_bearer_token(authorization)
+        user = store.get_user_by_token(token)
+        if not user:
+            raise AuthError("invalid token")
+        return ok(store.get_current_user_profile(user).model_dump())
+    except AuthError:
+        return ApiResponse(code=1002, message="登录已失效，请重新登录", data=None)
 
 
 @router.post("/api/generate-quiz", response_model=ApiResponse)

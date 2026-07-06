@@ -3,7 +3,15 @@ import secrets
 from datetime import datetime, timedelta, timezone
 
 from app.config import AUTH_TOKEN_TTL_DAYS
-from app.schemas import AnswerResult, LearningProfile, LoginUser, Quiz, Report, WrongQuestion
+from app.schemas import (
+    AnswerResult,
+    CurrentUserProfile,
+    LearningProfile,
+    LoginUser,
+    Quiz,
+    Report,
+    WrongQuestion,
+)
 
 
 class MemoryStore:
@@ -39,6 +47,47 @@ class MemoryStore:
             + timedelta(days=AUTH_TOKEN_TTL_DAYS),
         }
         return token
+
+    def get_user_by_id(self, user_id: str) -> LoginUser | None:
+        return next(
+            (user for user in self.wechat_users.values() if user.id == user_id),
+            None,
+        )
+
+    def get_user_by_token(self, token: str) -> LoginUser | None:
+        token_hash = hashlib.sha256(token.encode("utf-8")).hexdigest()
+        session = self.auth_sessions.get(token_hash)
+        if not session:
+            return None
+        expires_at = session.get("expires_at")
+        if not isinstance(expires_at, datetime) or expires_at <= datetime.now(timezone.utc):
+            return None
+        user_id = session.get("user_id")
+        if not isinstance(user_id, str):
+            return None
+        return self.get_user_by_id(user_id)
+
+    def get_current_user_profile(self, user: LoginUser) -> CurrentUserProfile:
+        profile = self.get_profile(user.id)
+        reports = self.get_reports(user.id)
+        accuracy = (
+            round(profile.totalCorrect / profile.totalAnswered * 100)
+            if profile.totalAnswered
+            else 0
+        )
+        return CurrentUserProfile(
+            id=user.id,
+            displayName=user.displayName,
+            avatarUrl=user.avatarUrl,
+            loginType=user.loginType,
+            level=profile.level,
+            exp=profile.exp,
+            streakDays=profile.streakDays,
+            totalAnswered=profile.totalAnswered,
+            totalCorrect=profile.totalCorrect,
+            totalSessions=len(reports),
+            accuracy=accuracy,
+        )
 
     def save_quiz(self, session_id: str, quiz: Quiz) -> None:
         self.quizzes[quiz.quizId] = quiz
