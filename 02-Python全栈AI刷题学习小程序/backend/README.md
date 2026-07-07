@@ -77,6 +77,21 @@ AI_REPORT_MODEL=deepseek-v4-pro
 - 小程序前端不能直接调用 DeepSeek，必须通过后端接口。
 - 没有 `.env` 时，后端会继续使用 mock AI，方便开发和测试。
 
+## Tavily 搜索配置
+
+如果要启用联网搜索和网页抽取，只把真实 Tavily Key 写入本地 `backend/.env` 或部署平台 Secrets，不要写入代码、README 或 `.env.example`：
+
+```text
+SEARCH_PROVIDER=tavily
+TAVILY_API_KEY=你的本地 Tavily key
+SEARCH_MAX_RESULTS=5
+SEARCH_DEPTH=basic
+EXTRACT_DEPTH=basic
+TAVILY_TIMEOUT_SECONDS=8
+```
+
+`.env.example` 只保留空值模板，用于提示需要哪些环境变量。
+
 ## 运行测试
 
 ```powershell

@@ -82,6 +82,13 @@ AI_REPORT_MODEL=deepseek-v4-pro
 
 注意：`.env` 已被 Git 忽略，不要把真实 key 写入 README、代码或提交记录。
 
+Tavily 联网搜索同理，只在 `backend/.env` 或部署平台 Secrets 中配置真实 key：
+
+```text
+SEARCH_PROVIDER=tavily
+TAVILY_API_KEY=你的本地 Tavily key
+```
+
 ## 当前阶段
 
 当前已完成 MVP 核心功能的第一版开发：
