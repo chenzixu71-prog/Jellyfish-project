@@ -6,6 +6,7 @@ from app.config import AUTH_TOKEN_TTL_DAYS
 from app.schemas import (
     AnswerResult,
     CurrentUserProfile,
+    KnowledgeBase,
     LearningProfile,
     LoginUser,
     MergedGuestData,
@@ -26,6 +27,7 @@ class MemoryStore:
         self.wechat_users: dict[str, LoginUser] = {}
         self.auth_sessions: dict[str, dict[str, object]] = {}
         self.merged_guest_sessions: set[tuple[str, str]] = set()
+        self.knowledge_bases: dict[str, list[KnowledgeBase]] = {}
 
     def get_or_create_wechat_user(self, openid: str) -> LoginUser:
         existing = self.wechat_users.get(openid)
@@ -141,6 +143,16 @@ class MemoryStore:
                 copied_reports += 1
         self.reports[user_id] = user_reports[:10]
 
+        copied_knowledge_bases = 0
+        user_knowledge_bases = self.knowledge_bases.setdefault(user_id, [])
+        existing_kb_ids = {item.id for item in user_knowledge_bases}
+        for knowledge_base in self.knowledge_bases.get(session_id, []):
+            if knowledge_base.id not in existing_kb_ids and len(user_knowledge_bases) < 5:
+                user_knowledge_bases.append(knowledge_base)
+                existing_kb_ids.add(knowledge_base.id)
+                copied_knowledge_bases += 1
+        self.knowledge_bases[user_id] = user_knowledge_bases[:5]
+
         copied_profile_stats = False
         guest_stats = self.profile_stats.get(session_id)
         if guest_stats:
@@ -172,6 +184,26 @@ class MemoryStore:
             wrongQuestions=copied_wrong_questions,
             reports=copied_reports,
             profileStats=copied_profile_stats,
+            knowledgeBases=copied_knowledge_bases,
+        )
+
+    def save_knowledge_base(self, owner_id: str, knowledge_base: KnowledgeBase) -> None:
+        existing = [
+            item for item in self.knowledge_bases.get(owner_id, []) if item.id != knowledge_base.id
+        ]
+        existing.insert(0, knowledge_base)
+        self.knowledge_bases[owner_id] = existing[:5]
+
+    def count_knowledge_bases(self, owner_id: str) -> int:
+        return len(self.knowledge_bases.get(owner_id, []))
+
+    def get_knowledge_bases(self, owner_id: str) -> list[KnowledgeBase]:
+        return self.knowledge_bases.get(owner_id, [])
+
+    def get_knowledge_base(self, owner_id: str, knowledge_base_id: str) -> KnowledgeBase | None:
+        return next(
+            (item for item in self.get_knowledge_bases(owner_id) if item.id == knowledge_base_id),
+            None,
         )
 
     def save_quiz(self, session_id: str, quiz: Quiz) -> None:

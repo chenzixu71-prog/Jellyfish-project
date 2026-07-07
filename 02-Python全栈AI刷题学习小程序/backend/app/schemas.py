@@ -52,6 +52,23 @@ class GenerateQuizRequest(BaseModel):
     webSearchEnabled: bool = False
 
 
+class KnowledgeBaseCreateRequest(BaseModel):
+    sessionId: str = Field(min_length=1)
+    title: str = ""
+    content: str = Field(min_length=1)
+    webSearchEnabled: bool = False
+
+
+class KnowledgeBaseSupplementRequest(BaseModel):
+    sessionId: str = Field(min_length=1)
+    content: str = Field(min_length=1)
+    webSearchEnabled: bool = False
+
+
+class KnowledgeBaseQuizRequest(BaseModel):
+    sessionId: str = Field(min_length=1)
+
+
 class WechatLoginRequest(BaseModel):
     code: str = Field(min_length=1)
     sessionId: str = Field(min_length=1)
@@ -69,6 +86,7 @@ class MergedGuestData(BaseModel):
     wrongQuestions: int = 0
     reports: int = 0
     profileStats: bool = False
+    knowledgeBases: int = 0
 
 
 class WechatLoginResponse(BaseModel):
@@ -95,6 +113,36 @@ class Quiz(BaseModel):
     summary: str
     questions: list[Question]
     sourceMeta: SourceMeta | None = None
+
+
+class KnowledgeBaseMaterial(BaseModel):
+    id: str
+    type: Literal["text", "file", "image", "search"]
+    name: str
+    summary: str
+    createdAt: str = ""
+
+
+class KnowledgeBaseSummary(BaseModel):
+    id: str
+    title: str
+    summary: str
+    materialCount: int
+    sourceCount: int
+    quizCount: int = 0
+    updatedAt: str = ""
+
+
+class KnowledgeBase(BaseModel):
+    id: str
+    title: str
+    summary: str
+    content: str
+    materials: list[KnowledgeBaseMaterial]
+    sourceMeta: SourceMeta | None = None
+    quizIds: list[str] = []
+    createdAt: str = ""
+    updatedAt: str = ""
 
 
 class SubmitAnswerRequest(BaseModel):

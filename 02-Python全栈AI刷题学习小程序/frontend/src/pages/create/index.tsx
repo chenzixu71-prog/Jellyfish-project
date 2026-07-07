@@ -1,7 +1,11 @@
 import { useEffect, useState } from 'react'
-import Taro from '@tarojs/taro'
+import Taro, { useDidShow } from '@tarojs/taro'
 import { Button, Image, Switch, Text, Textarea, View } from '@tarojs/components'
-import { generateQuiz } from '../../services/quizService'
+import {
+  createKnowledgeBase,
+  getKnowledgeBases,
+  KnowledgeBaseSummary
+} from '../../services/knowledgeBaseService'
 import jellyLogo from '../../assets/jelly-logo.jpg'
 import './index.css'
 
@@ -19,6 +23,12 @@ export default function CreatePage() {
   const [webSearchEnabled, setWebSearchEnabled] = useState(false)
   const [loading, setLoading] = useState(false)
   const [loadingStep, setLoadingStep] = useState(0)
+  const [knowledgeBases, setKnowledgeBases] = useState<KnowledgeBaseSummary[]>([])
+  const [listLoading, setListLoading] = useState(false)
+
+  useDidShow(() => {
+    loadKnowledgeBases()
+  })
 
   useEffect(() => {
     if (!loading) {
@@ -80,7 +90,19 @@ export default function CreatePage() {
     return parts.filter(Boolean).join('')
   }
 
-  async function handleGenerate() {
+  async function loadKnowledgeBases() {
+    setListLoading(true)
+    try {
+      const list = await getKnowledgeBases()
+      setKnowledgeBases(list)
+    } catch {
+      setKnowledgeBases([])
+    } finally {
+      setListLoading(false)
+    }
+  }
+
+  async function handleCreateKnowledgeBase() {
     const trimmed = content.trim()
     if (!trimmed && files.length === 0 && images.length === 0) {
       Taro.showToast({ title: '先输入主题或选择素材', icon: 'none' })
@@ -90,15 +112,22 @@ export default function CreatePage() {
     setLoading(true)
     setLoadingStep(0)
     try {
-      const quiz = await generateQuiz(buildLearningContent(trimmed), webSearchEnabled)
-      Taro.setStorageSync('currentQuiz', quiz)
-      if (quiz.sourceMeta?.enabled) {
+      const knowledgeBase = await createKnowledgeBase(
+        buildTitle(trimmed),
+        buildLearningContent(trimmed),
+        webSearchEnabled
+      )
+      if (knowledgeBase.sourceMeta?.enabled) {
         Taro.showToast({
-          title: quiz.sourceMeta.sourceCount > 0 ? `已参考 ${quiz.sourceMeta.sourceCount} 条资料` : '联网搜索已降级',
+          title: knowledgeBase.sourceMeta.sourceCount > 0 ? `已参考 ${knowledgeBase.sourceMeta.sourceCount} 条资料` : '联网搜索已降级',
           icon: 'none'
         })
       }
-      Taro.switchTab({ url: '/pages/quiz/index' })
+      setContent('')
+      setFiles([])
+      setImages([])
+      await loadKnowledgeBases()
+      Taro.navigateTo({ url: `/pages/knowledge-base/index?id=${knowledgeBase.id}` })
     } catch (error) {
       Taro.showToast({
         title: error instanceof Error ? error.message : '生成失败',
@@ -110,8 +139,23 @@ export default function CreatePage() {
   }
 
   const loadingSteps = webSearchEnabled
-    ? ['联网检索新资料', '整理可信来源', '生成闯关题目']
-    : ['读取学习素材', '拆解知识重点', '生成闯关题目']
+    ? ['联网检索新资料', '整理可信来源', '沉淀知识库']
+    : ['读取学习素材', '拆解知识重点', '沉淀知识库']
+
+  function buildTitle(trimmed: string) {
+    const firstLine = trimmed.split('\n').find((line) => line.trim())?.trim()
+    if (firstLine) {
+      return firstLine.slice(0, 18)
+    }
+    if (files[0]?.name) {
+      return files[0].name.replace(/\.[^.]+$/, '').slice(0, 18)
+    }
+    return '水母知识库'
+  }
+
+  function openKnowledgeBase(id: string) {
+    Taro.navigateTo({ url: `/pages/knowledge-base/index?id=${id}` })
+  }
 
   return (
     <View className='create-page'>
@@ -147,8 +191,8 @@ export default function CreatePage() {
 
       <View className='home-board'>
         <View className='challenge-card'>
-          <Text className='challenge-title'>今日水母挑战已准备</Text>
-          <Text className='challenge-copy'>围绕你的学习内容生成 5 道题。答完每题都会收到即时讲解。</Text>
+          <Text className='challenge-title'>今日水母知识库已准备</Text>
+          <Text className='challenge-copy'>先把学习资料沉淀成知识库，再从知识库里进入 5 题闯关。</Text>
           <View className='tag-row'>
             <Text className='topic-tag'>知识点</Text>
             <Text className='topic-tag'>AI 讲解</Text>
@@ -162,8 +206,31 @@ export default function CreatePage() {
             <View className='progress-track'>
               <View className='progress-fill' />
             </View>
-            <Text className='progress-copy'>今天共有 20 个小挑战，先完成当前 5 题闯关。</Text>
+            <Text className='progress-copy'>每个人最多保留 5 个知识库，适合持续补充和复习。</Text>
           </View>
+        </View>
+
+        <View className='kb-panel'>
+          <View className='kb-panel-head'>
+            <Text className='kb-title'>我的知识库</Text>
+            <Text className='kb-count'>{knowledgeBases.length}/5</Text>
+          </View>
+          {listLoading && <Text className='kb-empty'>同步知识库中...</Text>}
+          {!listLoading && knowledgeBases.length === 0 && (
+            <Text className='kb-empty'>还没有知识库。先输入一个主题，水母会帮你整理。</Text>
+          )}
+          {!listLoading && knowledgeBases.map((item) => (
+            <View key={item.id} className='kb-card' onClick={() => openKnowledgeBase(item.id)}>
+              <View className='kb-card-main'>
+                <Text className='kb-card-title'>{item.title}</Text>
+                <Text className='kb-card-summary'>{item.summary}</Text>
+              </View>
+              <View className='kb-card-meta'>
+                <Text className='kb-pill'>{item.materialCount} 份素材</Text>
+                <Text className='kb-pill kb-pill-blue'>{item.sourceCount} 条来源</Text>
+              </View>
+            </View>
+          ))}
         </View>
 
         <View className='input-panel'>
@@ -191,8 +258,8 @@ export default function CreatePage() {
               onChange={(event) => setWebSearchEnabled(event.detail.value)}
             />
           </View>
-          <Button className='main-button' loading={loading} onClick={handleGenerate}>
-            {webSearchEnabled ? '搜索资料并生成题目' : '让水母生成题目'}
+          <Button className='main-button' loading={loading} onClick={handleCreateKnowledgeBase}>
+            {webSearchEnabled ? '搜索资料并生成知识库' : '让水母生成知识库'}
           </Button>
         </View>
       </View>
@@ -208,7 +275,7 @@ export default function CreatePage() {
             </View>
             <Text className='loading-title'>{loadingSteps[loadingStep]}</Text>
             <Text className='loading-copy'>
-              {webSearchEnabled ? '打开联网搜索后，会先参考搜索结果和网页内容再出题。' : '正在生成适合闯关的 5 道题。'}
+              {webSearchEnabled ? '打开联网搜索后，会先参考搜索结果和网页内容再沉淀。' : '正在整理成可复习的知识库。'}
             </Text>
             <View className='loading-step-row'>
               {loadingSteps.map((step, index) => (

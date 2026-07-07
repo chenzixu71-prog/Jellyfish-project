@@ -469,6 +469,130 @@ def test_generate_quiz_returns_source_meta_when_web_search_enabled():
     assert "sources" in quiz["sourceMeta"]
 
 
+def test_create_list_supplement_and_quiz_from_knowledge_base():
+    session_id = "kb-session"
+    created = client.post(
+        "/api/knowledge-bases",
+        json={
+            "sessionId": session_id,
+            "title": "英语知识库",
+            "content": "我想学习英语中的现在完成时。",
+            "webSearchEnabled": False,
+        },
+    ).json()["data"]
+
+    assert created["id"].startswith("kb-")
+    assert created["title"] == "英语知识库"
+    assert len(created["materials"]) == 1
+
+    items = client.get(
+        "/api/knowledge-bases",
+        params={"sessionId": session_id},
+    ).json()["data"]
+    assert len(items) == 1
+    assert items[0]["id"] == created["id"]
+    assert items[0]["materialCount"] == 1
+
+    detail = client.get(
+        f"/api/knowledge-bases/{created['id']}",
+        params={"sessionId": session_id},
+    ).json()["data"]
+    assert "现在完成时" in detail["content"]
+
+    supplemented = client.post(
+        f"/api/knowledge-bases/{created['id']}/supplements",
+        json={
+            "sessionId": session_id,
+            "content": "补充：现在完成时常和 already、yet、ever 搭配。",
+            "webSearchEnabled": False,
+        },
+    ).json()["data"]
+    assert len(supplemented["materials"]) == 2
+    assert "already" in supplemented["content"]
+
+    quiz = client.post(
+        f"/api/knowledge-bases/{created['id']}/quiz",
+        json={"sessionId": session_id},
+    ).json()["data"]
+    assert quiz["quizId"]
+    assert quiz["title"] == "英语知识库"
+    assert len(quiz["questions"]) == 5
+
+
+def test_knowledge_base_limit_is_five_per_owner():
+    session_id = "kb-limit-session"
+
+    for index in range(5):
+        response = client.post(
+            "/api/knowledge-bases",
+            json={
+                "sessionId": session_id,
+                "title": f"知识库 {index}",
+                "content": f"学习主题 {index}",
+                "webSearchEnabled": False,
+            },
+        )
+        assert response.status_code == 200
+        assert response.json()["code"] == 0
+
+    rejected = client.post(
+        "/api/knowledge-bases",
+        json={
+            "sessionId": session_id,
+            "title": "第六个知识库",
+            "content": "超过上限",
+            "webSearchEnabled": False,
+        },
+    )
+
+    assert rejected.status_code == 400
+    assert "5" in rejected.json()["detail"]
+
+
+def test_knowledge_base_from_assets_accepts_text_file():
+    response = client.post(
+        "/api/knowledge-bases/from-assets",
+        data={"sessionId": "kb-asset-session", "title": "Redis 素材"},
+        files=[
+            ("files", ("redis.md", b"Redis keeps data in memory.", "text/markdown")),
+        ],
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    kb = body["data"]
+    assert body["code"] == 0
+    assert kb["title"] == "Redis 素材"
+    assert "Redis keeps data" in kb["content"]
+    assert kb["upload"]["fileCount"] == 1
+
+
+def test_wechat_login_binds_guest_knowledge_bases_once():
+    session_id = "kb-bind-guest"
+    created = client.post(
+        "/api/knowledge-bases",
+        json={
+            "sessionId": session_id,
+            "title": "游客知识库",
+            "content": "游客先创建的知识库",
+        },
+    ).json()["data"]
+
+    login = client.post(
+        "/api/auth/wechat-login",
+        json={"code": "kb-bind-code", "sessionId": session_id},
+    ).json()["data"]
+
+    assert login["merged"]["knowledgeBases"] == 1
+
+    authed_items = client.get(
+        "/api/knowledge-bases",
+        headers={"Authorization": f"Bearer {login['token']}"},
+        params={"sessionId": session_id},
+    ).json()["data"]
+    assert any(item["id"] == created["id"] for item in authed_items)
+
+
 def test_generate_quiz_rejects_empty_content():
     response = client.post(
         "/api/generate-quiz",

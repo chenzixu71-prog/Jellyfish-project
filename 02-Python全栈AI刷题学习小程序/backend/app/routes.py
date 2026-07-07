@@ -5,12 +5,22 @@ from app.schemas import (
     ApiResponse,
     GenerateQuizRequest,
     GenerateReportRequest,
+    KnowledgeBaseCreateRequest,
+    KnowledgeBaseQuizRequest,
+    KnowledgeBaseSupplementRequest,
     RegenerateWeakQuizRequest,
     SubmitAnswerRequest,
     WechatLoginRequest,
 )
 from app.services.asset_parser import parse_learning_assets
 from app.services.auth_service import AuthError, get_bearer_token, login_with_wechat
+from app.services.knowledge_base_service import (
+    create_knowledge_base,
+    get_knowledge_base,
+    list_knowledge_bases,
+    start_quiz_from_knowledge_base,
+    supplement_knowledge_base,
+)
 from app.services.quiz_service import (
     create_quiz,
     generate_report,
@@ -145,6 +155,115 @@ async def generate_quiz_from_assets(
         "notes": parsed.notes,
     }
     return ok(payload)
+
+
+@router.post("/api/knowledge-bases", response_model=ApiResponse)
+def create_kb(payload: KnowledgeBaseCreateRequest, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(payload.sessionId, authorization)
+    knowledge_base = create_knowledge_base(
+        owner_id,
+        payload.content,
+        payload.title,
+        payload.webSearchEnabled,
+    )
+    return ok(knowledge_base.model_dump())
+
+
+@router.post("/api/knowledge-bases/from-assets", response_model=ApiResponse)
+async def create_kb_from_assets(
+    sessionId: str = Form(...),
+    title: str = Form(""),
+    content: str = Form(""),
+    webSearchEnabled: bool = Form(False),
+    files: list[UploadFile] = File(default=[]),
+    images: list[UploadFile] = File(default=[]),
+    authorization: str | None = Header(default=None),
+):
+    parsed = await parse_learning_assets(content, files, images)
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    knowledge_base = create_knowledge_base(
+        owner_id,
+        parsed.content,
+        title,
+        webSearchEnabled,
+    )
+    payload = knowledge_base.model_dump()
+    payload["upload"] = {
+        "fileCount": parsed.file_count,
+        "imageCount": parsed.image_count,
+        "notes": parsed.notes,
+    }
+    return ok(payload)
+
+
+@router.get("/api/knowledge-bases", response_model=ApiResponse)
+def knowledge_bases(sessionId: str, authorization: str | None = Header(default=None)):
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    return ok([item.model_dump() for item in list_knowledge_bases(owner_id)])
+
+
+@router.get("/api/knowledge-bases/{knowledge_base_id}", response_model=ApiResponse)
+def knowledge_base_detail(
+    knowledge_base_id: str,
+    sessionId: str,
+    authorization: str | None = Header(default=None),
+):
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    return ok(get_knowledge_base(owner_id, knowledge_base_id).model_dump())
+
+
+@router.post("/api/knowledge-bases/{knowledge_base_id}/supplements", response_model=ApiResponse)
+def supplement_kb(
+    knowledge_base_id: str,
+    payload: KnowledgeBaseSupplementRequest,
+    authorization: str | None = Header(default=None),
+):
+    owner_id = resolve_learning_owner(payload.sessionId, authorization)
+    knowledge_base = supplement_knowledge_base(
+        owner_id,
+        knowledge_base_id,
+        payload.content,
+        payload.webSearchEnabled,
+    )
+    return ok(knowledge_base.model_dump())
+
+
+@router.post("/api/knowledge-bases/{knowledge_base_id}/supplements/from-assets", response_model=ApiResponse)
+async def supplement_kb_from_assets(
+    knowledge_base_id: str,
+    sessionId: str = Form(...),
+    content: str = Form(""),
+    webSearchEnabled: bool = Form(False),
+    files: list[UploadFile] = File(default=[]),
+    images: list[UploadFile] = File(default=[]),
+    authorization: str | None = Header(default=None),
+):
+    parsed = await parse_learning_assets(content, files, images)
+    owner_id = resolve_learning_owner(sessionId, authorization)
+    knowledge_base = supplement_knowledge_base(
+        owner_id,
+        knowledge_base_id,
+        parsed.content,
+        webSearchEnabled,
+    )
+    payload = knowledge_base.model_dump()
+    payload["upload"] = {
+        "fileCount": parsed.file_count,
+        "imageCount": parsed.image_count,
+        "notes": parsed.notes,
+    }
+    return ok(payload)
+
+
+@router.post("/api/knowledge-bases/{knowledge_base_id}/quiz", response_model=ApiResponse)
+def knowledge_base_quiz(
+    knowledge_base_id: str,
+    payload: KnowledgeBaseQuizRequest,
+    authorization: str | None = Header(default=None),
+):
+    owner_id = resolve_learning_owner(payload.sessionId, authorization)
+    quiz = start_quiz_from_knowledge_base(owner_id, knowledge_base_id)
+    return ok(quiz.model_dump())
 
 
 @router.post("/api/submit-answer", response_model=ApiResponse)

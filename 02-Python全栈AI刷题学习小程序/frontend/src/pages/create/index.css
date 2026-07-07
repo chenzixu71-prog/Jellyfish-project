@@ -485,6 +485,98 @@
   animation: softLift 3.2s ease-in-out infinite;
 }
 
+.kb-panel {
+  margin-top: 16px;
+  padding: 20px 18px;
+  border-radius: 30px;
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 16px 34px rgba(80, 61, 176, 0.1);
+}
+
+.kb-panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.kb-title {
+  color: #15151f;
+  font-size: 22px;
+  font-weight: 950;
+  line-height: 1.25;
+}
+
+.kb-count {
+  min-width: 52px;
+  height: 30px;
+  border-radius: 999px;
+  background: #f7de61;
+  color: #4f39d8;
+  font-size: 13px;
+  font-weight: 950;
+  line-height: 30px;
+  text-align: center;
+}
+
+.kb-empty {
+  display: block;
+  margin-top: 14px;
+  color: #5d6472;
+  font-size: 13px;
+  font-weight: 850;
+  line-height: 1.55;
+}
+
+.kb-card {
+  margin-top: 12px;
+  padding: 15px;
+  border-radius: 22px;
+  background: #f6f2ff;
+  box-shadow: inset 0 0 0 2px #e8e0ff;
+}
+
+.kb-card:active {
+  transform: scale(0.985);
+}
+
+.kb-card-title {
+  display: block;
+  color: #15151f;
+  font-size: 17px;
+  font-weight: 950;
+  line-height: 1.35;
+}
+
+.kb-card-summary {
+  display: block;
+  margin-top: 6px;
+  color: #4b5563;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.kb-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.kb-pill {
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #fff2ad;
+  color: #4f39d8;
+  font-size: 11px;
+  font-weight: 950;
+}
+
+.kb-pill-blue {
+  background: #dff4ff;
+}
+
 .loading-overlay {
   position: fixed;
   inset: 0;

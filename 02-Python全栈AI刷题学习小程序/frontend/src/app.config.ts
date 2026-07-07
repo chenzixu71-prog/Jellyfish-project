@@ -1,6 +1,7 @@
 export default defineAppConfig({
   pages: [
     'pages/create/index',
+    'pages/knowledge-base/index',
     'pages/quiz/index',
     'pages/report/index',
     'pages/wrong/index',
