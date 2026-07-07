@@ -448,6 +448,27 @@ def test_generate_quiz_returns_five_mixed_questions():
         assert question["difficulty"] in {"easy", "medium", "hard"}
 
 
+def test_generate_quiz_returns_source_meta_when_web_search_enabled():
+    response = client.post(
+        "/api/generate-quiz",
+        json={
+            "sessionId": "source-meta-session",
+            "inputType": "text",
+            "content": "我想学习最新的 Harness Engineering",
+            "questionCount": 5,
+            "webSearchEnabled": True,
+        },
+    )
+
+    assert response.status_code == 200
+    quiz = response.json()["data"]
+    assert quiz["sourceMeta"]["enabled"] is True
+    assert "sourceCount" in quiz["sourceMeta"]
+    assert "toolCalls" in quiz["sourceMeta"]
+    assert "warnings" in quiz["sourceMeta"]
+    assert "sources" in quiz["sourceMeta"]
+
+
 def test_generate_quiz_rejects_empty_content():
     response = client.post(
         "/api/generate-quiz",

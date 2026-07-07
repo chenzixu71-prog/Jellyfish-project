@@ -29,6 +29,21 @@ class Question(BaseModel):
     difficulty: Difficulty
 
 
+class SourceItem(BaseModel):
+    title: str
+    url: str = ""
+    sourceType: str
+    summary: str
+
+
+class SourceMeta(BaseModel):
+    enabled: bool = False
+    sourceCount: int = 0
+    toolCalls: list[str] = []
+    warnings: list[str] = []
+    sources: list[SourceItem] = []
+
+
 class GenerateQuizRequest(BaseModel):
     sessionId: str = Field(min_length=1)
     inputType: Literal["text"] = "text"
@@ -79,6 +94,7 @@ class Quiz(BaseModel):
     title: str
     summary: str
     questions: list[Question]
+    sourceMeta: SourceMeta | None = None
 
 
 class SubmitAnswerRequest(BaseModel):
@@ -123,6 +139,7 @@ class Report(BaseModel):
     weakPoints: list[str]
     nextSteps: list[str]
     completedAt: str = ""
+    sourceMeta: SourceMeta | None = None
 
 
 class WrongQuestion(BaseModel):

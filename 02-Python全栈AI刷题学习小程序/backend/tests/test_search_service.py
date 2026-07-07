@@ -9,6 +9,7 @@ from app.services.search_service import (
     normalize_extract_response,
     normalize_search_response,
 )
+from app.services.quiz_service import build_source_meta
 
 
 class FakeProvider:
@@ -146,6 +147,28 @@ def test_format_source_context_limits_and_labels_sources():
 
     assert "[Source 1]" in formatted
     assert "Fresh source text" in formatted
+
+
+def test_build_source_meta_exposes_visible_source_summary():
+    context = SourceContext(
+        documents=[
+            SourceDocument(
+                title="Harness Docs",
+                url="https://developer.harness.io/docs",
+                content="Harness Engineering is a software delivery topic for modern teams.",
+                source_type="search",
+            )
+        ],
+        tool_calls=["tavily_search"],
+    )
+
+    meta = build_source_meta(True, context)
+
+    assert meta.enabled is True
+    assert meta.sourceCount == 1
+    assert meta.toolCalls == ["tavily_search"]
+    assert meta.sources[0].title == "Harness Docs"
+    assert "software delivery" in meta.sources[0].summary
 
 
 def test_complex_topic_uses_at_least_five_results():

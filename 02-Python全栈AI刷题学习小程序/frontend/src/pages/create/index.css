@@ -592,6 +592,32 @@
   line-height: 1.6;
 }
 
+.loading-step-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.loading-step {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: #f1edff;
+  color: #8b82aa;
+  font-size: 13px;
+  font-weight: 950;
+}
+
+.loading-step-active {
+  background: #f7de61;
+  color: #4f39d8;
+  box-shadow: 0 8px 16px rgba(98, 70, 242, 0.16);
+}
+
 .loading-track {
   height: 13px;
   margin-top: 18px;

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import Taro from '@tarojs/taro'
 import { Button, Image, Switch, Text, Textarea, View } from '@tarojs/components'
 import { generateQuiz } from '../../services/quizService'
@@ -18,6 +18,19 @@ export default function CreatePage() {
   const [images, setImages] = useState<string[]>([])
   const [webSearchEnabled, setWebSearchEnabled] = useState(false)
   const [loading, setLoading] = useState(false)
+  const [loadingStep, setLoadingStep] = useState(0)
+
+  useEffect(() => {
+    if (!loading) {
+      setLoadingStep(0)
+      return undefined
+    }
+
+    const timer = setInterval(() => {
+      setLoadingStep((step) => Math.min(step + 1, 2))
+    }, 1200)
+    return () => clearInterval(timer)
+  }, [loading])
 
   async function chooseFiles() {
     try {
@@ -75,9 +88,16 @@ export default function CreatePage() {
     }
 
     setLoading(true)
+    setLoadingStep(0)
     try {
       const quiz = await generateQuiz(buildLearningContent(trimmed), webSearchEnabled)
       Taro.setStorageSync('currentQuiz', quiz)
+      if (quiz.sourceMeta?.enabled) {
+        Taro.showToast({
+          title: quiz.sourceMeta.sourceCount > 0 ? `已参考 ${quiz.sourceMeta.sourceCount} 条资料` : '联网搜索已降级',
+          icon: 'none'
+        })
+      }
       Taro.switchTab({ url: '/pages/quiz/index' })
     } catch (error) {
       Taro.showToast({
@@ -88,6 +108,10 @@ export default function CreatePage() {
       setLoading(false)
     }
   }
+
+  const loadingSteps = webSearchEnabled
+    ? ['联网检索新资料', '整理可信来源', '生成闯关题目']
+    : ['读取学习素材', '拆解知识重点', '生成闯关题目']
 
   return (
     <View className='create-page'>
@@ -182,8 +206,17 @@ export default function CreatePage() {
               <View className='loading-tentacle loading-tentacle-2' />
               <View className='loading-tentacle loading-tentacle-3' />
             </View>
-            <Text className='loading-title'>{webSearchEnabled ? '水母正在查找可靠资料...' : '水母正在解析素材...'}</Text>
-            <Text className='loading-copy'>正在生成适合闯关的 5 道题。</Text>
+            <Text className='loading-title'>{loadingSteps[loadingStep]}</Text>
+            <Text className='loading-copy'>
+              {webSearchEnabled ? '打开联网搜索后，会先参考搜索结果和网页内容再出题。' : '正在生成适合闯关的 5 道题。'}
+            </Text>
+            <View className='loading-step-row'>
+              {loadingSteps.map((step, index) => (
+                <Text key={step} className={`loading-step ${index <= loadingStep ? 'loading-step-active' : ''}`}>
+                  {index + 1}
+                </Text>
+              ))}
+            </View>
             <View className='loading-track'><View className='loading-fill' /></View>
           </View>
         </View>

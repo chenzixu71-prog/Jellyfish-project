@@ -21,11 +21,27 @@ export interface Question {
   difficulty: Difficulty
 }
 
+export interface SourceItem {
+  title: string
+  url: string
+  sourceType: string
+  summary: string
+}
+
+export interface SourceMeta {
+  enabled: boolean
+  sourceCount: number
+  toolCalls: string[]
+  warnings: string[]
+  sources: SourceItem[]
+}
+
 export interface Quiz {
   quizId: string
   title: string
   summary: string
   questions: Question[]
+  sourceMeta?: SourceMeta
 }
 
 export interface AnswerResult {
@@ -46,6 +62,7 @@ export interface Report {
   weakPoints: string[]
   nextSteps: string[]
   completedAt?: string
+  sourceMeta?: SourceMeta
 }
 
 export interface WrongQuestion {

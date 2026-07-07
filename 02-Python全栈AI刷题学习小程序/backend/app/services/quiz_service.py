@@ -10,10 +10,12 @@ from app.schemas import (
     Quiz,
     Report,
     ReportHistoryItem,
+    SourceItem,
+    SourceMeta,
     WrongQuestion,
 )
 from app.services.ai_service import generate_quiz
-from app.services.search_service import SourceProvider, build_source_context
+from app.services.search_service import SourceContext, SourceProvider, build_source_context, trim_text
 from app.storage.memory_store import store
 
 
@@ -28,8 +30,27 @@ def create_quiz(
 
     source_context = build_source_context(content, web_search_enabled, source_provider)
     quiz = generate_quiz(content, source_context)
+    quiz.sourceMeta = build_source_meta(web_search_enabled, source_context)
     store.save_quiz(session_id, quiz)
     return quiz
+
+
+def build_source_meta(enabled: bool, source_context: SourceContext) -> SourceMeta:
+    return SourceMeta(
+        enabled=enabled,
+        sourceCount=len(source_context.documents),
+        toolCalls=source_context.tool_calls,
+        warnings=source_context.warnings,
+        sources=[
+            SourceItem(
+                title=document.title,
+                url=document.url,
+                sourceType=document.source_type,
+                summary=trim_text(document.content, 120),
+            )
+            for document in source_context.documents[:5]
+        ],
+    )
 
 
 def submit_answer(
@@ -101,6 +122,7 @@ def generate_report(session_id: str, quiz_id: str) -> Report:
             "用自己的话重新解释本轮主题。",
             "再生成一组题巩固薄弱点。",
         ],
+        sourceMeta=quiz.sourceMeta,
     )
     store.save_report(session_id, report)
     return report

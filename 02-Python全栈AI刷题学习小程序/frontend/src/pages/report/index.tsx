@@ -85,6 +85,12 @@ export default function ReportPage() {
     Taro.showToast({ title: '已复制，可粘贴到 QQ', icon: 'none' })
   }
 
+  function toolLabel(tool: string) {
+    if (tool === 'tavily_extract') return '网页解析'
+    if (tool === 'tavily_search') return '联网搜索'
+    return tool
+  }
+
   if (loading) {
     return (
       <View className='report-page loading-page'>
@@ -165,6 +171,33 @@ export default function ReportPage() {
           <Text className='list-line'>- 掌握度：{report.mastery}%。</Text>
           <Text className='list-line'>- 主题：{report.title}</Text>
         </View>
+
+        {report.sourceMeta?.enabled && (
+          <View className='report-section source-section'>
+            <View className='source-head'>
+              <Text className='block-title'>联网资料来源</Text>
+              <Text className='source-count'>{report.sourceMeta.sourceCount} 条</Text>
+            </View>
+            <View className='source-tool-row'>
+              {(report.sourceMeta.toolCalls.length > 0 ? report.sourceMeta.toolCalls : ['已开启']).map((tool) => (
+                <Text key={tool} className='source-tool'>{toolLabel(tool)}</Text>
+              ))}
+            </View>
+            {report.sourceMeta.sources.length === 0 && (
+              <Text className='list-line'>- 本次没有拿到可展示来源，题目已降级为普通 AI 生成。</Text>
+            )}
+            {report.sourceMeta.sources.map((source, index) => (
+              <View key={`${source.url}-${index}`} className='source-card'>
+                <Text className='source-title'>{index + 1}. {source.title}</Text>
+                <Text className='source-summary'>{source.summary}</Text>
+                {!!source.url && <Text className='source-url'>{source.url}</Text>}
+              </View>
+            ))}
+            {report.sourceMeta.warnings.map((warning) => (
+              <Text key={warning} className='source-warning'>- {warning}</Text>
+            ))}
+          </View>
+        )}
 
         <View className='report-section'>
           <Text className='block-title'>薄弱点</Text>
