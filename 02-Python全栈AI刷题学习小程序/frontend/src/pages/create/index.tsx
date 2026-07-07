@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Taro from '@tarojs/taro'
-import { Button, Image, Text, Textarea, View } from '@tarojs/components'
+import { Button, Image, Switch, Text, Textarea, View } from '@tarojs/components'
 import { generateQuiz } from '../../services/quizService'
 import jellyLogo from '../../assets/jelly-logo.jpg'
 import './index.css'
@@ -16,6 +16,7 @@ export default function CreatePage() {
   const [content, setContent] = useState('')
   const [files, setFiles] = useState<LocalFile[]>([])
   const [images, setImages] = useState<string[]>([])
+  const [webSearchEnabled, setWebSearchEnabled] = useState(false)
   const [loading, setLoading] = useState(false)
 
   async function chooseFiles() {
@@ -54,14 +55,14 @@ export default function CreatePage() {
       files.forEach((file) => {
         try {
           const text = fs.readFileSync(file.path, 'utf8')
-          parts.push(`\n\n【上传文件：${file.name}】\n${String(text).slice(0, 2000)}`)
+          parts.push(`\n\n[上传文件：${file.name}]\n${String(text).slice(0, 2000)}`)
         } catch {
-          parts.push(`\n\n【上传文件：${file.name}】文件已选择，但小程序本地读取失败，请根据文件名辅助出题。`)
+          parts.push(`\n\n[上传文件：${file.name}] 文件已选择，但小程序本地读取失败，请根据文件名辅助出题。`)
         }
       })
     }
     if (images.length > 0) {
-      parts.push(`\n\n【上传图片】用户选择了 ${images.length} 张图片。当前版本先记录图片数量；如果图片里有关键知识，请用户在文本里补充说明。`)
+      parts.push(`\n\n[上传图片] 用户选择了 ${images.length} 张图片。当前小程序端先记录图片数量；如果图片里有关键知识，请用户在文本里补充说明。`)
     }
     return parts.filter(Boolean).join('')
   }
@@ -75,7 +76,7 @@ export default function CreatePage() {
 
     setLoading(true)
     try {
-      const quiz = await generateQuiz(buildLearningContent(trimmed))
+      const quiz = await generateQuiz(buildLearningContent(trimmed), webSearchEnabled)
       Taro.setStorageSync('currentQuiz', quiz)
       Taro.switchTab({ url: '/pages/quiz/index' })
     } catch (error) {
@@ -123,11 +124,11 @@ export default function CreatePage() {
       <View className='home-board'>
         <View className='challenge-card'>
           <Text className='challenge-title'>今日水母挑战已准备</Text>
-          <Text className='challenge-copy'>围绕端口、数据库和 Redis 生成 5 道题。答完每题都会收到即时讲解。</Text>
+          <Text className='challenge-copy'>围绕你的学习内容生成 5 道题。答完每题都会收到即时讲解。</Text>
           <View className='tag-row'>
-            <Text className='topic-tag'>端口</Text>
-            <Text className='topic-tag'>数据库</Text>
-            <Text className='topic-tag'>Redis</Text>
+            <Text className='topic-tag'>知识点</Text>
+            <Text className='topic-tag'>AI 讲解</Text>
+            <Text className='topic-tag'>复盘报告</Text>
           </View>
           <View className='progress-card'>
             <View className='progress-head'>
@@ -155,8 +156,19 @@ export default function CreatePage() {
             <Button className='upload-button' onClick={chooseFiles}>文件 {files.length}/3</Button>
             <Button className='upload-button upload-image' onClick={chooseImages}>图片 {images.length}/10</Button>
           </View>
+          <View className='search-toggle-card'>
+            <View className='search-toggle-copy'>
+              <Text className='search-toggle-title'>联网搜索资料</Text>
+              <Text className='search-toggle-desc'>适合最新知识、网页链接、产品文档，会先搜索再出题。</Text>
+            </View>
+            <Switch
+              color='#6246f2'
+              checked={webSearchEnabled}
+              onChange={(event) => setWebSearchEnabled(event.detail.value)}
+            />
+          </View>
           <Button className='main-button' loading={loading} onClick={handleGenerate}>
-            让水母生成题目
+            {webSearchEnabled ? '搜索资料并生成题目' : '让水母生成题目'}
           </Button>
         </View>
       </View>
@@ -170,7 +182,7 @@ export default function CreatePage() {
               <View className='loading-tentacle loading-tentacle-2' />
               <View className='loading-tentacle loading-tentacle-3' />
             </View>
-            <Text className='loading-title'>水母正在解析素材...</Text>
+            <Text className='loading-title'>{webSearchEnabled ? '水母正在查找可靠资料...' : '水母正在解析素材...'}</Text>
             <Text className='loading-copy'>正在生成适合闯关的 5 道题。</Text>
             <View className='loading-track'><View className='loading-fill' /></View>
           </View>
