@@ -557,6 +557,36 @@ def test_submit_answer_scores_and_returns_explanation():
     assert body["data"]["explanation"]
 
 
+def test_submit_answer_accepts_single_answer_string_for_compatibility():
+    generated = client.post(
+        "/api/generate-quiz",
+        json={
+            "sessionId": "answer-string-session",
+            "inputType": "text",
+            "content": "learn ports",
+            "questionCount": 5,
+        },
+    ).json()["data"]
+    first_question = generated["questions"][0]
+    wrong_answer = "B" if first_question["answer"] != ["B"] else "A"
+
+    response = client.post(
+        "/api/submit-answer",
+        json={
+            "sessionId": "answer-string-session",
+            "quizId": generated["quizId"],
+            "questionId": first_question["id"],
+            "answer": wrong_answer,
+        },
+    )
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["code"] == 0
+    assert body["data"]["isCorrect"] is False
+    assert body["data"]["correctAnswer"] == first_question["answer"]
+
+
 def test_generate_report_after_answers():
     generated = client.post(
         "/api/generate-quiz",

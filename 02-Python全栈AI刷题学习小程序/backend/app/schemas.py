@@ -1,6 +1,6 @@
 from typing import Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 QuestionType = Literal["single", "multiple", "judge"]
@@ -85,6 +85,13 @@ class SubmitAnswerRequest(BaseModel):
     quizId: str = Field(min_length=1)
     questionId: str = Field(min_length=1)
     answer: list[str] = Field(min_length=1)
+
+    @field_validator("answer", mode="before")
+    @classmethod
+    def normalize_single_answer(cls, value):
+        if isinstance(value, str):
+            return [value]
+        return value
 
 
 class AnswerResult(BaseModel):
