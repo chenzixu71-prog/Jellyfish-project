@@ -1,7 +1,11 @@
 from fastapi.testclient import TestClient
 
+from app import config
 from app.main import app
 
+
+config.AI_PROVIDER = "mock"
+config.SEARCH_PROVIDER = "mock"
 
 client = TestClient(app)
 

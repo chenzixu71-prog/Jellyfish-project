@@ -1,4 +1,6 @@
 import httpx
+import pytest
+from fastapi import HTTPException
 
 from app.services.ai_service import DeepSeekClient, build_quiz_prompt, parse_json_object
 from app.services.search_service import SourceContext, SourceDocument
@@ -161,3 +163,22 @@ def test_build_quiz_prompt_rejects_generic_learning_questions():
     assert "Do not create generic stems" in prompt
     assert "Each question stem must contain a concrete term" in prompt
     assert "knowledge_point must be a specific domain point" in prompt
+
+
+def test_deepseek_client_maps_payment_required_to_readable_error():
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(402, json={"error": {"message": "Payment Required"}})
+
+    client = DeepSeekClient(
+        api_key="test-key",
+        base_url="https://api.deepseek.com",
+        model="deepseek-v4-flash",
+        http_client=httpx.Client(transport=httpx.MockTransport(handler)),
+    )
+
+    with pytest.raises(HTTPException) as exc_info:
+        client.generate_quiz("Git")
+
+    assert exc_info.value.status_code == 502
+    assert "DeepSeek API" in exc_info.value.detail
+    assert "余额不足" in exc_info.value.detail

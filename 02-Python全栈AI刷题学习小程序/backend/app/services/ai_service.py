@@ -2,6 +2,7 @@ import json
 import re
 
 import httpx
+from fastapi import HTTPException
 
 from app import config
 from app.schemas import Quiz
@@ -78,25 +79,41 @@ class DeepSeekClient:
         if not self.api_key:
             raise ValueError("DEEPSEEK_API_KEY is required when AI_PROVIDER=deepseek")
 
-        response = self.http_client.post(
-            f"{self.base_url}/chat/completions",
-            headers={
-                "Authorization": f"Bearer {self.api_key}",
-                "Content-Type": "application/json",
-            },
-            json={
-                "model": self.model,
-                "messages": [
-                    {
-                        "role": "user",
-                        "content": build_quiz_prompt(content, source_context),
-                    }
-                ],
-                "temperature": 0.4,
-                "response_format": {"type": "json_object"},
-            },
-        )
-        response.raise_for_status()
+        try:
+            response = self.http_client.post(
+                f"{self.base_url}/chat/completions",
+                headers={
+                    "Authorization": f"Bearer {self.api_key}",
+                    "Content-Type": "application/json",
+                },
+                json={
+                    "model": self.model,
+                    "messages": [
+                        {
+                            "role": "user",
+                            "content": build_quiz_prompt(content, source_context),
+                        }
+                    ],
+                    "temperature": 0.4,
+                    "response_format": {"type": "json_object"},
+                },
+            )
+            response.raise_for_status()
+        except httpx.HTTPStatusError as exc:
+            if exc.response.status_code == 402:
+                raise HTTPException(
+                    status_code=502,
+                    detail="DeepSeek API 余额不足或账号未开通计费，请充值后重试。",
+                ) from exc
+            raise HTTPException(
+                status_code=502,
+                detail=f"DeepSeek API 调用失败：HTTP {exc.response.status_code}",
+            ) from exc
+        except httpx.HTTPError as exc:
+            raise HTTPException(
+                status_code=502,
+                detail="DeepSeek API 网络请求失败，请稍后重试。",
+            ) from exc
         payload = response.json()
         raw_content = payload["choices"][0]["message"]["content"]
         quiz_payload = parse_json_object(raw_content)
