@@ -107,10 +107,16 @@ def supplement_knowledge_base(
 def start_quiz_from_knowledge_base(owner_id: str, knowledge_base_id: str):
     knowledge_base = get_knowledge_base(owner_id, knowledge_base_id)
     quiz_content = (
-        f"请基于以下知识库生成闯关题。\n"
-        f"知识库标题：{knowledge_base.title}\n"
-        f"知识库摘要：{knowledge_base.summary}\n"
-        f"知识库内容：\n{knowledge_base.content}"
+        "Generate quiz questions from this knowledge base only.\n"
+        "Hard constraints:\n"
+        "- Do not generate generic learning-method questions.\n"
+        "- Every question must test one concrete detail from the knowledge base content.\n"
+        "- Every option must be related to the knowledge base domain.\n"
+        "- Use the knowledge base content and included source summaries as the source of truth.\n"
+        "- If the knowledge base is about a new product/tool/framework, ask about that exact product/tool/framework, not a similarly named concept.\n\n"
+        f"Knowledge base title: {knowledge_base.title}\n"
+        f"Knowledge base summary: {knowledge_base.summary}\n"
+        f"Knowledge base content:\n{knowledge_base.content}"
     )
     quiz = create_quiz(owner_id, quiz_content, web_search_enabled=False)
     quiz.title = knowledge_base.title

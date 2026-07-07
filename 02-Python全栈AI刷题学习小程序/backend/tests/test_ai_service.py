@@ -152,3 +152,12 @@ def test_build_quiz_prompt_includes_reference_sources():
     assert "Harness Engineering" in prompt
     assert "Reference sources" in prompt
     assert "Harness is a software delivery platform." in prompt
+
+
+def test_build_quiz_prompt_rejects_generic_learning_questions():
+    prompt = build_quiz_prompt("Harness Engineering is a software delivery platform.")
+
+    assert "Questions must test the actual domain knowledge" in prompt
+    assert "Do not create generic stems" in prompt
+    assert "Each question stem must contain a concrete term" in prompt
+    assert "knowledge_point must be a specific domain point" in prompt

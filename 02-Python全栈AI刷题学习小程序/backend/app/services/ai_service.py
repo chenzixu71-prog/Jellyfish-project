@@ -20,6 +20,13 @@ Output rules:
 5. Explanations must be beginner-friendly.
 6. If reference sources are provided, prioritize them over your training data. Do not invent facts that conflict with the sources.
 7. If sources are missing or weak, stay close to the user's topic and say only what can be reasonably inferred.
+8. Questions must test the actual domain knowledge in the learner content, not generic learning methods.
+9. Do not create generic stems like "What should you do first when learning X?", "Why review after answering?", or "What is useful for revision?".
+10. Do not use generic options like "understand the core concept first", "memorize all details", "skip basics", or "guess randomly".
+11. Each question stem must contain a concrete term, fact, concept, API, tool name, rule, process, or example from the learner content or reference sources.
+12. Every wrong option must be a plausible domain-related misconception. Avoid options about UI, page color, study attitude, or app workflow unless the learner content is specifically about those topics.
+13. knowledge_point must be a specific domain point, not labels such as "learning start", "instant feedback", "review", or "question structure".
+14. If the content is too short, infer only the minimum needed from reliable sources/context and make the limitation clear in the summary.
 
 JSON shape:
 {{
