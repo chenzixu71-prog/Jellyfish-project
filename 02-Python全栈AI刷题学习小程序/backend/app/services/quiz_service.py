@@ -13,14 +13,21 @@ from app.schemas import (
     WrongQuestion,
 )
 from app.services.ai_service import generate_quiz
+from app.services.search_service import SourceProvider, build_source_context
 from app.storage.memory_store import store
 
 
-def create_quiz(session_id: str, content: str) -> Quiz:
+def create_quiz(
+    session_id: str,
+    content: str,
+    web_search_enabled: bool = False,
+    source_provider: SourceProvider | None = None,
+) -> Quiz:
     if not content.strip():
         raise HTTPException(status_code=422, detail="content is required")
 
-    quiz = generate_quiz(content)
+    source_context = build_source_context(content, web_search_enabled, source_provider)
+    quiz = generate_quiz(content, source_context)
     store.save_quiz(session_id, quiz)
     return quiz
 

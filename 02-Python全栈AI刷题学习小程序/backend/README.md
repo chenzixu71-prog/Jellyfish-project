@@ -104,3 +104,19 @@ cd backend
 ```text
 5 passed
 ```
+
+## Source-aware quiz generation
+
+Current backend supports source-aware generation behind `webSearchEnabled`:
+
+- `POST /api/generate-quiz` accepts JSON field `webSearchEnabled`.
+- `POST /api/generate-quiz-from-assets` accepts form field `webSearchEnabled`.
+- When `webSearchEnabled=false`, the backend keeps the existing mock/DeepSeek flow.
+- When `webSearchEnabled=true` and `SEARCH_PROVIDER=tavily`, the backend uses Tavily search/extract context before calling DeepSeek.
+- If Tavily is missing, times out, or fails, quiz generation degrades to empty source context and continues.
+
+Uploaded assets:
+
+- Text files: `.txt`, `.md`, `.csv`, `.json`, up to 3 files and 2MB each.
+- Images: up to 10 images and 2MB each.
+- Image OCR is optional. If `Pillow`, `pytesseract`, and the local Tesseract binary are available, image text is extracted. Otherwise the backend records image metadata and continues.

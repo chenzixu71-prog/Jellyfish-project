@@ -122,7 +122,7 @@ def current_user(authorization: str | None = Header(default=None)):
 @router.post("/api/generate-quiz", response_model=ApiResponse)
 def generate_quiz(payload: GenerateQuizRequest, authorization: str | None = Header(default=None)):
     owner_id = resolve_learning_owner(payload.sessionId, authorization)
-    quiz = create_quiz(owner_id, payload.content)
+    quiz = create_quiz(owner_id, payload.content, payload.webSearchEnabled)
     return ok(quiz.model_dump())
 
 
@@ -130,13 +130,14 @@ def generate_quiz(payload: GenerateQuizRequest, authorization: str | None = Head
 async def generate_quiz_from_assets(
     sessionId: str = Form(...),
     content: str = Form(""),
+    webSearchEnabled: bool = Form(False),
     files: list[UploadFile] = File(default=[]),
     images: list[UploadFile] = File(default=[]),
     authorization: str | None = Header(default=None),
 ):
     parsed = await parse_learning_assets(content, files, images)
     owner_id = resolve_learning_owner(sessionId, authorization)
-    quiz = create_quiz(owner_id, parsed.content)
+    quiz = create_quiz(owner_id, parsed.content, webSearchEnabled)
     payload = quiz.model_dump()
     payload["source"] = {
         "fileCount": parsed.file_count,

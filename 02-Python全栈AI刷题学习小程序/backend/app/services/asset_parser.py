@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from io import BytesIO
 from pathlib import Path
 
 from fastapi import HTTPException, UploadFile
@@ -31,24 +32,18 @@ async def parse_learning_assets(
     notes: list[str] = []
     chunks: list[str] = []
     if text_content.strip():
-        chunks.append(f"用户输入文本：\n{text_content.strip()}")
+        chunks.append(f"User text:\n{text_content.strip()}")
 
     for upload in files:
         chunks.append(await parse_text_file(upload))
 
     for image in images:
-        validate_image(image)
-        notes.append(f"已接收图片：{image.filename or '未命名图片'}")
-
-    if images:
-        chunks.append(
-            "图片素材说明：用户上传了图片，但当前 DeepSeek 官方 API 未提供图片输入能力。"
-            "本次出题只能根据文件名和用户文字生成；如图片里有关键知识，请用户补充文字或后续接入 OCR。"
-        )
+        chunks.append(await parse_image_file(image))
+        notes.append(f"received image: {image.filename or 'unnamed image'}")
 
     content = "\n\n".join(chunk for chunk in chunks if chunk.strip())
     if not content.strip():
-        raise HTTPException(status_code=422, detail="请至少输入文本或上传可解析的文本文件")
+        raise HTTPException(status_code=422, detail="请至少输入文本或上传可解析的文件")
 
     return ParsedAssets(
         content=content,
@@ -59,7 +54,7 @@ async def parse_learning_assets(
 
 
 async def parse_text_file(upload: UploadFile) -> str:
-    filename = upload.filename or "未命名文件"
+    filename = upload.filename or "unnamed-file"
     suffix = Path(filename).suffix.lower()
     if suffix not in SUPPORTED_TEXT_EXTENSIONS:
         raise HTTPException(
@@ -75,14 +70,44 @@ async def parse_text_file(upload: UploadFile) -> str:
     if not text.strip():
         raise HTTPException(status_code=422, detail=f"{filename} 没有可解析文本")
 
-    return f"文件 {filename} 内容：\n{text.strip()}"
+    return f"File {filename} content:\n{text.strip()}"
+
+
+async def parse_image_file(upload: UploadFile) -> str:
+    validate_image(upload)
+    filename = upload.filename or "unnamed-image"
+    raw = await upload.read()
+    if len(raw) > MAX_FILE_BYTES:
+        raise HTTPException(status_code=400, detail=f"{filename} 超过 2MB 限制")
+
+    ocr_text = try_ocr_image(raw)
+    if ocr_text.strip():
+        return f"Image {filename} OCR text:\n{ocr_text.strip()}"
+    return (
+        f"Image {filename} was uploaded. OCR is not available or no text was detected. "
+        "Use the learner text, file names, and other uploaded text files as the main quiz context."
+    )
 
 
 def validate_image(upload: UploadFile) -> None:
-    filename = upload.filename or "未命名图片"
+    filename = upload.filename or "unnamed-image"
     content_type = upload.content_type or ""
     if not content_type.startswith("image/"):
         raise HTTPException(status_code=400, detail=f"{filename} 不是图片文件")
+
+
+def try_ocr_image(raw: bytes) -> str:
+    try:
+        from PIL import Image
+        import pytesseract
+    except ImportError:
+        return ""
+
+    try:
+        image = Image.open(BytesIO(raw))
+        return pytesseract.image_to_string(image, lang="chi_sim+eng")
+    except Exception:
+        return ""
 
 
 def decode_text(raw: bytes) -> str:

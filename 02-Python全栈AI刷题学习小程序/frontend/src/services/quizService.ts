@@ -155,12 +155,13 @@ export function getOrCreateSessionId(): string {
   return sessionId
 }
 
-export function generateQuiz(content: string): Promise<Quiz> {
+export function generateQuiz(content: string, webSearchEnabled = false): Promise<Quiz> {
   return request<Quiz>('/api/generate-quiz', 'POST', {
     sessionId: getOrCreateSessionId(),
     inputType: 'text',
     content,
-    questionCount: 5
+    questionCount: 5,
+    webSearchEnabled
   })
 }
 

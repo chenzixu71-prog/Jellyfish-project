@@ -6,20 +6,47 @@ import httpx
 from app import config
 from app.schemas import Quiz
 from app.services.mock_ai_service import generate_mock_quiz
+from app.services.search_service import SourceContext, format_source_context
 
 
-QUIZ_SYSTEM_PROMPT = """你是一名专业的 AI 学习教练，请根据用户提供的学习内容生成一组用于小程序闯关答题的题目。
+QUIZ_SYSTEM_PROMPT = """You are a professional AI learning coach.
+Generate a mini-program quiz from the learner's content.
 
-要求：
-1. 输出必须是合法 JSON，不要输出任何 JSON 之外的内容。
-2. 题目总数为 5 题。
-3. 题型包含：3 道单选题、1 道多选题、1 道判断题。
-4. 每道题必须包含：题目编号、题型、题干、选项、正确答案、详细讲解、知识点标签、难度。
-5. 讲解必须适合初学者阅读，避免过度学术化。
-6. 如果用户输入内容过短，可以基于常识进行合理补充，但不要偏离主题。
+Output rules:
+1. Output valid JSON only. Do not output any text outside JSON.
+2. Generate exactly 5 questions.
+3. Include 3 single-choice questions, 1 multiple-choice question, and 1 true/false question.
+4. Every question must include: id, type, stem, options, answer, explanation, knowledge_point, difficulty.
+5. Explanations must be beginner-friendly.
+6. If reference sources are provided, prioritize them over your training data. Do not invent facts that conflict with the sources.
+7. If sources are missing or weak, stay close to the user's topic and say only what can be reasonably inferred.
 
-用户学习内容如下：
+JSON shape:
+{{
+  "title": "learning topic",
+  "summary": "short topic summary",
+  "questions": [
+    {{
+      "id": "q1",
+      "type": "single",
+      "stem": "question",
+      "options": [
+        {{"key": "A", "text": "option A"}},
+        {{"key": "B", "text": "option B"}}
+      ],
+      "answer": ["A"],
+      "explanation": "explanation",
+      "knowledge_point": "knowledge point",
+      "difficulty": "easy"
+    }}
+  ]
+}}
+
+Learner content:
 {user_input}
+
+Reference sources:
+{source_context}
 """
 
 
@@ -36,7 +63,11 @@ class DeepSeekClient:
         self.model = model
         self.http_client = http_client or httpx.Client(timeout=30)
 
-    def generate_quiz(self, content: str) -> Quiz:
+    def generate_quiz(
+        self,
+        content: str,
+        source_context: SourceContext | None = None,
+    ) -> Quiz:
         if not self.api_key:
             raise ValueError("DEEPSEEK_API_KEY is required when AI_PROVIDER=deepseek")
 
@@ -51,7 +82,7 @@ class DeepSeekClient:
                 "messages": [
                     {
                         "role": "user",
-                        "content": QUIZ_SYSTEM_PROMPT.format(user_input=content),
+                        "content": build_quiz_prompt(content, source_context),
                     }
                 ],
                 "temperature": 0.4,
@@ -65,6 +96,19 @@ class DeepSeekClient:
         return Quiz.model_validate(quiz_payload)
 
 
+def build_quiz_prompt(
+    content: str,
+    source_context: SourceContext | None = None,
+) -> str:
+    formatted_context = format_source_context(source_context or SourceContext())
+    if not formatted_context:
+        formatted_context = "No external sources provided."
+    return QUIZ_SYSTEM_PROMPT.format(
+        user_input=content,
+        source_context=formatted_context,
+    )
+
+
 def parse_json_object(raw_content: str) -> dict:
     cleaned = raw_content.strip()
     fenced = re.search(r"```(?:json)?\s*(.*?)\s*```", cleaned, re.DOTALL)
@@ -73,7 +117,7 @@ def parse_json_object(raw_content: str) -> dict:
     return json.loads(cleaned)
 
 
-def generate_quiz(content: str) -> Quiz:
+def generate_quiz(content: str, source_context: SourceContext | None = None) -> Quiz:
     if config.AI_PROVIDER != "deepseek":
         return generate_mock_quiz(content)
 
@@ -82,4 +126,4 @@ def generate_quiz(content: str) -> Quiz:
         base_url=config.DEEPSEEK_BASE_URL,
         model=config.AI_MODEL,
     )
-    return client.generate_quiz(content)
+    return client.generate_quiz(content, source_context)

@@ -34,6 +34,7 @@ class GenerateQuizRequest(BaseModel):
     inputType: Literal["text"] = "text"
     content: str = Field(min_length=1)
     questionCount: int = Field(default=5, ge=5, le=5)
+    webSearchEnabled: bool = False
 
 
 class WechatLoginRequest(BaseModel):

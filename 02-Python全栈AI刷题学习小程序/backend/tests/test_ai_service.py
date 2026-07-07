@@ -1,6 +1,7 @@
 import httpx
 
-from app.services.ai_service import DeepSeekClient, parse_json_object
+from app.services.ai_service import DeepSeekClient, build_quiz_prompt, parse_json_object
+from app.services.search_service import SourceContext, SourceDocument
 
 
 def test_parse_json_object_accepts_plain_json():
@@ -131,3 +132,23 @@ def test_deepseek_client_builds_chat_completion_request():
 
     assert quiz.title == "Git"
     assert len(quiz.questions) == 5
+
+
+def test_build_quiz_prompt_includes_reference_sources():
+    prompt = build_quiz_prompt(
+        "Harness Engineering",
+        SourceContext(
+            documents=[
+                SourceDocument(
+                    title="Harness docs",
+                    url="https://developer.harness.io/docs",
+                    content="Harness is a software delivery platform.",
+                    source_type="search",
+                )
+            ]
+        ),
+    )
+
+    assert "Harness Engineering" in prompt
+    assert "Reference sources" in prompt
+    assert "Harness is a software delivery platform." in prompt
