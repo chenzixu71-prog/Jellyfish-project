@@ -1,3 +1,5 @@
+import hashlib
+import re
 import uuid
 from datetime import datetime, timezone
 
@@ -5,6 +7,7 @@ from fastapi import HTTPException
 
 from app.schemas import (
     KnowledgeBase,
+    KnowledgeBaseChunk,
     KnowledgeBaseMaterial,
     KnowledgeBaseSummary,
 )
@@ -15,6 +18,9 @@ from app.storage.memory_store import store
 
 MAX_KNOWLEDGE_BASES_PER_OWNER = 5
 MAX_KNOWLEDGE_CONTENT_CHARS = 12000
+CHUNK_WORD_SIZE = 180
+CHUNK_WORD_OVERLAP = 35
+MAX_RETRIEVED_CHUNKS = 5
 
 
 def create_knowledge_base(
@@ -26,7 +32,7 @@ def create_knowledge_base(
 ) -> KnowledgeBase:
     normalized_content = normalize_content(content)
     if store.count_knowledge_bases(owner_id) >= MAX_KNOWLEDGE_BASES_PER_OWNER:
-        raise HTTPException(status_code=400, detail="每个人最多只能创建 5 个知识库")
+        raise HTTPException(status_code=400, detail="Each user can create at most 5 knowledge bases.")
 
     source_context = build_source_context(
         normalized_content,
@@ -34,20 +40,24 @@ def create_knowledge_base(
         source_provider,
     )
     now = now_iso()
+    content_with_sources = build_content_with_sources(normalized_content, source_context)
+    content_hash = hash_content(content_with_sources)
     knowledge_base = KnowledgeBase(
         id=f"kb-{uuid.uuid4().hex[:12]}",
         title=build_title(title, normalized_content),
         summary=build_summary(normalized_content, source_context),
-        content=build_content_with_sources(normalized_content, source_context),
+        content=content_with_sources,
         materials=[
             KnowledgeBaseMaterial(
                 id=f"mat-{uuid.uuid4().hex[:10]}",
                 type="text",
-                name="初始知识",
+                name="initial knowledge",
                 summary=trim_for_summary(normalized_content, 90),
+                contentHash=content_hash,
                 createdAt=now,
             )
         ],
+        chunks=build_chunks(content_with_sources, "initial"),
         sourceMeta=build_source_meta(web_search_enabled, source_context),
         createdAt=now,
         updatedAt=now,
@@ -63,7 +73,7 @@ def list_knowledge_bases(owner_id: str) -> list[KnowledgeBaseSummary]:
 def get_knowledge_base(owner_id: str, knowledge_base_id: str) -> KnowledgeBase:
     knowledge_base = store.get_knowledge_base(owner_id, knowledge_base_id)
     if knowledge_base is None:
-        raise HTTPException(status_code=404, detail="知识库不存在")
+        raise HTTPException(status_code=404, detail="Knowledge base not found.")
     return knowledge_base
 
 
@@ -83,18 +93,29 @@ def supplement_knowledge_base(
     )
     now = now_iso()
     supplement = build_content_with_sources(normalized_content, source_context)
+    content_hash = hash_content(supplement)
+    if any(material.contentHash == content_hash for material in knowledge_base.materials):
+        knowledge_base.updatedAt = now
+        store.save_knowledge_base(owner_id, knowledge_base)
+        return knowledge_base
+
     knowledge_base.content = trim_for_storage(
-        f"{knowledge_base.content}\n\n[补充资料]\n{supplement}"
+        f"{knowledge_base.content}\n\n[Supplement]\n{supplement}"
     )
     knowledge_base.summary = build_summary(knowledge_base.content, source_context)
     knowledge_base.updatedAt = now
+    knowledge_base.chunks = merge_chunks(
+        knowledge_base.chunks,
+        build_chunks(supplement, "supplement"),
+    )
     knowledge_base.materials.insert(
         0,
         KnowledgeBaseMaterial(
             id=f"mat-{uuid.uuid4().hex[:10]}",
             type="text",
-            name="补充资料",
+            name="supplement",
             summary=trim_for_summary(normalized_content, 90),
+            contentHash=content_hash,
             createdAt=now,
         ),
     )
@@ -106,21 +127,28 @@ def supplement_knowledge_base(
 
 def start_quiz_from_knowledge_base(owner_id: str, knowledge_base_id: str):
     knowledge_base = get_knowledge_base(owner_id, knowledge_base_id)
+    retrieved_chunks = retrieve_chunks(
+        knowledge_base,
+        f"{knowledge_base.title}\n{knowledge_base.summary}",
+    )
+    retrieved_context = format_retrieved_chunks(retrieved_chunks)
     quiz_content = (
         "Generate quiz questions from this knowledge base only.\n"
         "Hard constraints:\n"
         "- Do not generate generic learning-method questions.\n"
-        "- Every question must test one concrete detail from the knowledge base content.\n"
+        "- Every question must test one concrete detail from the retrieved chunks.\n"
         "- Every option must be related to the knowledge base domain.\n"
-        "- Use the knowledge base content and included source summaries as the source of truth.\n"
-        "- If the knowledge base is about a new product/tool/framework, ask about that exact product/tool/framework, not a similarly named concept.\n\n"
+        "- Use retrieved chunks and included source summaries as the source of truth.\n"
+        "- If the knowledge base is about a new product/tool/framework, ask about that exact product/tool/framework, not a similarly named concept.\n"
+        "- Prefer concepts that appear in multiple chunks or have explicit keywords.\n\n"
         f"Knowledge base title: {knowledge_base.title}\n"
         f"Knowledge base summary: {knowledge_base.summary}\n"
-        f"Knowledge base content:\n{knowledge_base.content}"
+        f"Most relevant knowledge chunks:\n{retrieved_context}\n\n"
+        f"Full knowledge base fallback:\n{knowledge_base.content[:3500]}"
     )
     quiz = create_quiz(owner_id, quiz_content, web_search_enabled=False)
     quiz.title = knowledge_base.title
-    quiz.summary = f"基于知识库“{knowledge_base.title}”生成的 5 题闯关练习。"
+    quiz.summary = f'Generated from knowledge base "{knowledge_base.title}".'
     quiz.sourceMeta = knowledge_base.sourceMeta
     store.save_quiz(owner_id, quiz)
     knowledge_base.quizIds.insert(0, quiz.quizId)
@@ -149,7 +177,7 @@ def build_content_with_sources(content: str, source_context: SourceContext) -> s
         for document in source_context.documents[:5]
     ]
     return trim_for_storage(
-        f"{content}\n\n[联网资料摘要]\n" + "\n".join(source_lines)
+        f"{content}\n\n[Search source summaries]\n" + "\n".join(source_lines)
     )
 
 
@@ -157,21 +185,21 @@ def build_title(title: str, content: str) -> str:
     cleaned_title = title.strip()
     if cleaned_title:
         return cleaned_title[:30]
-    first_line = content.strip().splitlines()[0] if content.strip() else "水母知识库"
-    return trim_for_summary(first_line, 18) or "水母知识库"
+    first_line = content.strip().splitlines()[0] if content.strip() else "Jelly knowledge base"
+    return trim_for_summary(first_line, 18) or "Jelly knowledge base"
 
 
 def build_summary(content: str, source_context: SourceContext) -> str:
     suffix = ""
     if source_context.documents:
-        suffix = f" 已参考 {len(source_context.documents)} 条联网资料。"
+        suffix = f" Referenced {len(source_context.documents)} web sources."
     return f"{trim_for_summary(content, 80)}{suffix}"
 
 
 def normalize_content(content: str) -> str:
     cleaned = content.strip()
     if not cleaned:
-        raise HTTPException(status_code=422, detail="请至少输入知识内容")
+        raise HTTPException(status_code=422, detail="Knowledge content is required.")
     return trim_for_storage(cleaned)
 
 
@@ -188,3 +216,108 @@ def trim_for_summary(content: str, limit: int) -> str:
 
 def now_iso() -> str:
     return datetime.now(timezone.utc).isoformat()
+
+
+def hash_content(content: str) -> str:
+    return hashlib.sha256(content.strip().encode("utf-8")).hexdigest()[:16]
+
+
+def build_chunks(content: str, source: str) -> list[KnowledgeBaseChunk]:
+    normalized = " ".join(content.split())
+    if not normalized:
+        return []
+
+    words = normalized.split()
+    if len(words) <= CHUNK_WORD_SIZE:
+        texts = [normalized]
+    else:
+        texts = []
+        start = 0
+        while start < len(words):
+            end = min(start + CHUNK_WORD_SIZE, len(words))
+            texts.append(" ".join(words[start:end]))
+            if end == len(words):
+                break
+            start = max(end - CHUNK_WORD_OVERLAP, start + 1)
+
+    chunks: list[KnowledgeBaseChunk] = []
+    for index, text in enumerate(texts):
+        chunks.append(
+            KnowledgeBaseChunk(
+                id=f"chunk-{hash_content(source + ':' + str(index) + ':' + text)}",
+                text=text,
+                keywords=extract_keywords(text),
+                source=source,
+            )
+        )
+    return chunks
+
+
+def merge_chunks(
+    existing_chunks: list[KnowledgeBaseChunk],
+    next_chunks: list[KnowledgeBaseChunk],
+) -> list[KnowledgeBaseChunk]:
+    seen = {chunk.id for chunk in existing_chunks}
+    merged = list(existing_chunks)
+    for chunk in next_chunks:
+        if chunk.id not in seen:
+            merged.append(chunk)
+            seen.add(chunk.id)
+    return merged[:80]
+
+
+def retrieve_chunks(
+    knowledge_base: KnowledgeBase,
+    query: str,
+    limit: int = MAX_RETRIEVED_CHUNKS,
+) -> list[KnowledgeBaseChunk]:
+    chunks = knowledge_base.chunks or build_chunks(knowledge_base.content, "legacy")
+    scored = [(score_chunk(query, chunk), chunk) for chunk in chunks]
+    scored.sort(key=lambda item: item[0], reverse=True)
+    top = [chunk for score, chunk in scored if score > 0][:limit]
+    if top:
+        return top
+    return chunks[:limit]
+
+
+def score_chunk(query: str, chunk: KnowledgeBaseChunk) -> float:
+    query_keywords = set(extract_keywords(query))
+    chunk_keywords = set(chunk.keywords or extract_keywords(chunk.text))
+    score = len(query_keywords & chunk_keywords) * 2.0
+    score += len(cjk_bigrams(query) & cjk_bigrams(chunk.text)) * 0.8
+    if query.strip() and query.strip() in chunk.text:
+        score += 3.0
+    return score
+
+
+def format_retrieved_chunks(chunks: list[KnowledgeBaseChunk]) -> str:
+    if not chunks:
+        return "No relevant chunks found."
+
+    lines = []
+    for index, chunk in enumerate(chunks, 1):
+        keywords = ", ".join(chunk.keywords[:8])
+        lines.append(
+            f"[Chunk {index} | source={chunk.source} | keywords={keywords}]\n{chunk.text[:1200]}"
+        )
+    return "\n\n".join(lines)
+
+
+def extract_keywords(text: str, limit: int = 18) -> list[str]:
+    lowered = text.lower()
+    latin_tokens = re.findall(r"[a-zA-Z][a-zA-Z0-9_-]{2,}", lowered)
+    cjk_tokens = list(cjk_bigrams(text))
+    candidates = latin_tokens + cjk_tokens
+    counts: dict[str, int] = {}
+    for token in candidates:
+        counts[token] = counts.get(token, 0) + 1
+    ordered = sorted(counts.items(), key=lambda item: (-item[1], item[0]))
+    return [token for token, _ in ordered[:limit]]
+
+
+def cjk_bigrams(text: str) -> set[str]:
+    return {
+        text[index:index + 2]
+        for index in range(len(text) - 1)
+        if all("\u4e00" <= char <= "\u9fff" for char in text[index:index + 2])
+    }

@@ -120,7 +120,15 @@ class KnowledgeBaseMaterial(BaseModel):
     type: Literal["text", "file", "image", "search"]
     name: str
     summary: str
+    contentHash: str = ""
     createdAt: str = ""
+
+
+class KnowledgeBaseChunk(BaseModel):
+    id: str
+    text: str
+    keywords: list[str] = []
+    source: str = ""
 
 
 class KnowledgeBaseSummary(BaseModel):
@@ -139,6 +147,7 @@ class KnowledgeBase(BaseModel):
     summary: str
     content: str
     materials: list[KnowledgeBaseMaterial]
+    chunks: list[KnowledgeBaseChunk] = []
     sourceMeta: SourceMeta | None = None
     quizIds: list[str] = []
     createdAt: str = ""
