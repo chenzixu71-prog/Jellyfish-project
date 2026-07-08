@@ -25,3 +25,6 @@ WECHAT_APP_ID = os.getenv("WECHAT_APP_ID", "")
 WECHAT_APP_SECRET = os.getenv("WECHAT_APP_SECRET", "")
 WECHAT_AUTH_MODE = os.getenv("WECHAT_AUTH_MODE", "mock")
 AUTH_TOKEN_TTL_DAYS = int(os.getenv("AUTH_TOKEN_TTL_DAYS", "7"))
+
+STORAGE_BACKEND = os.getenv("STORAGE_BACKEND", "memory").lower()
+DATABASE_URL = os.getenv("DATABASE_URL", "")

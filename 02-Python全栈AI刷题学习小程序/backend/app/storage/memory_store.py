@@ -330,4 +330,18 @@ class MemoryStore:
         )
 
 
-store = MemoryStore()
+def build_store():
+    from app.config import DATABASE_URL, STORAGE_BACKEND
+
+    if STORAGE_BACKEND == "mysql":
+        from app.storage.sql_store import SqlStore
+
+        return SqlStore(DATABASE_URL)
+    if STORAGE_BACKEND != "memory":
+        raise RuntimeError(
+            f"Unsupported STORAGE_BACKEND={STORAGE_BACKEND}. Use memory or mysql."
+        )
+    return MemoryStore()
+
+
+store = build_store()

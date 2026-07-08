@@ -120,3 +120,27 @@ Uploaded assets:
 - Text files: `.txt`, `.md`, `.csv`, `.json`, up to 3 files and 2MB each.
 - Images: up to 10 images and 2MB each.
 - Image OCR is optional. If `Pillow`, `pytesseract`, and the local Tesseract binary are available, image text is extracted. Otherwise the backend records image metadata and continues.
+
+## Storage backend
+
+The backend now supports two storage modes:
+
+- `STORAGE_BACKEND=memory`: default local development mode. Data is lost after the backend restarts.
+- `STORAGE_BACKEND=mysql`: persistent mode. Quizzes, answers, reports, wrong questions, profiles, auth sessions, and knowledge bases are saved in MySQL.
+
+Example local `.env` values:
+
+```text
+STORAGE_BACKEND=mysql
+DATABASE_URL=mysql+pymysql://root:password@127.0.0.1:3306/jellyfish_learning?charset=utf8mb4
+```
+
+Before enabling MySQL mode, create the database:
+
+```sql
+CREATE DATABASE jellyfish_learning CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+The first persistence version stores product aggregates as JSON records in
+`jelly_store_records`. This keeps the current MVP stable. Later migrations can
+split high-frequency data into normalized relational tables.
