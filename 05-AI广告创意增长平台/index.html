@@ -1,0 +1,176 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI 广告创意增长平台</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">AD</div>
+        <div>
+          <strong>AdGrowth AI</strong>
+          <span>广告创意增长平台</span>
+        </div>
+      </div>
+      <nav>
+        <button class="nav-item active" data-view="dashboard">看板</button>
+        <button class="nav-item" data-view="brief">创建 Brief</button>
+        <button class="nav-item" data-view="creatives">创意工作台</button>
+        <button class="nav-item" data-view="experiments">A/B 实验</button>
+        <button class="nav-item" data-view="reports">AI 复盘</button>
+      </nav>
+      <div class="sidebar-note">
+        <strong>产品闭环</strong>
+        <p>Brief -> 创意 -> 实验 -> 数据 -> 复盘 -> 下一轮优化</p>
+      </div>
+    </aside>
+
+    <main class="app">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Commercial AI Product Demo</p>
+          <h1>AI 广告创意增长平台</h1>
+        </div>
+        <div class="top-actions">
+          <button id="seedBtn" class="secondary-btn">载入示例数据</button>
+          <button id="resetBtn" class="ghost-btn">清空数据</button>
+        </div>
+      </header>
+
+      <section id="dashboard" class="view active">
+        <div class="metrics-grid" id="metricsGrid"></div>
+        <div class="content-grid">
+          <section class="panel wide">
+            <div class="panel-header">
+              <div>
+                <h2>创意表现排行</h2>
+                <p>按 ROI、CTR、CPA 综合观察素材质量</p>
+              </div>
+            </div>
+            <div id="leaderboard" class="leaderboard"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-header">
+              <div>
+                <h2>AI 今日建议</h2>
+                <p>根据当前模拟数据生成</p>
+              </div>
+            </div>
+            <div id="dailyAdvice" class="advice-box"></div>
+          </section>
+        </div>
+      </section>
+
+      <section id="brief" class="view">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>创建广告 Brief</h2>
+              <p>填写产品、目标人群和投放目标，生成多版本广告创意</p>
+            </div>
+          </div>
+          <form id="briefForm" class="brief-form">
+            <label>
+              产品名称
+              <input name="productName" value="AI 面试简历优化工具" required />
+            </label>
+            <label>
+              行业
+              <input name="industry" value="求职教育 / AI 工具" required />
+            </label>
+            <label>
+              目标人群
+              <input name="audience" value="准备转行 AI 产品经理的非科班求职者" required />
+            </label>
+            <label>
+              核心卖点
+              <textarea name="sellingPoints" required>用 AI 分析岗位 JD，自动优化简历亮点，生成面试问答和项目包装建议</textarea>
+            </label>
+            <div class="form-row">
+              <label>
+                投放平台
+                <select name="platform">
+                  <option>小红书</option>
+                  <option>抖音</option>
+                  <option>Meta Ads</option>
+                  <option>Google Search</option>
+                  <option>朋友圈广告</option>
+                </select>
+              </label>
+              <label>
+                转化目标
+                <select name="goal">
+                  <option>注册试用</option>
+                  <option>购买订阅</option>
+                  <option>私域加微</option>
+                  <option>预约 Demo</option>
+                </select>
+              </label>
+              <label>
+                风格
+                <select name="tone">
+                  <option>直接转化</option>
+                  <option>痛点共鸣</option>
+                  <option>专业可信</option>
+                  <option>年轻轻松</option>
+                </select>
+              </label>
+            </div>
+            <button class="primary-btn" type="submit">生成广告创意</button>
+          </form>
+        </section>
+      </section>
+
+      <section id="creatives" class="view">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>创意工作台</h2>
+              <p>管理 AI 生成的标题、文案、CTA、视频脚本和落地页文案</p>
+            </div>
+            <button id="generateFromLatestBtn" class="secondary-btn">基于最新 Brief 再生成</button>
+          </div>
+          <div id="creativeList" class="creative-list"></div>
+        </section>
+      </section>
+
+      <section id="experiments" class="view">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>A/B 测试管理</h2>
+              <p>用实验假设管理创意版本，沉淀投放结论</p>
+            </div>
+            <button id="createExperimentBtn" class="primary-btn">创建实验</button>
+          </div>
+          <div id="experimentList" class="experiment-list"></div>
+        </section>
+      </section>
+
+      <section id="reports" class="view">
+        <section class="panel">
+          <div class="panel-header">
+            <div>
+              <h2>AI 投放复盘</h2>
+              <p>自动解释胜出版本、短板指标和下一轮优化方向</p>
+            </div>
+            <button id="createReportBtn" class="primary-btn">生成复盘</button>
+          </div>
+          <div id="reportList" class="report-list"></div>
+        </section>
+      </section>
+    </main>
+
+    <template id="emptyStateTemplate">
+      <div class="empty-state">
+        <strong>暂无数据</strong>
+        <p>先创建广告 Brief 或载入示例数据。</p>
+      </div>
+    </template>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
