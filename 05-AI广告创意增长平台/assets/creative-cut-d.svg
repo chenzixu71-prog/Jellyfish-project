@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="560" viewBox="0 0 440 560" role="img" aria-label="专业可信广告切图">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#5925DC"/>
+      <stop offset="1" stop-color="#9E77ED"/>
+    </linearGradient>
+  </defs>
+  <rect width="440" height="560" rx="28" fill="url(#g)"/>
+  <rect x="34" y="34" width="156" height="28" rx="14" fill="#fff" opacity=".22"/>
+  <text x="34" y="126" fill="#fff" font-size="24" font-family="Microsoft YaHei, Arial" font-weight="700">产品经理面试逻辑</text>
+  <text x="34" y="178" fill="#fff" font-size="42" font-family="Microsoft YaHei, Arial" font-weight="800">把你的项目</text>
+  <text x="34" y="230" fill="#fff" font-size="42" font-family="Microsoft YaHei, Arial" font-weight="800">讲得更专业</text>
+  <rect x="34" y="294" width="372" height="118" rx="18" fill="#fff"/>
+  <text x="58" y="340" fill="#5925DC" font-size="22" font-family="Microsoft YaHei, Arial" font-weight="700">目标用户 / 需求 / 指标 / 迭代</text>
+  <text x="58" y="376" fill="#475467" font-size="20" font-family="Microsoft YaHei, Arial">按真实产品框架重构表达</text>
+  <rect x="34" y="456" width="196" height="50" rx="12" fill="#101828"/>
+  <text x="62" y="488" fill="#fff" font-size="20" font-family="Microsoft YaHei, Arial" font-weight="700">生成项目话术</text>
+</svg>

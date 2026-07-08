@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="440" height="560" viewBox="0 0 440 560" role="img" aria-label="痛点直击广告切图">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#155EEF"/>
+      <stop offset="1" stop-color="#6938EF"/>
+    </linearGradient>
+  </defs>
+  <rect width="440" height="560" rx="28" fill="url(#g)"/>
+  <circle cx="356" cy="94" r="52" fill="#fff" opacity=".16"/>
+  <rect x="34" y="34" width="168" height="28" rx="14" fill="#fff" opacity=".22"/>
+  <text x="34" y="128" fill="#fff" font-size="26" font-family="Microsoft YaHei, Arial" font-weight="700">非科班转 AI 产品</text>
+  <text x="34" y="170" fill="#fff" font-size="42" font-family="Microsoft YaHei, Arial" font-weight="800">别再只写</text>
+  <text x="34" y="222" fill="#fff" font-size="42" font-family="Microsoft YaHei, Arial" font-weight="800">负责需求分析</text>
+  <rect x="34" y="282" width="372" height="116" rx="18" fill="#fff" opacity=".14"/>
+  <text x="58" y="326" fill="#fff" font-size="22" font-family="Microsoft YaHei, Arial">AI 帮你拆 JD、提炼项目亮点</text>
+  <text x="58" y="362" fill="#fff" font-size="22" font-family="Microsoft YaHei, Arial">把经历讲成面试官听得懂的项目</text>
+  <rect x="34" y="450" width="180" height="50" rx="12" fill="#fff"/>
+  <text x="66" y="482" fill="#175CD3" font-size="20" font-family="Microsoft YaHei, Arial" font-weight="700">领取 7 天体验</text>
+</svg>
