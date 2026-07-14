@@ -1,0 +1,26 @@
+﻿version: 1
+project: "水母DIY学习助手"
+run_mode: "lean"
+max_debate_rounds: 2
+max_rework_cycles: 2
+manual_gates:
+  GATE-1: {name: PRODUCT_APPROVAL, approver: user}
+  GATE-2: {name: VISUAL_APPROVAL, approver: user}
+  GATE-3: {name: RELEASE_APPROVAL, approver: user}
+states:
+  INIT: {owner: lead, next: DISCOVERY_DEBATE}
+  DISCOVERY_DEBATE: {owner: research, reviewers: [product], next: PRODUCT_APPROVAL}
+  PRODUCT_APPROVAL: {owner: lead, gate: GATE-1, next: PRD_REVIEW}
+  PRD_REVIEW: {owner: product, reviewers: [research, design, frontend, backend, qa], next: DESIGN}
+  DESIGN: {owner: design, reviewers: [product, research, frontend], next: VISUAL_APPROVAL}
+  VISUAL_APPROVAL: {owner: lead, gate: GATE-2, next: TECH_PLANNING}
+  TECH_PLANNING: {owner: backend, reviewers: [frontend, design, qa, product], next: BUILD}
+  BUILD: {owner: frontend, reviewers: [backend, qa], next: INTEGRATION}
+  INTEGRATION: {owner: backend, reviewers: [frontend, qa], next: VERIFICATION}
+  VERIFICATION: {owner: qa, reviewers: [product, research], next: RELEASE_APPROVAL}
+  RELEASE_APPROVAL: {owner: lead, gate: GATE-3, next: DEPLOYMENT_AND_PILOT}
+  DEPLOYMENT_AND_PILOT: {owner: backend, reviewers: [frontend, qa], next: DATA_REVIEW}
+  DATA_REVIEW: {owner: product, reviewers: [research, qa, lead], next: ACCEPTED}
+  ACCEPTED: {owner: lead, terminal: true}
+  BLOCKED: {owner: lead, terminal: false}
+

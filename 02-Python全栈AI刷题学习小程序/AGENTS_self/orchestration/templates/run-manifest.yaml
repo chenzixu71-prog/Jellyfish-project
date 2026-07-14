@@ -1,0 +1,19 @@
+﻿run_id: "{{RUN_ID}}"
+project: "水母DIY学习助手"
+run_mode: "lean"
+objective: "TODO"
+current_state: INIT
+status: active
+created_at: "{{CREATED_AT}}"
+lead: lead
+current_owner: lead
+enabled_roles: [research, product, design, frontend, backend, qa, lead]
+constraints: []
+success_metrics: []
+manual_gates:
+  GATE-1: {status: pending, approved_by: null, approved_at: null, evidence: null}
+  GATE-2: {status: pending, approved_by: null, approved_at: null, evidence: null}
+  GATE-3: {status: pending, approved_by: null, approved_at: null, evidence: null}
+blockers: []
+next_owner: lead
+

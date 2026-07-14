@@ -49,6 +49,24 @@
   background: rgba(255, 255, 255, 0.12);
 }
 
+.cover-jelly {
+  position: absolute;
+  right: 22px;
+  top: 36px;
+  width: 150px;
+  height: 150px;
+  animation: reportFloat 2.8s ease-in-out infinite;
+}
+
+.report-jelly {
+  display: block;
+  width: 150px;
+  height: 150px;
+  margin: -8px auto 0;
+}
+
+.loading-jelly-art { animation: reportFloat 2.5s ease-in-out infinite; }
+
 .report-card,
 .loading-card {
   padding: 24px 20px;
@@ -156,6 +174,14 @@
   line-height: 1.25;
 }
 
+.report-eyebrow {
+  display: block;
+  color: #8b7ff5;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: 1px;
+}
+
 .report-summary {
   display: block;
   margin-top: 12px;
@@ -208,6 +234,21 @@
   border-radius: 24px;
   background: #ffffff;
   box-shadow: 0 5px 0 rgba(17, 17, 17, 0.08);
+}
+
+.report-empty {
+  margin-top: 24px;
+  padding: 24px;
+  border-radius: 26px;
+  background: #f7f5ff;
+}
+
+.muted {
+  display: block;
+  margin-top: 8px;
+  color: #667085;
+  font-size: 14px;
+  line-height: 1.5;
 }
 
 .report-history-card {

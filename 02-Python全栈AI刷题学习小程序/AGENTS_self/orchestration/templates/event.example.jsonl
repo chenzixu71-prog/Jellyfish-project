@@ -1,0 +1,2 @@
+﻿{"timestamp":"2026-01-01T00:00:00Z","run_id":"example","stage":"INIT","agent":"lead","action":"initialize-run","skill":null,"input_refs":[],"output_refs":["manifest.yaml"],"status":"completed","confidence":"high","blocker":null,"next_owner":"research"}
+
