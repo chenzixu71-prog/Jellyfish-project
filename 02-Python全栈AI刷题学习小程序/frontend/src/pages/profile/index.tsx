@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import Taro, { useDidShow } from '@tarojs/taro'
-import { Button, Text, View } from '@tarojs/components'
+import { Button, Image, Text, View } from '@tarojs/components'
 import {
   AuthSession,
   CurrentUserProfile,
@@ -9,6 +9,7 @@ import {
   loginWithWechat
 } from '../../services/authService'
 import { ChallengeHistoryItem, getChallengeHistory, Report } from '../../services/quizService'
+import jellyProfileSprite from '../../assets/jelly-gpt/jelly-profile-sprite.png'
 import './index.css'
 
 export default function ProfilePage() {
@@ -96,6 +97,8 @@ export default function ProfilePage() {
   return (
     <View className='profile-page'>
       <View className='profile-hero'>
+        <View className='profile-ambient-bubble profile-ambient-bubble-one' />
+        <View className='profile-ambient-bubble profile-ambient-bubble-two' />
         <View className='hero-copy'>
           <Text className='profile-kicker'>Jelly Log</Text>
           <Text className='profile-title'>学习记录</Text>
@@ -104,17 +107,11 @@ export default function ProfilePage() {
         <View className='profile-jelly-stage'>
           <View className='profile-bubble profile-bubble-one' />
           <View className='profile-bubble profile-bubble-two' />
-          <View className='profile-jelly'>
-            <View className='profile-jelly-body'>
-              <View className='profile-jelly-mouth' />
-            </View>
-            <View className='profile-tentacle profile-tentacle-one' />
-            <View className='profile-tentacle profile-tentacle-two' />
-            <View className='profile-tentacle profile-tentacle-three' />
-            <View className='profile-tentacle profile-tentacle-four' />
+          <View className='profile-sprite-window' aria-label='正在挥手的水母学习伙伴'>
+            <Image className='profile-sprite-strip' src={jellyProfileSprite} mode='scaleToFill' />
           </View>
-          <Button className='profile-action' onClick={startNew}>新练习</Button>
         </View>
+        <Button className='profile-action' onClick={startNew}>新练习</Button>
       </View>
 
       <View className={`login-card ${loggingIn ? 'login-card-loading' : ''} ${auth ? 'login-card-authed' : ''}`}>

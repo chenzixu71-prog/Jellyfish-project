@@ -895,3 +895,81 @@
     transform: translateY(-4px);
   }
 }
+
+/* Final hero pass: the action stays inside purple and the mascot uses generated frames. */
+.profile-page {
+  background:
+    radial-gradient(circle at 18% 10%, rgba(247, 222, 97, .2), transparent 17%),
+    radial-gradient(circle at 88% 16%, rgba(184, 215, 255, .22), transparent 18%),
+    linear-gradient(180deg, #6246f2 0 360px, #fbfaff 360px 100%);
+}
+.profile-hero { min-height: 286px; padding: 28px 26px; overflow: hidden; }
+.hero-copy { max-width: 56%; }
+.profile-subtitle { width: auto; max-width: 248px; }
+.profile-jelly, .profile-jelly-body, .profile-jelly-mouth, .profile-tentacle { display: none; }
+
+.profile-jelly-stage {
+  position: absolute;
+  z-index: 4;
+  right: 18px;
+  top: 70px;
+  width: 154px;
+  height: 158px;
+  animation: profileSpriteFloat 3.3s ease-in-out infinite;
+}
+.profile-sprite-window { position: absolute; inset: 0; overflow: hidden; }
+.profile-sprite-strip {
+  display: block;
+  width: 200%;
+  height: 100%;
+  transform: translateX(0);
+  animation: profileSpriteExpression 5.8s steps(1, end) infinite;
+}
+.profile-jelly-stage .profile-action { position: static; }
+.profile-action {
+  position: absolute;
+  z-index: 7;
+  right: 26px;
+  bottom: 20px;
+  width: 150px;
+  height: 48px;
+  line-height: 48px;
+  border: 0;
+  border-radius: 999px;
+  background: #f5dc66;
+  color: #4a36c9;
+  box-shadow: 0 9px 18px rgba(45, 31, 114, .22);
+}
+.profile-bubble { z-index: 7; }
+.profile-ambient-bubble {
+  position: absolute;
+  z-index: 1;
+  border: 2px solid rgba(255, 255, 255, .45);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, .08);
+  pointer-events: none;
+  animation: profileAmbientDrift 8.5s ease-in-out infinite;
+}
+.profile-ambient-bubble-one { left: 48%; top: 26px; width: 22px; height: 22px; }
+.profile-ambient-bubble-two { right: 18px; top: 42px; width: 44px; height: 44px; animation-delay: -3.4s; }
+.login-card { margin-top: 24px; }
+
+@keyframes profileSpriteFloat {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+@keyframes profileSpriteExpression {
+  0%, 58%, 100% { transform: translateX(0); }
+  59%, 78% { transform: translateX(-50%); }
+}
+@keyframes profileAmbientDrift {
+  0%, 100% { transform: translate3d(0, 0, 0); opacity: .35; }
+  50% { transform: translate3d(-8px, 12px, 0); opacity: .65; }
+}
+
+@media (max-width: 370px) {
+  .profile-title { font-size: 35px; }
+  .profile-subtitle { max-width: 220px; font-size: 14px; }
+  .profile-jelly-stage { right: 6px; width: 138px; height: 144px; }
+  .profile-action { right: 18px; width: 138px; }
+}

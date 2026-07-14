@@ -472,3 +472,68 @@
 .explain-box {
   border-radius: 24px;
 }
+
+/* Final mascot pass: character and tentacles are generated as one sprite. */
+.wrong-hero { min-height: 250px; padding: 30px 24px; }
+.wrong-copy { width: 150px; max-width: 46%; }
+.wrong-title { font-size: 24px; white-space: nowrap; word-break: keep-all; }
+.wrong-subtitle { max-width: 150px; font-size: 13px; }
+.wrong-jelly, .wrong-jelly-body, .wrong-jelly-mouth, .wrong-tentacle { display: none; }
+
+.wrong-mascot-stage {
+  position: absolute;
+  z-index: 4;
+  right: 8px;
+  bottom: 18px;
+  width: 110px;
+  height: 120px;
+  animation: wrongMascotFloat 3.4s ease-in-out infinite;
+}
+
+.wrong-sprite-window { position: absolute; inset: 0; overflow: hidden; }
+.wrong-sprite-strip {
+  display: block;
+  width: 200%;
+  height: 100%;
+  transform: translateX(0);
+  animation: wrongSpriteExpression 6.4s steps(1, end) infinite;
+}
+
+.wrong-mascot-bubble, .wrong-ambient-bubble {
+  position: absolute;
+  border: 2px solid rgba(255, 255, 255, 0.62);
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.08);
+  pointer-events: none;
+}
+
+.wrong-mascot-bubble { z-index: 6; animation: wrongBubbleRise 3.6s ease-in-out infinite; }
+.wrong-mascot-bubble-one { right: 18px; top: 20px; width: 17px; height: 17px; }
+.wrong-mascot-bubble-two { right: 2px; top: 4px; width: 9px; height: 9px; animation-delay: .7s; }
+.wrong-ambient-bubble { z-index: 1; opacity: .34; animation: wrongAmbientDrift 8s ease-in-out infinite; }
+.wrong-ambient-bubble-one { left: 46%; top: 26px; width: 22px; height: 22px; }
+.wrong-ambient-bubble-two { right: 20px; bottom: 24px; width: 36px; height: 36px; animation-delay: -3s; }
+
+@keyframes wrongMascotFloat {
+  0%, 100% { transform: translateY(0) rotate(-1deg); }
+  50% { transform: translateY(-8px) rotate(1deg); }
+}
+@keyframes wrongSpriteExpression {
+  0%, 55%, 100% { transform: translateX(0); }
+  56%, 78% { transform: translateX(-50%); }
+}
+@keyframes wrongBubbleRise {
+  0% { opacity: 0; transform: translateY(10px) scale(.82); }
+  35% { opacity: .9; }
+  100% { opacity: 0; transform: translateY(-24px) scale(1.08); }
+}
+@keyframes wrongAmbientDrift {
+  0%, 100% { transform: translate3d(0, 0, 0); }
+  50% { transform: translate3d(8px, -12px, 0); }
+}
+
+@media (max-width: 370px) {
+  .wrong-title { font-size: 24px; }
+  .wrong-subtitle { font-size: 13px; }
+  .wrong-mascot-stage { right: 8px; width: 110px; height: 120px; }
+}

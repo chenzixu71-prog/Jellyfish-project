@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import Taro, { useDidShow } from '@tarojs/taro'
-import { Button, Text, View } from '@tarojs/components'
+import { Button, Image, Text, View } from '@tarojs/components'
 import { getWrongQuestions, regenerateWeakQuiz, WrongQuestion } from '../../services/quizService'
+import jellyReviewSprite from '../../assets/jelly-gpt/jelly-review-sprite.png'
 import './index.css'
 
 function answerCopy(answer: string[]) {
@@ -57,18 +58,19 @@ export default function WrongPage() {
   return (
     <View className='wrong-page'>
       <View className='wrong-hero'>
+        <View className='wrong-ambient-bubble wrong-ambient-bubble-one' />
+        <View className='wrong-ambient-bubble wrong-ambient-bubble-two' />
         <View className='wrong-copy'>
           <Text className='wrong-kicker'>Review Dock</Text>
           <Text className='wrong-title'>错题水母舱</Text>
           <Text className='wrong-subtitle'>把答错的知识点收集起来，下一轮专门练薄弱处。</Text>
         </View>
-        <View className='wrong-jelly'>
-          <View className='wrong-jelly-body'>
-            <View className='wrong-jelly-mouth' />
+        <View className='wrong-mascot-stage' aria-label='会思考的水母学习伙伴'>
+          <View className='wrong-mascot-bubble wrong-mascot-bubble-one' />
+          <View className='wrong-mascot-bubble wrong-mascot-bubble-two' />
+          <View className='wrong-sprite-window'>
+            <Image className='wrong-sprite-strip' src={jellyReviewSprite} mode='scaleToFill' />
           </View>
-          <View className='wrong-tentacle wrong-tentacle-1' />
-          <View className='wrong-tentacle wrong-tentacle-2' />
-          <View className='wrong-tentacle wrong-tentacle-3' />
         </View>
       </View>
 
@@ -85,7 +87,7 @@ export default function WrongPage() {
 
         {loading && (
           <View className='empty-card'>
-            <Text className='empty-title'>loading......</Text>
+            <Text className='empty-title'>正在打捞错题...</Text>
             <Text className='empty-copy'>水母正在打捞你的错题。</Text>
           </View>
         )}
