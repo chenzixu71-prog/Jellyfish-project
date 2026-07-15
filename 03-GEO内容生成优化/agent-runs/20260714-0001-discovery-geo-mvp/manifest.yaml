@@ -1,0 +1,43 @@
+run_id: 20260714-0001-discovery-geo-mvp
+project: GEO Insight Studio
+objective: 确定简历优先 GEO MVP 的目标用户、核心闭环、竞争差异和可验证成功标准
+current_state: DESIGN
+status: active
+created_at: 2026-07-14T00:05:31+08:00
+updated_at: 2026-07-15T02:10:00+08:00
+lead: agent-07
+current_owner: agent-03
+iteration:
+  debate_round: 2
+  rework_cycle: 1
+manual_gates:
+  GATE-1:
+    status: approved
+    approved_by: user
+    approved_at: 2026-07-14T12:59:40+08:00
+    evidence: gate-report.md
+  GATE-2:
+    status: pending
+    approved_by: null
+    approved_at: null
+    evidence: ../../../docs/design/GATE-2-VISUAL-DECISION.md
+  GATE-3:
+    status: pending
+    approved_by: null
+    approved_at: null
+    evidence: null
+inputs:
+  - ../../../AGENTS_self/README.md
+  - AutoGEO paper supplied by user
+  - public competitor sources accessed 2026-07-14
+required_outputs:
+  - evidence/01-REQUIREMENT_ANALYSIS.md
+  - evidence/02-AUTOGEO_PAPER_NOTES.md
+  - evidence/03-COMPETITIVE_DECISION_BRIEF.md
+  - proposals/01-RESEARCH_PROPOSAL.md
+  - proposals/02-PRODUCT_PROPOSAL.md
+  - debates.md
+  - decisions.md
+blockers:
+  - Explicit user approval of GATE-2 is required before BUILD
+next_owner: user

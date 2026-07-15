@@ -1,0 +1,32 @@
+run_id: YYYYMMDD-HHMM-stage-slug
+project: GEO Insight Studio
+objective: ""
+current_state: INIT
+status: active
+created_at: ""
+updated_at: ""
+lead: agent-07
+current_owner: agent-07
+iteration:
+  debate_round: 0
+  rework_cycle: 0
+manual_gates:
+  GATE-1:
+    status: pending
+    approved_by: null
+    approved_at: null
+    evidence: null
+  GATE-2:
+    status: pending
+    approved_by: null
+    approved_at: null
+    evidence: null
+  GATE-3:
+    status: pending
+    approved_by: null
+    approved_at: null
+    evidence: null
+inputs: []
+required_outputs: []
+blockers: []
+next_owner: null

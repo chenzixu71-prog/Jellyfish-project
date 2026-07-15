@@ -1,0 +1,126 @@
+version: 1
+project: GEO Insight Studio
+max_debate_rounds: 2
+max_rework_cycles: 2
+
+locked_defaults:
+  frontend: React + TypeScript + Vite
+  design_source: Figma
+  backend: FastAPI + Pydantic
+  local_database: SQLite
+  pilot_database: managed PostgreSQL
+  deployment: static frontend plus independent backend
+  pilot_users: 5-10
+
+manual_gates:
+  - id: GATE-1
+    name: PRODUCT_APPROVAL
+    required_state: PRODUCT_APPROVAL
+    approver: user
+  - id: GATE-2
+    name: VISUAL_APPROVAL
+    required_state: VISUAL_APPROVAL
+    approver: user
+  - id: GATE-3
+    name: RELEASE_APPROVAL
+    required_state: RELEASE_APPROVAL
+    approver: user
+
+states:
+  INIT:
+    owner: lead
+    requires: [user_goal]
+    produces: [manifest]
+    next: DISCOVERY_DEBATE
+  DISCOVERY_DEBATE:
+    owner: [research, product]
+    requires: [manifest]
+    produces: [research_brief, competitor_matrix, independent_proposals, debate_record, product_decision_record]
+    next: PRODUCT_APPROVAL
+  PRODUCT_APPROVAL:
+    owner: lead
+    requires: [product_decision_record, gate_report, user_approval_G1]
+    produces: [approved_product_baseline]
+    next: PRD_REVIEW
+  PRD_REVIEW:
+    owner: product
+    reviewers: [research, design, frontend, backend, qa]
+    requires: [approved_product_baseline]
+    produces: [prd, traceability_matrix, event_dictionary, atomic_backlog, review_record]
+    next: DESIGN
+  DESIGN:
+    owner: design
+    reviewers: [product, research, frontend]
+    requires: [prd, traceability_matrix]
+    produces: [screen_inventory, state_model, visual_options, figma_library, figma_pages, design_handoff]
+    next: VISUAL_APPROVAL
+  VISUAL_APPROVAL:
+    owner: lead
+    requires: [figma_pages, design_handoff, gate_report, user_approval_G2]
+    produces: [approved_design_baseline]
+    next: TECH_PLANNING
+  TECH_PLANNING:
+    owner: [frontend, backend]
+    reviewers: [design, qa, product]
+    requires: [approved_design_baseline, prd]
+    produces: [architecture_adr, openapi_draft, data_model, component_map, test_scope]
+    next: BUILD
+  BUILD:
+    owner: [frontend, backend]
+    requires: [architecture_adr, openapi_draft, component_map]
+    produces: [frontend_build, backend_build, unit_test_evidence, implementation_handoff]
+    next: INTEGRATION
+  INTEGRATION:
+    owner: [frontend, backend]
+    reviewers: [qa]
+    requires: [frontend_build, backend_build]
+    produces: [integrated_build, integration_evidence]
+    next: VERIFICATION
+  VERIFICATION:
+    owner: qa
+    reviewers: [product, research]
+    requires: [integrated_build, traceability_matrix]
+    produces: [test_matrix, defect_report, local_verification_report, release_candidate]
+    next: RELEASE_APPROVAL
+  RELEASE_APPROVAL:
+    owner: lead
+    requires: [release_candidate, gate_report, user_approval_G3]
+    produces: [approved_release]
+    next: DEPLOYMENT_AND_PILOT
+  DEPLOYMENT_AND_PILOT:
+    owner: [frontend, backend, qa]
+    requires: [approved_release, deployment_adr]
+    produces: [deployed_urls, post_deploy_qa, pilot_events, pilot_feedback]
+    next: DATA_REVIEW
+  DATA_REVIEW:
+    owner: [research, product, qa, lead]
+    requires: [pilot_events, pilot_feedback]
+    produces: [experiment_report, next_iteration_decision, final_gate_report]
+    next: ACCEPTED
+  ACCEPTED:
+    owner: lead
+    requires: [experiment_report, final_gate_report, end_to_end_evidence]
+    produces: [final_report, resume_summary]
+    terminal: true
+  BLOCKED:
+    owner: lead
+    requires: [blocker_record]
+    produces: [decision_or_user_request]
+    terminal: false
+
+pilot_metrics:
+  minimum_complete_sessions: 5
+  core_flow_completion_rate_min: 0.70
+  suggestion_adoption_rate_min: 0.30
+  system_error_rate_max: 0.05
+  geo_rule_score_mean_lift_min: 0.15
+
+required_events:
+  - project_created
+  - prompts_generated
+  - evaluation_completed
+  - diagnosis_viewed
+  - optimization_generated
+  - suggestion_adopted
+  - comparison_completed
+  - feedback_submitted
