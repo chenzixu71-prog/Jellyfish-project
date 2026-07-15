@@ -1,6 +1,8 @@
+import secrets
 from typing import Literal
 
 from pydantic import BaseModel, Field, field_validator
+from pydantic import model_validator
 
 
 QuestionType = Literal["single", "multiple", "judge"]
@@ -27,6 +29,14 @@ class Question(BaseModel):
     explanation: str
     knowledge_point: str
     difficulty: Difficulty
+
+    @field_validator("type", mode="before")
+    @classmethod
+    def normalize_question_type(cls, value):
+        normalized = str(value).lower()
+        if normalized in {"truefalse", "true_false", "true-false", "boolean"}:
+            return "judge"
+        return value
 
 
 class SourceItem(BaseModel):
@@ -114,6 +124,13 @@ class Quiz(BaseModel):
     questions: list[Question]
     sourceMeta: SourceMeta | None = None
 
+
+    @model_validator(mode="before")
+    @classmethod
+    def ensure_quiz_id(cls, value):
+        normalized = dict(value)
+        normalized.setdefault("quizId", f"quiz-{secrets.token_hex(8)}")
+        return normalized
 
 class KnowledgeBaseMaterial(BaseModel):
     id: str
