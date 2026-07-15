@@ -7,6 +7,7 @@ import {
   startKnowledgeBaseQuiz,
   supplementKnowledgeBase
 } from '../../services/knowledgeBaseService'
+import { elapsedMilliseconds, trackEvent } from '../../services/analyticsService'
 import './index.css'
 
 interface LocalFile {
@@ -103,15 +104,33 @@ export default function KnowledgeBasePage() {
       Taro.showToast({ title: '先输入或选择补充资料', icon: 'none' })
       return
     }
+    const startedAt = Date.now()
+    trackEvent('knowledge_supplement', {
+      status: 'start',
+      search_enabled: webSearchEnabled,
+      file_count: files.length,
+      image_count: images.length
+    })
     setSaving(true)
     try {
       const next = await supplementKnowledgeBase(knowledgeBaseId, nextContent, webSearchEnabled)
+      trackEvent('knowledge_supplement', {
+        status: 'success',
+        search_enabled: webSearchEnabled,
+        duration_ms: elapsedMilliseconds(startedAt),
+        material_count: next.materials.length
+      })
       setKnowledgeBase(next)
       setContent('')
       setFiles([])
       setImages([])
       Taro.showToast({ title: '已补充知识库', icon: 'none' })
     } catch (error) {
+      trackEvent('knowledge_supplement', {
+        status: 'fail',
+        search_enabled: webSearchEnabled,
+        duration_ms: elapsedMilliseconds(startedAt)
+      })
       Taro.showToast({
         title: error instanceof Error ? error.message : '补充失败',
         icon: 'none'
@@ -226,7 +245,10 @@ export default function KnowledgeBasePage() {
           <Switch
             color='#6246f2'
             checked={webSearchEnabled}
-            onChange={(event) => setWebSearchEnabled(event.detail.value)}
+            onChange={(event) => {
+              setWebSearchEnabled(event.detail.value)
+              trackEvent('search_toggle', { enabled: event.detail.value, scene: 'knowledge_supplement' })
+            }}
           />
         </View>
         <Button className='kb-save-button' loading={saving} onClick={saveSupplement}>

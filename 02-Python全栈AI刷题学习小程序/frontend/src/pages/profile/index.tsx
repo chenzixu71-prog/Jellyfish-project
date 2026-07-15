@@ -9,6 +9,7 @@ import {
   loginWithWechat
 } from '../../services/authService'
 import { ChallengeHistoryItem, getChallengeHistory, Report } from '../../services/quizService'
+import { elapsedMilliseconds, trackEvent } from '../../services/analyticsService'
 import jellyProfileSprite from '../../assets/jelly-gpt/jelly-profile-sprite.png'
 import './index.css'
 
@@ -46,14 +47,17 @@ export default function ProfilePage() {
   async function handleLogin() {
     if (loggingIn) return
 
+    const startedAt = Date.now()
     setLoggingIn(true)
     setLoginError('')
     try {
       const nextAuth = await loginWithWechat()
+      trackEvent('login_result', { status: 'success', login_type: 'wechat', duration_ms: elapsedMilliseconds(startedAt) })
       setAuth(nextAuth)
       await loadProfile()
       await loadChallengeHistory()
     } catch (error) {
+      trackEvent('login_result', { status: 'fail', login_type: 'wechat', duration_ms: elapsedMilliseconds(startedAt) })
       const message = error instanceof Error ? error.message : '微信登录失败，请稍后重试'
       setLoginError(message)
     } finally {

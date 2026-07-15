@@ -2,6 +2,7 @@ import { useState } from 'react'
 import Taro, { useDidShow, useRouter, useShareAppMessage } from '@tarojs/taro'
 import { Button, Image, Text, View } from '@tarojs/components'
 import { generateReport, getReportDetail, getReportHistory, Quiz, Report, ReportHistoryItem } from '../../services/quizService'
+import { trackEvent } from '../../services/analyticsService'
 import jellyReport from '../../assets/jelly-gpt/jelly-report.png'
 import './index.css'
 
@@ -30,6 +31,13 @@ export default function ReportPage() {
     try {
       const nextReport = historyQuizId ? await getReportDetail(quizId) : await generateReport(quizId)
       setReport(nextReport)
+      trackEvent('report_view', {
+        source: historyQuizId ? 'history' : 'current_quiz',
+        score: nextReport.score,
+        total: nextReport.total,
+        mastery: nextReport.mastery,
+        search_enabled: Boolean(nextReport.sourceMeta?.enabled)
+      })
       const history = Taro.getStorageSync<Report[]>('learningReports') || []
       Taro.setStorageSync('learningReports', [nextReport, ...history.filter((item) => item.quizId !== quizId)].slice(0, 10))
     } catch (error) {
@@ -53,6 +61,7 @@ export default function ReportPage() {
   }
 
   async function shareToQQ() {
+    trackEvent('report_share', { channel: 'qq_copy', has_report: Boolean(report) })
     await Taro.setClipboardData({ data: buildShareText() })
     Taro.showToast({ title: '已复制，可粘贴到 QQ', icon: 'none' })
   }
@@ -123,7 +132,7 @@ export default function ReportPage() {
         <View className='report-section'><Text className='block-title'>薄弱点</Text>{report.weakPoints.map((item) => <Text key={item} className='list-line'>· {item}</Text>)}</View>
         <View className='report-section blue'><Text className='block-title'>知识拆解</Text><Text className='list-line'>先复盘错题对应的概念。</Text><Text className='list-line'>再用自己的话解释正确答案。</Text><Text className='list-line'>最后重新生成一组薄弱点练习。</Text></View>
         <View className='report-section'><Text className='block-title'>下一步建议</Text>{report.nextSteps.map((item) => <Text key={item} className='list-line'>· {item}</Text>)}</View>
-        <View className='share-row'><Button className='share-button share-button-wechat' openType='share'>分享给微信好友</Button><Button className='share-button share-button-qq' onClick={shareToQQ}>复制分享给 QQ</Button></View>
+        <View className='share-row'><Button className='share-button share-button-wechat' openType='share' onClick={() => trackEvent('report_share', { channel: 'wechat', has_report: true })}>分享给微信好友</Button><Button className='share-button share-button-qq' onClick={shareToQQ}>复制分享给 QQ</Button></View>
       </View>
     </View>
   )

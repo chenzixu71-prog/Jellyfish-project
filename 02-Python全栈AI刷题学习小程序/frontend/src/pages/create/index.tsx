@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import Taro, { useDidShow } from '@tarojs/taro'
 import { Button, Image, Switch, Text, Textarea, View } from '@tarojs/components'
 import { createKnowledgeBase, getKnowledgeBases, KnowledgeBaseSummary } from '../../services/knowledgeBaseService'
+import { elapsedMilliseconds, trackEvent } from '../../services/analyticsService'
 import jellyIcon from '../../assets/jelly-gpt/jelly-icon.png'
 import jellyStudy from '../../assets/jelly-gpt/jelly-study.png'
 import './index.css'
@@ -40,15 +41,24 @@ export default function CreatePage() {
   async function chooseFiles() {
     try {
       const result = await Taro.chooseMessageFile({ count: 3, type: 'file', extension: ['txt', 'md', 'csv', 'json'] })
-      setFiles((result.tempFiles || []).slice(0, 3).map((file) => ({ name: file.name, path: file.path })))
+      const nextFiles = (result.tempFiles || []).slice(0, 3).map((file) => ({ name: file.name, path: file.path }))
+      setFiles(nextFiles)
+      trackEvent('asset_select', { asset_type: 'file', asset_count: nextFiles.length })
     } catch { Taro.showToast({ title: '暂未选择文件', icon: 'none' }) }
   }
 
   async function chooseImages() {
     try {
       const result = await Taro.chooseImage({ count: 10, sizeType: ['compressed'], sourceType: ['album', 'camera'] })
-      setImages((result.tempFilePaths || []).slice(0, 10))
+      const nextImages = (result.tempFilePaths || []).slice(0, 10)
+      setImages(nextImages)
+      trackEvent('asset_select', { asset_type: 'image', asset_count: nextImages.length })
     } catch { Taro.showToast({ title: '暂未选择图片', icon: 'none' }) }
+  }
+
+  function handleSearchToggle(enabled: boolean) {
+    setWebSearchEnabled(enabled)
+    trackEvent('search_toggle', { enabled, scene: 'knowledge_create' })
   }
 
   function buildTitle(trimmed: string) {
@@ -81,13 +91,36 @@ export default function CreatePage() {
     if (knowledgeBases.length >= 5) {
       Taro.showToast({ title: '最多创建 5 个知识库', icon: 'none' }); return
     }
+    const startedAt = Date.now()
+    const inputType = files.length > 0 ? 'file' : images.length > 0 ? 'image' : 'text'
+    trackEvent('knowledge_create', {
+      status: 'start',
+      input_type: inputType,
+      search_enabled: webSearchEnabled,
+      file_count: files.length,
+      image_count: images.length
+    })
     setLoading(true)
     try {
       const knowledgeBase = await createKnowledgeBase(buildTitle(trimmed), buildLearningContent(trimmed), webSearchEnabled)
+      trackEvent('knowledge_create', {
+        status: 'success',
+        input_type: inputType,
+        search_enabled: webSearchEnabled,
+        duration_ms: elapsedMilliseconds(startedAt),
+        material_count: knowledgeBase.materials.length,
+        source_count: knowledgeBase.sourceMeta?.sourceCount || 0
+      })
       setContent(''); setFiles([]); setImages([])
       await loadKnowledgeBases()
       Taro.navigateTo({ url: `/pages/knowledge-base/index?id=${knowledgeBase.id}` })
     } catch (error) {
+      trackEvent('knowledge_create', {
+        status: 'fail',
+        input_type: inputType,
+        search_enabled: webSearchEnabled,
+        duration_ms: elapsedMilliseconds(startedAt)
+      })
       Taro.showToast({ title: error instanceof Error ? error.message : '生成失败', icon: 'none' })
     } finally { setLoading(false) }
   }
@@ -134,7 +167,7 @@ export default function CreatePage() {
           </View>
           <View className={`search-card ${webSearchEnabled ? 'search-enabled' : ''}`}>
             <View className='search-copy'><Text className='search-title'>联网搜索资料</Text><Text className='search-desc'>适合最新知识、网页链接和产品文档</Text></View>
-            <Switch color='#6D5DF6' checked={webSearchEnabled} onChange={(event) => setWebSearchEnabled(event.detail.value)} />
+            <Switch color='#6D5DF6' checked={webSearchEnabled} onChange={(event) => handleSearchToggle(event.detail.value)} />
           </View>
           <Button className='primary-cta' disabled={loading} onClick={handleCreateKnowledgeBase}>{webSearchEnabled ? '搜索并生成知识库' : '生成水母知识库'}</Button>
         </View>

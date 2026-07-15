@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react'
 import Taro, { useDidShow } from '@tarojs/taro'
 import { Button, Image, ScrollView, Text, View } from '@tarojs/components'
 import { AnswerResult, Question, Quiz, submitAnswer } from '../../services/quizService'
+import { trackEvent } from '../../services/analyticsService'
 import jellyCelebrate from '../../assets/jelly-gpt/jelly-celebrate.png'
 import './index.css'
 
@@ -32,6 +33,7 @@ export default function QuizPage() {
   const [submitting, setSubmitting] = useState(false)
   const [completed, setCompleted] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
+  const [correctCount, setCorrectCount] = useState(0)
 
   useDidShow(() => {
     const storedQuiz = Taro.getStorageSync<Quiz>('currentQuiz')
@@ -43,6 +45,11 @@ export default function QuizPage() {
       setResult(null)
       setCompleted(false)
       setSheetOpen(false)
+      setCorrectCount(0)
+      trackEvent('quiz_start', {
+        question_count: storedQuiz.questions.length,
+        search_enabled: Boolean(storedQuiz.sourceMeta?.enabled)
+      })
     }
   })
 
@@ -70,7 +77,15 @@ export default function QuizPage() {
     }
     setSubmitting(true)
     try {
-      setResult(await submitAnswer(quiz.quizId, question.id, selected))
+      const answerResult = await submitAnswer(quiz.quizId, question.id, selected)
+      setResult(answerResult)
+      if (answerResult.isCorrect) setCorrectCount((count) => count + 1)
+      trackEvent('answer_submit', {
+        question_index: currentIndex + 1,
+        question_type: question.type,
+        difficulty: question.difficulty,
+        is_correct: answerResult.isCorrect
+      })
     } catch (error) {
       Taro.showToast({ title: error instanceof Error ? error.message : '提交失败', icon: 'none' })
     } finally {
@@ -81,6 +96,11 @@ export default function QuizPage() {
   function goNext() {
     if (!quiz) return
     if (currentIndex >= quiz.questions.length - 1) {
+      trackEvent('quiz_complete', {
+        question_count: quiz.questions.length,
+        correct_count: correctCount,
+        search_enabled: Boolean(quiz.sourceMeta?.enabled)
+      })
       setCompleted(true)
       return
     }
