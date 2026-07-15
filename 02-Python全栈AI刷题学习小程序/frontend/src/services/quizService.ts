@@ -1,6 +1,7 @@
 import Taro from '@tarojs/taro'
+import { requireApiBaseUrls } from '../config/api'
 
-const API_BASE_URLS = ['http://127.0.0.1:8010', 'http://localhost:8010']
+const API_BASE_URLS = requireApiBaseUrls()
 
 export type QuestionType = 'single' | 'multiple' | 'judge'
 export type Difficulty = 'easy' | 'medium' | 'hard'

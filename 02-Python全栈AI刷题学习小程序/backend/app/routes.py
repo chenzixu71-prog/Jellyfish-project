@@ -2,7 +2,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, File, Form, Header, HTTPException, UploadFile
 
-from app.config import AI_MODEL
+from app import config
 from app.schemas import (
     ApiResponse,
     GenerateQuizRequest,
@@ -113,7 +113,25 @@ def health():
             "service": "ai-quiz-miniapp-backend",
             "product": "水母diy学习助手",
             "status": "running",
-            "aiModel": AI_MODEL,
+            "aiModel": config.AI_MODEL,
+            "environment": config.ENVIRONMENT,
+            "storageBackend": config.STORAGE_BACKEND,
+        }
+    )
+
+
+@router.get("/ready", response_model=ApiResponse)
+def ready():
+    errors = config.production_configuration_errors()
+    if errors:
+        raise HTTPException(status_code=503, detail={"checks": errors})
+    return ok(
+        {
+            "status": "ready",
+            "aiProvider": config.AI_PROVIDER,
+            "searchProvider": config.SEARCH_PROVIDER,
+            "wechatAuthMode": config.WECHAT_AUTH_MODE,
+            "storageBackend": config.STORAGE_BACKEND,
         }
     )
 

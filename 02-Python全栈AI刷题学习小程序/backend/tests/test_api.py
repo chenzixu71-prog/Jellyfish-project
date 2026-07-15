@@ -28,6 +28,17 @@ def test_health_returns_service_status():
     assert body["data"]["product"] == "水母diy学习助手"
 
 
+def test_ready_returns_provider_and_storage_status():
+    response = client.get("/ready")
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["code"] == 0
+    assert body["data"]["status"] == "ready"
+    assert body["data"]["aiProvider"] == config.AI_PROVIDER
+    assert body["data"]["storageBackend"] == config.STORAGE_BACKEND
+
+
 def test_wechat_login_creates_user_and_token():
     response = client.post(
         "/api/auth/wechat-login",

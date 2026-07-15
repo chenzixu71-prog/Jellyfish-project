@@ -64,7 +64,8 @@ frontend/dist/
 
 ## 部署步骤
 
-后续补充部署平台、环境变量、小程序合法域名、数据库和小程序发布步骤。
+生产部署、微信后台配置、隐私检查和提审步骤见
+[`docs/production-release-checklist.md`](docs/production-release-checklist.md)。
 
 ## 配置说明
 

@@ -12,7 +12,8 @@
   "scripts": {
     "prepare": "husky",
     "new": "taro new",
-    "build:weapp": "taro build --type weapp",
+    "build:weapp": "taro build --type weapp --mode development",
+    "build:weapp:prod": "node scripts/verify-release-config.mjs && taro build --type weapp --mode production",
     "build:swan": "taro build --type swan",
     "build:alipay": "taro build --type alipay",
     "build:tt": "taro build --type tt",

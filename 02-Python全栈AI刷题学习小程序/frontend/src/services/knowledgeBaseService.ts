@@ -1,4 +1,5 @@
 import Taro from '@tarojs/taro'
+import { requireApiBaseUrls } from '../config/api'
 import {
   getOrCreateSessionId,
   Quiz,
@@ -6,7 +7,7 @@ import {
   SourceMeta
 } from './quizService'
 
-const API_BASE_URLS = ['http://127.0.0.1:8010', 'http://localhost:8010']
+const API_BASE_URLS = requireApiBaseUrls()
 
 interface ApiResponse<T> {
   code: number
