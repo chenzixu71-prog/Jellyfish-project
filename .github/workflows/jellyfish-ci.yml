@@ -13,6 +13,13 @@ on:
 jobs:
   backend-tests:
     runs-on: ubuntu-latest
+    env:
+      APP_ENV: development
+      AI_PROVIDER: mock
+      SEARCH_PROVIDER: mock
+      WECHAT_AUTH_MODE: mock
+      STORAGE_BACKEND: memory
+      PYTHONPATH: .
     defaults:
       run:
         working-directory: 02-Python全栈AI刷题学习小程序/backend
@@ -24,7 +31,7 @@ jobs:
           cache: pip
           cache-dependency-path: 02-Python全栈AI刷题学习小程序/backend/requirements.txt
       - run: pip install -r requirements.txt
-      - run: pytest -q
+      - run: python -m pytest -q
 
   weapp-production-build:
     runs-on: ubuntu-latest
