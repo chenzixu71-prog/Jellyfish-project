@@ -342,3 +342,26 @@
   0%, 100% { margin-top: 0; }
   50% { margin-top: 6px; }
 }
+
+.kb-state-card { text-align: center; }
+.kb-error-text { color: #c2415b; }
+.kb-retry-button {
+  width: 144px;
+  height: 44px;
+  margin-top: 16px;
+  border-radius: 999px;
+  background: #6246f2;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 44px;
+}
+.kb-retry-button::after { border: 0; }
+.kb-progress-copy {
+  display: block;
+  margin-top: 10px;
+  color: #667085;
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}

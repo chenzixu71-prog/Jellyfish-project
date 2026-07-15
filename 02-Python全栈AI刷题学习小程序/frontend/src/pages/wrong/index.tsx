@@ -12,6 +12,7 @@ function answerCopy(answer: string[]) {
 export default function WrongPage() {
   const [wrongQuestions, setWrongQuestions] = useState<WrongQuestion[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [generating, setGenerating] = useState(false)
 
   useDidShow(() => {
@@ -20,14 +21,13 @@ export default function WrongPage() {
 
   async function loadWrongQuestions() {
     setLoading(true)
+    setLoadError('')
     try {
       const list = await getWrongQuestions()
       setWrongQuestions(list)
     } catch (error) {
-      Taro.showToast({
-        title: error instanceof Error ? error.message : '错题读取失败',
-        icon: 'none'
-      })
+      setWrongQuestions([])
+      setLoadError(error instanceof Error ? error.message : '错题读取失败')
     } finally {
       setLoading(false)
     }
@@ -92,14 +92,22 @@ export default function WrongPage() {
           </View>
         )}
 
-        {!loading && wrongQuestions.length === 0 && (
+        {!loading && loadError && (
+          <View className='empty-card error-card'>
+            <Text className='empty-title'>错题加载失败</Text>
+            <Text className='empty-copy'>{loadError}</Text>
+            <Button className='wrong-retry-button' onClick={loadWrongQuestions}>重新加载</Button>
+          </View>
+        )}
+
+        {!loading && !loadError && wrongQuestions.length === 0 && (
           <View className='empty-card'>
             <Text className='empty-title'>还没有错题</Text>
             <Text className='empty-copy'>完成一次闯关后，答错的题会自动出现在这里。</Text>
           </View>
         )}
 
-        {!loading && wrongQuestions.map((item, index) => (
+        {!loading && !loadError && wrongQuestions.map((item, index) => (
           <View key={`${item.quizId}-${item.questionId}`} className='wrong-card'>
             <View className='wrong-card-top'>
               <Text className='wrong-index'>#{index + 1}</Text>

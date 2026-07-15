@@ -2,12 +2,20 @@ from fastapi.testclient import TestClient
 
 from app import config
 from app.main import app
+from app.storage.memory_store import store
 
 
 config.AI_PROVIDER = "mock"
 config.SEARCH_PROVIDER = "mock"
 
 client = TestClient(app)
+
+
+def stored_answer(quiz_id: str, question_id: str) -> list[str]:
+    quiz = store.get_quiz(quiz_id)
+    assert quiz is not None
+    question = next(item for item in quiz.questions if item.id == question_id)
+    return question.answer
 
 
 def test_health_returns_service_status():
@@ -135,7 +143,7 @@ def test_wechat_login_binds_guest_learning_data_once():
                 "sessionId": session_id,
                 "quizId": generated["quizId"],
                 "questionId": question["id"],
-                "answer": question["answer"],
+                "answer": stored_answer(generated["quizId"], question["id"]),
             },
         )
 
@@ -203,13 +211,29 @@ def test_learning_endpoints_use_authenticated_user_identity():
             "sessionId": "owner-local-session",
             "quizId": generated["quizId"],
             "questionId": first_question["id"],
-            "answer": first_question["answer"],
+            "answer": stored_answer(generated["quizId"], first_question["id"]),
         },
     )
 
     profile = client.get("/api/me", headers=headers).json()["data"]
     assert profile["totalAnswered"] == 1
     assert profile["totalCorrect"] == 1
+
+
+def test_learning_endpoint_rejects_invalid_token_instead_of_using_guest_session():
+    response = client.post(
+        "/api/generate-quiz",
+        headers={"Authorization": "Bearer invalid-token"},
+        json={
+            "sessionId": "must-not-become-guest",
+            "inputType": "text",
+            "content": "learn authentication boundaries",
+            "questionCount": 5,
+        },
+    )
+
+    assert response.status_code == 401
+    assert "登录已失效" in response.json()["detail"]
 
 
 def test_challenge_history_returns_authenticated_reports():
@@ -239,7 +263,7 @@ def test_challenge_history_returns_authenticated_reports():
                 "sessionId": session_id,
                 "quizId": generated["quizId"],
                 "questionId": question["id"],
-                "answer": question["answer"],
+                "answer": stored_answer(generated["quizId"], question["id"]),
             },
         )
 
@@ -291,7 +315,7 @@ def test_report_history_and_detail_return_saved_report():
                 "sessionId": session_id,
                 "quizId": generated["quizId"],
                 "questionId": question["id"],
-                "answer": question["answer"],
+                "answer": stored_answer(generated["quizId"], question["id"]),
             },
         )
 
@@ -339,7 +363,8 @@ def test_wrong_book_uses_authenticated_identity_and_regenerates_quiz():
         },
     ).json()["data"]
     first_question = generated["questions"][0]
-    wrong_answer = ["B"] if first_question["answer"] != ["B"] else ["A"]
+    correct_answer = stored_answer(generated["quizId"], first_question["id"])
+    wrong_answer = ["B"] if correct_answer != ["B"] else ["A"]
 
     client.post(
         "/api/submit-answer",
@@ -360,7 +385,7 @@ def test_wrong_book_uses_authenticated_identity_and_regenerates_quiz():
     assert len(wrong_questions) == 1
     assert wrong_questions[0]["stem"]
     assert wrong_questions[0]["selectedAnswer"] == wrong_answer
-    assert wrong_questions[0]["correctAnswer"] == first_question["answer"]
+    assert wrong_questions[0]["correctAnswer"] == correct_answer
     assert wrong_questions[0]["explanation"]
     assert wrong_questions[0]["knowledge_point"]
 
@@ -400,7 +425,7 @@ def test_growth_profile_updates_exp_level_and_badges_after_learning():
                 "sessionId": session_id,
                 "quizId": generated["quizId"],
                 "questionId": question["id"],
-                "answer": question["answer"],
+                "answer": stored_answer(generated["quizId"], question["id"]),
             },
         )
 
@@ -446,8 +471,8 @@ def test_generate_quiz_returns_five_mixed_questions():
     for question in quiz["questions"]:
         assert question["id"]
         assert question["stem"]
-        assert question["answer"]
-        assert question["explanation"]
+        assert "answer" not in question
+        assert "explanation" not in question
         assert question["knowledge_point"]
         assert question["difficulty"] in {"easy", "medium", "hard"}
 
@@ -521,6 +546,8 @@ def test_create_list_supplement_and_quiz_from_knowledge_base():
     assert quiz["quizId"]
     assert quiz["title"] == "英语知识库"
     assert len(quiz["questions"]) == 5
+    assert all("answer" not in question for question in quiz["questions"])
+    assert all("explanation" not in question for question in quiz["questions"])
 
 
 def test_knowledge_base_limit_is_five_per_owner():
@@ -556,9 +583,13 @@ def test_knowledge_base_limit_is_five_per_owner():
 def test_knowledge_base_from_assets_accepts_text_file():
     response = client.post(
         "/api/knowledge-bases/from-assets",
-        data={"sessionId": "kb-asset-session", "title": "Redis 素材"},
+        data={
+            "sessionId": "kb-asset-session",
+            "title": "Redis 素材",
+            "originalName": "redis.md",
+        },
         files=[
-            ("files", ("redis.md", b"Redis keeps data in memory.", "text/markdown")),
+            ("files", ("upload.bin", b"Redis keeps data in memory.", "application/octet-stream")),
         ],
     )
 
@@ -611,7 +642,11 @@ def test_generate_quiz_rejects_empty_content():
     assert response.status_code == 422
 
 
-def test_generate_quiz_from_assets_accepts_text_files_and_images():
+def test_generate_quiz_from_assets_accepts_text_files_and_images(monkeypatch):
+    monkeypatch.setattr(
+        "app.services.asset_parser.try_ocr_image",
+        lambda _raw: "Redis diagram: memory, key and value",
+    )
     response = client.post(
         "/api/generate-quiz-from-assets",
         data={"sessionId": "asset-session", "content": "请结合上传素材出题"},
@@ -629,6 +664,18 @@ def test_generate_quiz_from_assets_accepts_text_files_and_images():
     assert quiz["source"]["fileCount"] == 1
     assert quiz["source"]["imageCount"] == 1
     assert quiz["source"]["notes"]
+
+
+def test_generate_quiz_from_assets_rejects_image_without_ocr_text(monkeypatch):
+    monkeypatch.setattr("app.services.asset_parser.try_ocr_image", lambda _raw: "")
+    response = client.post(
+        "/api/generate-quiz-from-assets",
+        data={"sessionId": "image-ocr-failed", "content": "图片学习资料"},
+        files=[("images", ("blurred.png", b"fake-image", "image/png"))],
+    )
+
+    assert response.status_code == 422
+    assert "未识别到可用文字" in response.json()["detail"]
 
 
 def test_generate_quiz_from_assets_rejects_more_than_three_files():
@@ -687,6 +734,7 @@ def test_submit_answer_scores_and_returns_explanation():
         },
     ).json()["data"]
     first_question = generated["questions"][0]
+    correct_answer = stored_answer(generated["quizId"], first_question["id"])
 
     response = client.post(
         "/api/submit-answer",
@@ -694,7 +742,7 @@ def test_submit_answer_scores_and_returns_explanation():
             "sessionId": "answer-session",
             "quizId": generated["quizId"],
             "questionId": first_question["id"],
-            "answer": first_question["answer"],
+            "answer": correct_answer,
         },
     )
 
@@ -702,7 +750,7 @@ def test_submit_answer_scores_and_returns_explanation():
     body = response.json()
     assert body["code"] == 0
     assert body["data"]["isCorrect"] is True
-    assert body["data"]["correctAnswer"] == first_question["answer"]
+    assert body["data"]["correctAnswer"] == correct_answer
     assert body["data"]["explanation"]
 
 
@@ -717,7 +765,8 @@ def test_submit_answer_accepts_single_answer_string_for_compatibility():
         },
     ).json()["data"]
     first_question = generated["questions"][0]
-    wrong_answer = "B" if first_question["answer"] != ["B"] else "A"
+    correct_answer = stored_answer(generated["quizId"], first_question["id"])
+    wrong_answer = "B" if correct_answer != ["B"] else "A"
 
     response = client.post(
         "/api/submit-answer",
@@ -733,7 +782,7 @@ def test_submit_answer_accepts_single_answer_string_for_compatibility():
     body = response.json()
     assert body["code"] == 0
     assert body["data"]["isCorrect"] is False
-    assert body["data"]["correctAnswer"] == first_question["answer"]
+    assert body["data"]["correctAnswer"] == correct_answer
 
 
 def test_generate_report_after_answers():
@@ -754,7 +803,7 @@ def test_generate_report_after_answers():
                 "sessionId": "report-session",
                 "quizId": generated["quizId"],
                 "questionId": question["id"],
-                "answer": question["answer"],
+                "answer": stored_answer(generated["quizId"], question["id"]),
             },
         )
 
@@ -786,7 +835,8 @@ def test_wrong_questions_history_daily_profile_and_weak_regeneration():
         },
     ).json()["data"]
     first_question = generated["questions"][0]
-    wrong_answer = ["B"] if first_question["answer"] != ["B"] else ["A"]
+    correct_answer = stored_answer(generated["quizId"], first_question["id"])
+    wrong_answer = ["B"] if correct_answer != ["B"] else ["A"]
 
     wrong_response = client.post(
         "/api/submit-answer",
@@ -812,7 +862,7 @@ def test_wrong_questions_history_daily_profile_and_weak_regeneration():
             "sessionId": session_id,
             "quizId": generated["quizId"],
             "questionId": first_question["id"],
-            "answer": first_question["answer"],
+            "answer": correct_answer,
         },
     )
     wrong_questions_after_review = client.get(
@@ -827,7 +877,7 @@ def test_wrong_questions_history_daily_profile_and_weak_regeneration():
                 "sessionId": session_id,
                 "quizId": generated["quizId"],
                 "questionId": question["id"],
-                "answer": question["answer"],
+                "answer": stored_answer(generated["quizId"], question["id"]),
             },
         )
 

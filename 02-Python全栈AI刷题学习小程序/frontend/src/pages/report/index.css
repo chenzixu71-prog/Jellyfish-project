@@ -534,3 +534,17 @@
   height: 58px;
   line-height: 54px;
 }
+
+.report-error { color: #9f2744; }
+.report-retry-button {
+  width: 144px;
+  height: 44px;
+  margin: 16px 0 0;
+  border-radius: 999px;
+  background: #6246f2;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 44px;
+}
+.report-retry-button::after { border: 0; }

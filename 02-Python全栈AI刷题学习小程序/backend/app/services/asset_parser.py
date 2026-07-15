@@ -83,9 +83,9 @@ async def parse_image_file(upload: UploadFile) -> str:
     ocr_text = try_ocr_image(raw)
     if ocr_text.strip():
         return f"Image {filename} OCR text:\n{ocr_text.strip()}"
-    return (
-        f"Image {filename} was uploaded. OCR is not available or no text was detected. "
-        "Use the learner text, file names, and other uploaded text files as the main quiz context."
+    raise HTTPException(
+        status_code=422,
+        detail=f"{filename} 未识别到可用文字，请换一张清晰图片或补充文字说明",
     )
 
 

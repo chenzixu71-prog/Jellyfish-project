@@ -1,4 +1,6 @@
-from fastapi import APIRouter, File, Form, Header, UploadFile
+from pathlib import Path
+
+from fastapi import APIRouter, File, Form, Header, HTTPException, UploadFile
 
 from app.config import AI_MODEL
 from app.schemas import (
@@ -75,15 +77,33 @@ def ok(data=None, message="ok") -> ApiResponse:
     return ApiResponse(code=0, message=message, data=data)
 
 
+def public_quiz_payload(quiz) -> dict:
+    payload = quiz.model_dump()
+    for question in payload.get("questions", []):
+        question.pop("answer", None)
+        question.pop("explanation", None)
+    return payload
+
+
+def apply_original_upload_name(
+    files: list[UploadFile], images: list[UploadFile], original_name: str
+) -> None:
+    uploads = [*files, *images]
+    if original_name and len(uploads) == 1:
+        uploads[0].filename = Path(original_name).name
+
+
 def resolve_learning_owner(session_id: str, authorization: str | None = None) -> str:
     if not authorization:
         return session_id
     try:
         token = get_bearer_token(authorization)
         user = store.get_user_by_token(token)
-        return user.id if user else session_id
-    except AuthError:
-        return session_id
+        if not user:
+            raise AuthError("invalid token")
+        return user.id
+    except AuthError as exc:
+        raise HTTPException(status_code=401, detail="登录已失效，请重新登录") from exc
 
 
 @router.get("/health", response_model=ApiResponse)
@@ -133,7 +153,7 @@ def current_user(authorization: str | None = Header(default=None)):
 def generate_quiz(payload: GenerateQuizRequest, authorization: str | None = Header(default=None)):
     owner_id = resolve_learning_owner(payload.sessionId, authorization)
     quiz = create_quiz(owner_id, payload.content, payload.webSearchEnabled)
-    return ok(quiz.model_dump())
+    return ok(public_quiz_payload(quiz))
 
 
 @router.post("/api/generate-quiz-from-assets", response_model=ApiResponse)
@@ -148,7 +168,7 @@ async def generate_quiz_from_assets(
     parsed = await parse_learning_assets(content, files, images)
     owner_id = resolve_learning_owner(sessionId, authorization)
     quiz = create_quiz(owner_id, parsed.content, webSearchEnabled)
-    payload = quiz.model_dump()
+    payload = public_quiz_payload(quiz)
     payload["source"] = {
         "fileCount": parsed.file_count,
         "imageCount": parsed.image_count,
@@ -177,8 +197,10 @@ async def create_kb_from_assets(
     webSearchEnabled: bool = Form(False),
     files: list[UploadFile] = File(default=[]),
     images: list[UploadFile] = File(default=[]),
+    originalName: str = Form(""),
     authorization: str | None = Header(default=None),
 ):
+    apply_original_upload_name(files, images, originalName)
     parsed = await parse_learning_assets(content, files, images)
     owner_id = resolve_learning_owner(sessionId, authorization)
     knowledge_base = create_knowledge_base(
@@ -236,8 +258,10 @@ async def supplement_kb_from_assets(
     webSearchEnabled: bool = Form(False),
     files: list[UploadFile] = File(default=[]),
     images: list[UploadFile] = File(default=[]),
+    originalName: str = Form(""),
     authorization: str | None = Header(default=None),
 ):
+    apply_original_upload_name(files, images, originalName)
     parsed = await parse_learning_assets(content, files, images)
     owner_id = resolve_learning_owner(sessionId, authorization)
     knowledge_base = supplement_knowledge_base(
@@ -263,7 +287,7 @@ def knowledge_base_quiz(
 ):
     owner_id = resolve_learning_owner(payload.sessionId, authorization)
     quiz = start_quiz_from_knowledge_base(owner_id, knowledge_base_id)
-    return ok(quiz.model_dump())
+    return ok(public_quiz_payload(quiz))
 
 
 @router.post("/api/submit-answer", response_model=ApiResponse)
@@ -295,7 +319,7 @@ def wrong_questions(sessionId: str, authorization: str | None = Header(default=N
 def weak_quiz(payload: RegenerateWeakQuizRequest, authorization: str | None = Header(default=None)):
     owner_id = resolve_learning_owner(payload.sessionId, authorization)
     quiz = regenerate_weak_quiz(owner_id, payload.quizId)
-    return ok(quiz.model_dump())
+    return ok(public_quiz_payload(quiz))
 
 
 @router.get("/api/report-history", response_model=ApiResponse)

@@ -15,8 +15,6 @@ export interface Question {
   type: QuestionType
   stem: string
   options: Option[]
-  answer: string[]
-  explanation: string
   knowledge_point: string
   difficulty: Difficulty
 }
@@ -124,6 +122,7 @@ interface ApiResponse<T> {
   code: number
   message: string
   data: T
+  detail?: string
 }
 
 export async function request<T>(
@@ -149,8 +148,14 @@ export async function request<T>(
         }
       })
 
+      if (response.statusCode === 401) {
+        Taro.removeStorageSync('authToken')
+        Taro.removeStorageSync('authUser')
+        throw new Error(response.data?.detail || '登录已失效，请重新登录')
+      }
+
       if (response.statusCode >= 400 || response.data.code !== 0) {
-        throw new Error(response.data?.message || `接口返回异常：${response.statusCode}`)
+        throw new Error(response.data?.detail || response.data?.message || `接口返回异常：${response.statusCode}`)
       }
 
       return response.data.data

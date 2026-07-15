@@ -11,6 +11,8 @@ export default function ReportPage() {
   const [report, setReport] = useState<Report | null>(null)
   const [reportHistory, setReportHistory] = useState<ReportHistoryItem[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
+  const [historyError, setHistoryError] = useState('')
 
   useShareAppMessage(() => ({
     title: report ? `我的水母学习报告：${report.title}` : '水母 DIY 学习助手',
@@ -20,17 +22,19 @@ export default function ReportPage() {
   useDidShow(() => { void loadCurrentReport() })
 
   async function loadCurrentReport() {
+    setLoading(true)
+    setLoadError('')
+    setHistoryError('')
     const storedQuiz = Taro.getStorageSync<Quiz>('currentQuiz')
     const historyQuizId = Taro.getStorageSync<string>('historyReportQuizId')
     const quizId = router.params.quizId || historyQuizId || storedQuiz?.quizId
-    if (historyQuizId) Taro.removeStorageSync('historyReportQuizId')
     if (!quizId) {
       setReport(null); await loadReportHistory(); setLoading(false); return
     }
-    setLoading(true)
     try {
       const nextReport = historyQuizId ? await getReportDetail(quizId) : await generateReport(quizId)
       setReport(nextReport)
+      if (historyQuizId) Taro.removeStorageSync('historyReportQuizId')
       trackEvent('report_view', {
         source: historyQuizId ? 'history' : 'current_quiz',
         score: nextReport.score,
@@ -41,13 +45,16 @@ export default function ReportPage() {
       const history = Taro.getStorageSync<Report[]>('learningReports') || []
       Taro.setStorageSync('learningReports', [nextReport, ...history.filter((item) => item.quizId !== quizId)].slice(0, 10))
     } catch (error) {
-      Taro.showToast({ title: error instanceof Error ? error.message : '报告加载失败', icon: 'none' })
-      setReport(null); await loadReportHistory()
+      setReport(null)
+      setLoadError(error instanceof Error ? error.message : '报告加载失败')
     } finally { setLoading(false) }
   }
 
   async function loadReportHistory() {
-    try { setReportHistory(await getReportHistory()) } catch { setReportHistory([]) }
+    try { setReportHistory(await getReportHistory()) } catch (error) {
+      setReportHistory([])
+      setHistoryError(error instanceof Error ? error.message : '报告历史加载失败')
+    }
   }
 
   function openSavedReport(quizId: string) {
@@ -81,6 +88,16 @@ export default function ReportPage() {
           <Text className='loading-title'>正在生成报告</Text>
           <Text className='muted'>水母正在整理答题表现和下一步建议</Text>
         </View>
+      </View>
+    )
+  }
+
+  if (loadError || historyError) {
+    const message = loadError || historyError
+    return (
+      <View className='report-page'>
+        <View className='report-cover'><Text className='cover-label'>REPORT HISTORY</Text><Image className='cover-jelly' src={jellyReport} mode='aspectFit' /></View>
+        <View className='report-card report-history-panel'><View className='report-empty report-error'><Text className='block-title'>报告加载失败</Text><Text className='list-line'>{message}</Text><Button className='report-retry-button' onClick={loadCurrentReport}>重新加载</Button></View></View>
       </View>
     )
   }

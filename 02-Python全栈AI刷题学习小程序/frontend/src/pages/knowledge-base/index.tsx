@@ -5,7 +5,8 @@ import {
   getKnowledgeBase,
   KnowledgeBase,
   startKnowledgeBaseQuiz,
-  supplementKnowledgeBase
+  supplementKnowledgeBaseFromAssets,
+  UploadProgress
 } from '../../services/knowledgeBaseService'
 import { elapsedMilliseconds, trackEvent } from '../../services/analyticsService'
 import './index.css'
@@ -24,7 +25,9 @@ export default function KnowledgeBasePage() {
   const [images, setImages] = useState<string[]>([])
   const [webSearchEnabled, setWebSearchEnabled] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState('')
   const [saving, setSaving] = useState(false)
+  const [uploadProgress, setUploadProgress] = useState<UploadProgress | null>(null)
   const [starting, setStarting] = useState(false)
 
   useDidShow(() => {
@@ -37,14 +40,13 @@ export default function KnowledgeBasePage() {
       return
     }
     setLoading(true)
+    setLoadError('')
     try {
       const next = await getKnowledgeBase(knowledgeBaseId)
       setKnowledgeBase(next)
     } catch (error) {
-      Taro.showToast({
-        title: error instanceof Error ? error.message : '知识库加载失败',
-        icon: 'none'
-      })
+      setKnowledgeBase(null)
+      setLoadError(error instanceof Error ? error.message : '知识库加载失败')
     } finally {
       setLoading(false)
     }
@@ -79,28 +81,9 @@ export default function KnowledgeBasePage() {
     }
   }
 
-  function buildSupplementContent() {
-    const parts = [content.trim()]
-    if (files.length > 0) {
-      const fs = Taro.getFileSystemManager()
-      files.forEach((file) => {
-        try {
-          const text = fs.readFileSync(file.path, 'utf8')
-          parts.push(`\n\n[补充文件：${file.name}]\n${String(text).slice(0, 2000)}`)
-        } catch {
-          parts.push(`\n\n[补充文件：${file.name}] 文件已选择，但小程序本地读取失败，请根据文件名辅助整理。`)
-        }
-      })
-    }
-    if (images.length > 0) {
-      parts.push(`\n\n[补充图片] 用户选择了 ${images.length} 张图片。当前先记录图片数量；如果图片里有关键知识，请在文本中补充说明。`)
-    }
-    return parts.filter(Boolean).join('')
-  }
-
   async function saveSupplement() {
-    const nextContent = buildSupplementContent()
-    if (!nextContent.trim()) {
+    const nextContent = content.trim()
+    if (!nextContent && files.length === 0 && images.length === 0) {
       Taro.showToast({ title: '先输入或选择补充资料', icon: 'none' })
       return
     }
@@ -112,8 +95,15 @@ export default function KnowledgeBasePage() {
       image_count: images.length
     })
     setSaving(true)
+    setUploadProgress(null)
     try {
-      const next = await supplementKnowledgeBase(knowledgeBaseId, nextContent, webSearchEnabled)
+      const assets = [
+        ...files.map((file) => ({ path: file.path, type: 'file' as const, name: file.name })),
+        ...images.map((path) => ({ path, type: 'image' as const }))
+      ]
+      const next = await supplementKnowledgeBaseFromAssets(
+        knowledgeBaseId, nextContent, webSearchEnabled, assets, setUploadProgress
+      )
       trackEvent('knowledge_supplement', {
         status: 'success',
         search_enabled: webSearchEnabled,
@@ -137,6 +127,7 @@ export default function KnowledgeBasePage() {
       })
     } finally {
       setSaving(false)
+      setUploadProgress(null)
     }
   }
 
@@ -167,6 +158,15 @@ export default function KnowledgeBasePage() {
         <View className='kb-detail-card'>
           <Text className='kb-muted'>loading......</Text>
         </View>
+      </View>
+    )
+  }
+
+  if (loadError) {
+    return (
+      <View className='kb-detail-page'>
+        <View className='kb-hero'><Text className='kb-kicker'>Knowledge Dock</Text><Text className='kb-hero-title'>知识库加载失败</Text></View>
+        <View className='kb-detail-card kb-state-card'><Text className='kb-muted kb-error-text'>{loadError}</Text><Button className='kb-retry-button' onClick={loadKnowledgeBase}>重新加载</Button></View>
       </View>
     )
   }
@@ -252,8 +252,9 @@ export default function KnowledgeBasePage() {
           />
         </View>
         <Button className='kb-save-button' loading={saving} onClick={saveSupplement}>
-          补充到知识库
+          {uploadProgress ? `处理素材 ${uploadProgress.completed}/${uploadProgress.total}` : '补充到知识库'}
         </Button>
+        {saving && uploadProgress && <Text className='kb-progress-copy'>每份素材处理成功后会更新进度，失败时将停止后续上传。</Text>}
       </View>
 
       {knowledgeBase.sourceMeta?.enabled && (
