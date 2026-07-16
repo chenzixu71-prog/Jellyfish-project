@@ -650,6 +650,12 @@ def test_knowledge_base_refills_only_after_fewer_than_ten_questions_remain():
         json={"sessionId": session_id},
     ).json()["data"]
     assert len(first_quiz["questions"]) == 10
+    assert {question["type"] for question in first_quiz["questions"]} == {
+        "single",
+        "multiple",
+        "judge",
+        "short_answer",
+    }
 
     for question in first_quiz["questions"]:
         answer_payload = {

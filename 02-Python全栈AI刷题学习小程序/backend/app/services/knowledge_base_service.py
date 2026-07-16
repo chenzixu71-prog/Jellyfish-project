@@ -186,9 +186,9 @@ def start_quiz_from_knowledge_base(owner_id: str, knowledge_base_id: str):
     knowledge_base = get_knowledge_base(owner_id, knowledge_base_id)
     uncompleted_questions = get_uncompleted_questions(knowledge_base)
     selected_questions = (
-        uncompleted_questions[:CHALLENGE_QUESTION_COUNT]
+        select_challenge_questions(uncompleted_questions)
         if uncompleted_questions
-        else knowledge_base.questions[:CHALLENGE_QUESTION_COUNT]
+        else select_challenge_questions(knowledge_base.questions)
     )
     if not selected_questions:
         raise HTTPException(status_code=502, detail="No usable questions were generated.")
@@ -214,6 +214,33 @@ def get_uncompleted_questions(knowledge_base: KnowledgeBase) -> list[Question]:
         for question in knowledge_base.questions
         if question.id not in completed_ids
     ]
+
+
+def select_challenge_questions(questions: list[Question]) -> list[Question]:
+    targets = {
+        "single": 5,
+        "multiple": 2,
+        "judge": 1,
+        "short_answer": 2,
+    }
+    selected: list[Question] = []
+    selected_ids: set[str] = set()
+    for question_type, target in targets.items():
+        matching = [
+            question
+            for question in questions
+            if question.type == question_type and question.id not in selected_ids
+        ][:target]
+        selected.extend(matching)
+        selected_ids.update(question.id for question in matching)
+
+    for question in questions:
+        if len(selected) >= CHALLENGE_QUESTION_COUNT:
+            break
+        if question.id not in selected_ids:
+            selected.append(question)
+            selected_ids.add(question.id)
+    return selected
 
 
 def add_questions_to_knowledge_base(
