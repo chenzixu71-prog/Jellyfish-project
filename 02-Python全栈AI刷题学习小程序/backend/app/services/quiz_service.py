@@ -59,6 +59,7 @@ def submit_answer(
     quiz_id: str,
     question_id: str,
     answer: list[str],
+    self_assessment: str | None = None,
 ) -> AnswerResult:
     quiz = store.get_quiz(quiz_id)
     if quiz is None:
@@ -68,17 +69,31 @@ def submit_answer(
     if question is None:
         raise HTTPException(status_code=404, detail="question not found")
 
+    is_short_answer = question.type == "short_answer"
+    if is_short_answer and self_assessment not in {"correct", "incorrect"}:
+        raise HTTPException(
+            status_code=422,
+            detail="Short-answer questions require selfAssessment.",
+        )
+
     normalized_answer = sorted(answer)
     correct_answer = sorted(question.answer)
+    is_correct = (
+        self_assessment == "correct"
+        if is_short_answer
+        else normalized_answer == correct_answer
+    )
     result = AnswerResult(
         questionId=question.id,
-        isCorrect=normalized_answer == correct_answer,
+        isCorrect=is_correct,
         correctAnswer=question.answer,
         explanation=question.explanation,
         knowledge_point=question.knowledge_point,
+        evaluationMode="self_assessment" if is_short_answer else "objective",
     )
     store.save_answer(session_id, quiz_id, result)
-    store.record_answer_stat(session_id, result.isCorrect)
+    if not is_short_answer:
+        store.record_answer_stat(session_id, result.isCorrect)
     if quiz.knowledgeBaseId:
         from app.services.knowledge_base_service import mark_question_completed
 

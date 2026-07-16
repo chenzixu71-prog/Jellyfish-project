@@ -5,7 +5,7 @@ from pydantic import BaseModel, Field, field_validator
 from pydantic import model_validator
 
 
-QuestionType = Literal["single", "multiple", "judge"]
+QuestionType = Literal["single", "multiple", "judge", "short_answer"]
 Difficulty = Literal["easy", "medium", "hard"]
 
 
@@ -184,6 +184,7 @@ class SubmitAnswerRequest(BaseModel):
     quizId: str = Field(min_length=1)
     questionId: str = Field(min_length=1)
     answer: list[str] = Field(min_length=1)
+    selfAssessment: Literal["correct", "incorrect"] | None = None
 
     @field_validator("answer", mode="before")
     @classmethod
@@ -199,6 +200,7 @@ class AnswerResult(BaseModel):
     correctAnswer: list[str]
     explanation: str
     knowledge_point: str
+    evaluationMode: Literal["objective", "self_assessment"] = "objective"
 
 
 class GenerateReportRequest(BaseModel):

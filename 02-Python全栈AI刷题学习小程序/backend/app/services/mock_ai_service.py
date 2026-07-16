@@ -7,11 +7,12 @@ def generate_mock_quiz(content: str, question_count: int = 5) -> Quiz:
     topic = content.strip()
     safe_topic = topic[:40] if topic else "Custom topic"
     batch_seed = hashlib.sha256(topic.encode("utf-8")).hexdigest()[:6]
-    single_count, multiple_count, judge_count = question_type_counts(question_count)
+    single_count, multiple_count, judge_count, short_answer_count = question_type_counts(question_count)
     question_types = (
         ["single"] * single_count
         + ["multiple"] * multiple_count
         + ["judge"] * judge_count
+        + ["short_answer"] * short_answer_count
     )
     questions = [
         build_mock_question(index + 1, question_type, safe_topic, batch_seed)
@@ -24,16 +25,23 @@ def generate_mock_quiz(content: str, question_count: int = 5) -> Quiz:
     )
 
 
-def question_type_counts(question_count: int) -> tuple[int, int, int]:
+def question_type_counts(question_count: int) -> tuple[int, int, int, int]:
     if not 1 <= question_count <= 200:
         raise ValueError("question_count must be between 1 and 200")
     if question_count == 1:
-        return 1, 0, 0
+        return 1, 0, 0, 0
+
+    if question_count < 10:
+        multiple_count = max(1, round(question_count * 0.2))
+        judge_count = max(1, round(question_count * 0.2))
+        single_count = question_count - multiple_count - judge_count
+        return single_count, multiple_count, judge_count, 0
 
     multiple_count = max(1, round(question_count * 0.2))
-    judge_count = max(1, round(question_count * 0.2))
-    single_count = question_count - multiple_count - judge_count
-    return single_count, multiple_count, judge_count
+    judge_count = max(1, round(question_count * 0.15))
+    short_answer_count = max(1, round(question_count * 0.15))
+    single_count = question_count - multiple_count - judge_count - short_answer_count
+    return single_count, multiple_count, judge_count, short_answer_count
 
 def build_mock_question(
     index: int,
@@ -41,6 +49,18 @@ def build_mock_question(
     topic: str,
     batch_seed: str,
 ) -> Question:
+    if question_type == "short_answer":
+        return Question(
+            id=f"q{index}",
+            type="short_answer",
+            stem=f"In your own words, explain {topic} point {batch_seed}-{index}.",
+            options=[],
+            answer=[f"Reference answer {index} for {topic}."],
+            explanation=f"Development-mode explanation {index} for {topic}.",
+            knowledge_point=f"{topic} point {index}",
+            difficulty="medium",
+        )
+
     if question_type == "judge":
         return Question(
             id=f"q{index}",

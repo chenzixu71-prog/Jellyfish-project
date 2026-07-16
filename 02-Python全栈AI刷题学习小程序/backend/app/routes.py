@@ -325,6 +325,7 @@ def answer_question(payload: SubmitAnswerRequest, authorization: str | None = He
         payload.quizId,
         payload.questionId,
         payload.answer,
+        payload.selfAssessment,
     )
     return ok(result.model_dump())
 

@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 
 from app import config
 from app.main import app
+from app.schemas import Question, Quiz
 from app.storage.memory_store import store
 
 
@@ -636,14 +637,17 @@ def test_knowledge_base_refills_only_after_fewer_than_ten_questions_remain():
     assert len(first_quiz["questions"]) == 10
 
     for question in first_quiz["questions"]:
+        answer_payload = {
+            "sessionId": session_id,
+            "quizId": first_quiz["quizId"],
+            "questionId": question["id"],
+            "answer": stored_answer(first_quiz["quizId"], question["id"]),
+        }
+        if question["type"] == "short_answer":
+            answer_payload["selfAssessment"] = "correct"
         response = client.post(
             "/api/submit-answer",
-            json={
-                "sessionId": session_id,
-                "quizId": first_quiz["quizId"],
-                "questionId": question["id"],
-                "answer": stored_answer(first_quiz["quizId"], question["id"]),
-            },
+            json=answer_payload,
         )
         assert response.status_code == 200
 
@@ -663,14 +667,17 @@ def test_knowledge_base_refills_only_after_fewer_than_ten_questions_remain():
     assert after_second_start["questionCount"] == 20
 
     for question in second_quiz["questions"]:
+        answer_payload = {
+            "sessionId": session_id,
+            "quizId": second_quiz["quizId"],
+            "questionId": question["id"],
+            "answer": stored_answer(second_quiz["quizId"], question["id"]),
+        }
+        if question["type"] == "short_answer":
+            answer_payload["selfAssessment"] = "correct"
         client.post(
             "/api/submit-answer",
-            json={
-                "sessionId": session_id,
-                "quizId": second_quiz["quizId"],
-                "questionId": question["id"],
-                "answer": stored_answer(second_quiz["quizId"], question["id"]),
-            },
+            json=answer_payload,
         )
 
     third_quiz = client.post(
@@ -685,6 +692,53 @@ def test_knowledge_base_refills_only_after_fewer_than_ten_questions_remain():
     ).json()["data"]
     assert after_refill["questionCount"] == 40
     assert after_refill["completedQuestionCount"] == 20
+
+
+def test_short_answer_uses_user_self_assessment_and_returns_reference_answer():
+    quiz = Quiz(
+        title="HTTP",
+        summary="Short answer test",
+        questions=[
+            Question(
+                id="short-1",
+                type="short_answer",
+                stem="Explain what HTTP 404 means.",
+                options=[],
+                answer=["The requested resource was not found on the server."],
+                explanation="404 is a client error response for a resource that cannot be found.",
+                knowledge_point="HTTP 404",
+                difficulty="easy",
+            )
+        ],
+    )
+    store.save_quiz("short-answer-session", quiz)
+
+    missing_assessment = client.post(
+        "/api/submit-answer",
+        json={
+            "sessionId": "short-answer-session",
+            "quizId": quiz.quizId,
+            "questionId": "short-1",
+            "answer": ["It means the page is unavailable."],
+        },
+    )
+    assert missing_assessment.status_code == 422
+
+    submitted = client.post(
+        "/api/submit-answer",
+        json={
+            "sessionId": "short-answer-session",
+            "quizId": quiz.quizId,
+            "questionId": "short-1",
+            "answer": ["It means the page is unavailable."],
+            "selfAssessment": "incorrect",
+        },
+    )
+    assert submitted.status_code == 200
+    result = submitted.json()["data"]
+    assert result["isCorrect"] is False
+    assert result["evaluationMode"] == "self_assessment"
+    assert result["correctAnswer"] == ["The requested resource was not found on the server."]
 
 
 def test_knowledge_base_from_assets_accepts_text_file():

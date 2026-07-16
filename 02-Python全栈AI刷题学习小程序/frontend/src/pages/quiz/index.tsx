@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react'
 import Taro, { useDidShow } from '@tarojs/taro'
-import { Button, Image, ScrollView, Text, View } from '@tarojs/components'
+import { Button, Image, ScrollView, Text, Textarea, View } from '@tarojs/components'
 import { AnswerResult, Question, Quiz, submitAnswer } from '../../services/quizService'
 import { trackEvent } from '../../services/analyticsService'
 import jellyCelebrate from '../../assets/jelly-gpt/jelly-celebrate.png'
@@ -16,6 +16,7 @@ function answerText(question: Question, answer: string[]) {
 function typeText(question: Question) {
   if (question.type === 'multiple') return '多选题'
   if (question.type === 'judge') return '判断题'
+  if (question.type === 'short_answer') return '问答题'
   return '单选题'
 }
 
@@ -34,6 +35,7 @@ export default function QuizPage() {
   const [completed, setCompleted] = useState(false)
   const [sheetOpen, setSheetOpen] = useState(false)
   const [correctCount, setCorrectCount] = useState(0)
+  const [shortAnswer, setShortAnswer] = useState('')
 
   useDidShow(() => {
     const storedQuiz = Taro.getStorageSync<Quiz>('currentQuiz')
@@ -46,6 +48,7 @@ export default function QuizPage() {
       setCompleted(false)
       setSheetOpen(false)
       setCorrectCount(0)
+      setShortAnswer('')
       trackEvent('quiz_start', {
         question_count: storedQuiz.questions.length,
         search_enabled: Boolean(storedQuiz.sourceMeta?.enabled)
@@ -71,13 +74,33 @@ export default function QuizPage() {
   }
 
   async function handleSubmit() {
-    if (!quiz || !question || selected.length === 0) {
-      Taro.showToast({ title: '先选择答案', icon: 'none' })
+    if (!quiz || !question) return
+    const isShortAnswer = question.type === 'short_answer'
+    const answer = isShortAnswer ? [shortAnswer.trim()] : selected
+    if (!answer[0]) {
+      Taro.showToast({ title: isShortAnswer ? '先写下你的回答' : '先选择答案', icon: 'none' })
       return
     }
+
+    let selfAssessment: 'correct' | 'incorrect' | undefined
+    if (isShortAnswer) {
+      const assessment = await Taro.showModal({
+        title: '自评这道题',
+        content: '回想题目要求，你认为自己的回答是否掌握了关键点？选择后会显示参考答案。',
+        confirmText: '我答对了',
+        cancelText: '还没掌握'
+      })
+      selfAssessment = assessment.confirm ? 'correct' : 'incorrect'
+    }
+
     setSubmitting(true)
     try {
-      const answerResult = await submitAnswer(quiz.quizId, question.id, selected)
+      const answerResult = await submitAnswer(
+        quiz.quizId,
+        question.id,
+        answer,
+        selfAssessment
+      )
       setResult(answerResult)
       if (answerResult.isCorrect) setCorrectCount((count) => count + 1)
       trackEvent('answer_submit', {
@@ -108,6 +131,7 @@ export default function QuizPage() {
     setSelected([])
     setResult(null)
     setSheetOpen(false)
+    setShortAnswer('')
   }
 
   if (!quiz || !question) {
@@ -153,8 +177,21 @@ export default function QuizPage() {
           <Text className='type-pill soft'>{difficultyText(question.difficulty)}</Text>
         </View>
         <Text className='question-stem'>{question.stem}</Text>
-        <View className='option-list'>
-          {question.options.map((option) => {
+        {question.type === 'short_answer' ? (
+          <View className='short-answer-wrap'>
+            <Textarea
+              className='short-answer-input'
+              value={shortAnswer}
+              maxlength={600}
+              disabled={Boolean(result)}
+              placeholder='用自己的话写下答案，不用和参考答案一字不差'
+              onInput={(event) => setShortAnswer(event.detail.value)}
+            />
+            <Text className='short-answer-count'>{shortAnswer.length}/600</Text>
+          </View>
+        ) : (
+          <View className='option-list'>
+            {question.options.map((option) => {
             const active = selected.includes(option.key)
             const isCorrect = Boolean(result?.correctAnswer.includes(option.key))
             const isWrong = Boolean(result && active && !isCorrect)
@@ -168,18 +205,19 @@ export default function QuizPage() {
                 <Text className='option-text'>{option.text}</Text>
               </View>
             )
-          })}
-        </View>
+            })}
+          </View>
+        )}
         {!result && (
-          <Button className={`submit-button ${selected.length ? 'ready' : ''}`} disabled={submitting} onClick={handleSubmit}>提交答案</Button>
+          <Button className={`submit-button ${(selected.length || shortAnswer.trim()) ? 'ready' : ''}`} disabled={submitting} onClick={handleSubmit}>{question.type === 'short_answer' ? '完成回答' : '提交答案'}</Button>
         )}
       </View>
 
       {result && (
         <View className={`feedback-bar ${result.isCorrect ? 'right' : 'wrong'}`}>
           <View className='feedback-copy-wrap'>
-            <Text className='feedback-title'>{result.isCorrect ? '答对了，漂亮！' : '差一点，马上弄懂'}</Text>
-            <Text className='feedback-copy'>正确答案：{answerText(question, result.correctAnswer)}</Text>
+            <Text className='feedback-title'>{result.evaluationMode === 'self_assessment' ? (result.isCorrect ? '已记录：我掌握了' : '已加入重点复习') : (result.isCorrect ? '答对了，漂亮！' : '差一点，马上弄懂')}</Text>
+            <Text className='feedback-copy'>{question.type === 'short_answer' ? '参考答案' : '正确答案'}：{answerText(question, result.correctAnswer)}</Text>
           </View>
           <View className='feedback-actions'>
             <Button className='feedback-secondary' onClick={() => setSheetOpen(true)}>展开讲解</Button>
@@ -200,7 +238,7 @@ export default function QuizPage() {
                 <Text className='sheet-copy'>{result.explanation}</Text>
               </View>
               <View className='sheet-block'>
-                <Text className='sheet-label'>正确答案</Text>
+                <Text className='sheet-label'>{question.type === 'short_answer' ? '参考答案' : '正确答案'}</Text>
                 <Text className='sheet-copy'>{answerText(question, result.correctAnswer)}</Text>
               </View>
               <View className='sheet-block'>

@@ -3,7 +3,7 @@ import { requireApiBaseUrls } from '../config/api'
 
 const API_BASE_URLS = requireApiBaseUrls()
 
-export type QuestionType = 'single' | 'multiple' | 'judge'
+export type QuestionType = 'single' | 'multiple' | 'judge' | 'short_answer'
 export type Difficulty = 'easy' | 'medium' | 'hard'
 
 export interface Option {
@@ -51,6 +51,7 @@ export interface AnswerResult {
   correctAnswer: string[]
   explanation: string
   knowledge_point: string
+  evaluationMode: 'objective' | 'self_assessment'
 }
 
 export interface Report {
@@ -190,12 +191,18 @@ export function generateQuiz(content: string, webSearchEnabled = false): Promise
   })
 }
 
-export function submitAnswer(quizId: string, questionId: string, answer: string[]): Promise<AnswerResult> {
+export function submitAnswer(
+  quizId: string,
+  questionId: string,
+  answer: string[],
+  selfAssessment?: 'correct' | 'incorrect'
+): Promise<AnswerResult> {
   return request<AnswerResult>('/api/submit-answer', 'POST', {
     sessionId: getOrCreateSessionId(),
     quizId,
     questionId,
-    answer
+    answer,
+    selfAssessment
   })
 }
 
