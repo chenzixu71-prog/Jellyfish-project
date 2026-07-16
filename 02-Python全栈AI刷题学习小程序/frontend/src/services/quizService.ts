@@ -129,6 +129,8 @@ interface ApiResponse<T> {
   detail?: string
 }
 
+class NonRetryableApiError extends Error {}
+
 export async function request<T>(
   url: string,
   method: 'GET' | 'POST',
@@ -155,15 +157,16 @@ export async function request<T>(
       if (response.statusCode === 401) {
         Taro.removeStorageSync('authToken')
         Taro.removeStorageSync('authUser')
-        throw new Error(response.data?.detail || '登录已失效，请重新登录')
+        throw new NonRetryableApiError(response.data?.detail || '登录已失效，请重新登录')
       }
 
       if (response.statusCode >= 400 || response.data.code !== 0) {
-        throw new Error(response.data?.detail || response.data?.message || `接口返回异常：${response.statusCode}`)
+        throw new NonRetryableApiError(response.data?.detail || response.data?.message || `接口返回异常：${response.statusCode}`)
       }
 
       return response.data.data
     } catch (error) {
+      if (error instanceof NonRetryableApiError) throw error
       lastError = error
     }
   }

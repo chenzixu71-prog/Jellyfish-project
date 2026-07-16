@@ -15,7 +15,13 @@ from app.schemas import (
     WrongQuestion,
 )
 from app.services.ai_service import generate_quiz
-from app.services.search_service import SourceContext, SourceProvider, build_source_context, trim_text
+from app.services.search_service import (
+    SourceContext,
+    SourceProvider,
+    build_source_context,
+    is_url_only_content,
+    trim_text,
+)
 from app.storage.memory_store import store
 
 
@@ -28,6 +34,11 @@ def create_quiz(
 ) -> Quiz:
     if not content.strip():
         raise HTTPException(status_code=422, detail="content is required")
+    if not web_search_enabled and is_url_only_content(content):
+        raise HTTPException(
+            status_code=422,
+            detail="A URL requires web search. Enable web search or upload readable content.",
+        )
 
     source_context = build_source_context(content, web_search_enabled, source_provider)
     quiz = generate_quiz(content, source_context, question_count=question_count)

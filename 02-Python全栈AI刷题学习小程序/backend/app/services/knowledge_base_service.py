@@ -15,7 +15,12 @@ from app.schemas import (
 )
 from app.services.ai_service import generate_quiz
 from app.services.quiz_service import build_source_meta
-from app.services.search_service import SourceContext, SourceProvider, build_source_context
+from app.services.search_service import (
+    SourceContext,
+    SourceProvider,
+    build_source_context,
+    is_url_only_content,
+)
 from app.storage.memory_store import store
 
 
@@ -37,6 +42,7 @@ def create_knowledge_base(
     source_provider: SourceProvider | None = None,
 ) -> KnowledgeBase:
     normalized_content = normalize_content(content)
+    require_search_for_url_only_content(normalized_content, web_search_enabled)
     if store.count_knowledge_bases(owner_id) >= MAX_KNOWLEDGE_BASES_PER_OWNER:
         raise HTTPException(status_code=400, detail="Each user can create at most 5 knowledge bases.")
 
@@ -92,6 +98,7 @@ def supplement_knowledge_base(
 ) -> KnowledgeBase:
     knowledge_base = get_knowledge_base(owner_id, knowledge_base_id)
     normalized_content = normalize_content(content)
+    require_search_for_url_only_content(normalized_content, web_search_enabled)
     source_context = build_source_context(
         normalized_content,
         web_search_enabled,
@@ -339,6 +346,14 @@ def normalize_content(content: str) -> str:
     if not cleaned:
         raise HTTPException(status_code=422, detail="Knowledge content is required.")
     return trim_for_storage(cleaned)
+
+
+def require_search_for_url_only_content(content: str, web_search_enabled: bool) -> None:
+    if not web_search_enabled and is_url_only_content(content):
+        raise HTTPException(
+            status_code=422,
+            detail="A URL requires web search. Enable web search or upload readable content.",
+        )
 
 
 def trim_for_storage(content: str) -> str:

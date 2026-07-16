@@ -618,6 +618,21 @@ def test_knowledge_base_limit_is_five_per_owner():
     assert "5" in rejected.json()["detail"]
 
 
+def test_url_only_knowledge_requires_web_search_or_uploaded_content():
+    response = client.post(
+        "/api/knowledge-bases",
+        json={
+            "sessionId": "kb-url-search-off",
+            "title": "Harness docs",
+            "content": "https://developer.harness.io/docs",
+            "webSearchEnabled": False,
+        },
+    )
+
+    assert response.status_code == 422
+    assert "web search" in response.json()["detail"].lower()
+
+
 def test_knowledge_base_refills_only_after_fewer_than_ten_questions_remain():
     session_id = "kb-refill-session"
     created = client.post(

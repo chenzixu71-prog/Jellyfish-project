@@ -42,6 +42,13 @@ def extract_urls(text: str) -> list[str]:
     return [item.rstrip(").,;]}>") for item in URL_RE.findall(text)]
 
 
+def is_url_only_content(text: str) -> bool:
+    if not extract_urls(text):
+        return False
+    remaining = URL_RE.sub("", text).strip(" \t\r\n).,;]}>")
+    return not remaining
+
+
 def build_source_context(
     content: str,
     web_search_enabled: bool,

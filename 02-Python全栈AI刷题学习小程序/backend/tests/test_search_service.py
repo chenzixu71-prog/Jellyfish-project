@@ -78,14 +78,24 @@ def test_build_source_context_uses_injected_provider():
 
 
 def test_build_source_context_disabled_returns_empty_context():
+    class ProviderThatMustNotRun:
+        def __init__(self):
+            self.calls = 0
+
+        def collect(self, query: str) -> SourceContext:
+            self.calls += 1
+            raise AssertionError("search provider must not run while disabled")
+
+    provider = ProviderThatMustNotRun()
     context = build_source_context(
         "Harness Engineering",
         web_search_enabled=False,
-        provider=FakeProvider(),
+        provider=provider,
     )
 
     assert context.has_sources is False
     assert context.tool_calls == []
+    assert provider.calls == 0
 
 
 def test_tavily_provider_extracts_url_and_searches_long_query():
