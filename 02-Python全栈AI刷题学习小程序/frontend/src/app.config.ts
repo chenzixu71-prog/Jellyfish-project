@@ -1,6 +1,7 @@
 export default defineAppConfig({
   pages: [
     'pages/create/index',
+    'pages/challenge/index',
     'pages/knowledge-base/index',
     'pages/quiz/index',
     'pages/report/index',
@@ -27,7 +28,7 @@ export default defineAppConfig({
         selectedIconPath: 'assets/tabs/home-on.png'
       },
       {
-        pagePath: 'pages/quiz/index',
+        pagePath: 'pages/challenge/index',
         text: '闯关',
         iconPath: 'assets/tabs/quiz-off.png',
         selectedIconPath: 'assets/tabs/quiz-on.png'

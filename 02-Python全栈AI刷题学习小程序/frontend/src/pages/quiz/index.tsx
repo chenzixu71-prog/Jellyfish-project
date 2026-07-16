@@ -114,8 +114,8 @@ export default function QuizPage() {
     return (
       <View className='quiz-page quiz-empty'>
         <Text className='empty-title'>还没有关卡</Text>
-        <Text className='empty-copy'>先去首页创建知识库，再开始闯关。</Text>
-        <Button className='empty-button' onClick={() => Taro.switchTab({ url: '/pages/create/index' })}>回到首页</Button>
+        <Text className='empty-copy'>先选择一个知识库，再开始闯关。</Text>
+        <Button className='empty-button' onClick={() => Taro.switchTab({ url: '/pages/challenge/index' })}>选择知识库</Button>
       </View>
     )
   }

@@ -137,7 +137,7 @@ export default function KnowledgeBasePage() {
     try {
       const quiz = await startKnowledgeBaseQuiz(knowledgeBase.id)
       Taro.setStorageSync('currentQuiz', quiz)
-      Taro.switchTab({ url: '/pages/quiz/index' })
+      Taro.navigateTo({ url: '/pages/quiz/index' })
     } catch (error) {
       Taro.showToast({
         title: error instanceof Error ? error.message : '生成闯关失败',
@@ -214,8 +214,8 @@ export default function KnowledgeBasePage() {
             <Text className='kb-stat-label'>来源</Text>
           </View>
           <View className='kb-stat kb-stat-yellow'>
-            <Text className='kb-stat-value'>{knowledgeBase.quizIds.length}</Text>
-            <Text className='kb-stat-label'>闯关</Text>
+            <Text className='kb-stat-value'>{knowledgeBase.completedQuestionCount}/{knowledgeBase.questionCount}</Text>
+            <Text className='kb-stat-label'>题库进度</Text>
           </View>
         </View>
         <Button className='kb-primary-button' loading={starting} onClick={startQuiz}>

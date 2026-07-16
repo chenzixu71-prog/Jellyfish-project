@@ -214,6 +214,10 @@
   margin-top: 18px;
 }
 
+.input-card {
+  margin-top: 0;
+}
+
 .learning-input {
   width: 100%;
   min-height: 154px;
