@@ -29,6 +29,7 @@ class Question(BaseModel):
     explanation: str
     knowledge_point: str
     difficulty: Difficulty
+    sourceChunkIds: list[str] = Field(default_factory=list)
 
     @field_validator("type", mode="before")
     @classmethod
@@ -123,6 +124,7 @@ class Quiz(BaseModel):
     summary: str
     questions: list[Question]
     sourceMeta: SourceMeta | None = None
+    knowledgeBaseId: str = ""
 
 
     @model_validator(mode="before")
@@ -155,6 +157,9 @@ class KnowledgeBaseSummary(BaseModel):
     materialCount: int
     sourceCount: int
     quizCount: int = 0
+    questionCount: int = 0
+    completedQuestionCount: int = 0
+    maxQuestions: int = Field(default=200, ge=1, le=200)
     updatedAt: str = ""
 
 
@@ -167,6 +172,9 @@ class KnowledgeBase(BaseModel):
     chunks: list[KnowledgeBaseChunk] = []
     sourceMeta: SourceMeta | None = None
     quizIds: list[str] = []
+    questions: list[Question] = Field(default_factory=list)
+    completedQuestionIds: list[str] = Field(default_factory=list)
+    maxQuestions: int = Field(default=200, ge=1, le=200)
     createdAt: str = ""
     updatedAt: str = ""
 

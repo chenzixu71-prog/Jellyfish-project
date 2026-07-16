@@ -78,6 +78,10 @@ def submit_answer(
     )
     store.save_answer(session_id, quiz_id, result)
     store.record_answer_stat(session_id, result.isCorrect)
+    if quiz.knowledgeBaseId:
+        from app.services.knowledge_base_service import mark_question_completed
+
+        mark_question_completed(session_id, quiz.knowledgeBaseId, question.id)
     if result.isCorrect:
         store.remove_wrong_question(session_id, quiz_id, question.id)
     else:

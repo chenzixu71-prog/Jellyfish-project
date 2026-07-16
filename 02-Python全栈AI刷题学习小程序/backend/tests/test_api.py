@@ -560,6 +560,32 @@ def test_create_list_supplement_and_quiz_from_knowledge_base():
     assert all("answer" not in question for question in quiz["questions"])
     assert all("explanation" not in question for question in quiz["questions"])
 
+    after_quiz = client.get(
+        f"/api/knowledge-bases/{created['id']}",
+        params={"sessionId": session_id},
+    ).json()["data"]
+    assert after_quiz["questionCount"] == 5
+    assert after_quiz["completedQuestionCount"] == 0
+    assert after_quiz["maxQuestions"] == 200
+    assert "questions" not in after_quiz
+    assert "completedQuestionIds" not in after_quiz
+
+    first_question = quiz["questions"][0]
+    answer_payload = {
+        "sessionId": session_id,
+        "quizId": quiz["quizId"],
+        "questionId": first_question["id"],
+        "answer": stored_answer(quiz["quizId"], first_question["id"]),
+    }
+    assert client.post("/api/submit-answer", json=answer_payload).status_code == 200
+    assert client.post("/api/submit-answer", json=answer_payload).status_code == 200
+
+    after_answer = client.get(
+        f"/api/knowledge-bases/{created['id']}",
+        params={"sessionId": session_id},
+    ).json()["data"]
+    assert after_answer["completedQuestionCount"] == 1
+
 
 def test_knowledge_base_limit_is_five_per_owner():
     session_id = "kb-limit-session"

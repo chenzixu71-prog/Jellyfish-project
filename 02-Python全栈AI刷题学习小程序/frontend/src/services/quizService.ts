@@ -18,6 +18,7 @@ export interface Question {
   options: Option[]
   knowledge_point: string
   difficulty: Difficulty
+  sourceChunkIds?: string[]
 }
 
 export interface SourceItem {
@@ -41,6 +42,7 @@ export interface Quiz {
   summary: string
   questions: Question[]
   sourceMeta?: SourceMeta
+  knowledgeBaseId?: string
 }
 
 export interface AnswerResult {

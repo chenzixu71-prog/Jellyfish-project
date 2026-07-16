@@ -85,6 +85,15 @@ def public_quiz_payload(quiz) -> dict:
     return payload
 
 
+def public_knowledge_base_payload(knowledge_base) -> dict:
+    payload = knowledge_base.model_dump()
+    payload["questionCount"] = len(knowledge_base.questions)
+    payload["completedQuestionCount"] = len(knowledge_base.completedQuestionIds)
+    payload.pop("questions", None)
+    payload.pop("completedQuestionIds", None)
+    return payload
+
+
 def apply_original_upload_name(
     files: list[UploadFile], images: list[UploadFile], original_name: str
 ) -> None:
@@ -204,7 +213,7 @@ def create_kb(payload: KnowledgeBaseCreateRequest, authorization: str | None = H
         payload.title,
         payload.webSearchEnabled,
     )
-    return ok(knowledge_base.model_dump())
+    return ok(public_knowledge_base_payload(knowledge_base))
 
 
 @router.post("/api/knowledge-bases/from-assets", response_model=ApiResponse)
@@ -227,7 +236,7 @@ async def create_kb_from_assets(
         title,
         webSearchEnabled,
     )
-    payload = knowledge_base.model_dump()
+    payload = public_knowledge_base_payload(knowledge_base)
     payload["upload"] = {
         "fileCount": parsed.file_count,
         "imageCount": parsed.image_count,
@@ -249,7 +258,7 @@ def knowledge_base_detail(
     authorization: str | None = Header(default=None),
 ):
     owner_id = resolve_learning_owner(sessionId, authorization)
-    return ok(get_knowledge_base(owner_id, knowledge_base_id).model_dump())
+    return ok(public_knowledge_base_payload(get_knowledge_base(owner_id, knowledge_base_id)))
 
 
 @router.post("/api/knowledge-bases/{knowledge_base_id}/supplements", response_model=ApiResponse)
@@ -265,7 +274,7 @@ def supplement_kb(
         payload.content,
         payload.webSearchEnabled,
     )
-    return ok(knowledge_base.model_dump())
+    return ok(public_knowledge_base_payload(knowledge_base))
 
 
 @router.post("/api/knowledge-bases/{knowledge_base_id}/supplements/from-assets", response_model=ApiResponse)
@@ -288,7 +297,7 @@ async def supplement_kb_from_assets(
         parsed.content,
         webSearchEnabled,
     )
-    payload = knowledge_base.model_dump()
+    payload = public_knowledge_base_payload(knowledge_base)
     payload["upload"] = {
         "fileCount": parsed.file_count,
         "imageCount": parsed.image_count,

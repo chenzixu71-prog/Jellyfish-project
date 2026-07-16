@@ -10,6 +10,7 @@ from app.schemas import (
     KnowledgeBaseChunk,
     KnowledgeBaseMaterial,
     KnowledgeBaseSummary,
+    Question,
 )
 from app.services.quiz_service import build_source_meta, create_quiz
 from app.services.search_service import SourceContext, SourceProvider, build_source_context
@@ -17,6 +18,7 @@ from app.storage.memory_store import store
 
 
 MAX_KNOWLEDGE_BASES_PER_OWNER = 5
+MAX_QUESTIONS_PER_KNOWLEDGE_BASE = 200
 MAX_KNOWLEDGE_CONTENT_CHARS = 12000
 CHUNK_WORD_SIZE = 180
 CHUNK_WORD_OVERLAP = 35
@@ -147,6 +149,20 @@ def start_quiz_from_knowledge_base(owner_id: str, knowledge_base_id: str):
         f"Full knowledge base fallback:\n{knowledge_base.content[:3500]}"
     )
     quiz = create_quiz(owner_id, quiz_content, web_search_enabled=False)
+    requested_count = len(quiz.questions)
+    accepted_questions = add_questions_to_knowledge_base(
+        owner_id,
+        knowledge_base_id,
+        quiz.questions,
+        source_chunk_ids=[chunk.id for chunk in retrieved_chunks],
+    )
+    knowledge_base = get_knowledge_base(owner_id, knowledge_base_id)
+    quiz.questions = fill_quiz_from_pool(
+        accepted_questions,
+        knowledge_base.questions,
+        requested_count,
+    )
+    quiz.knowledgeBaseId = knowledge_base_id
     quiz.title = knowledge_base.title
     quiz.summary = f'Generated from knowledge base "{knowledge_base.title}".'
     quiz.sourceMeta = knowledge_base.sourceMeta
@@ -157,6 +173,89 @@ def start_quiz_from_knowledge_base(owner_id: str, knowledge_base_id: str):
     return quiz
 
 
+def add_questions_to_knowledge_base(
+    owner_id: str,
+    knowledge_base_id: str,
+    questions: list[Question],
+    source_chunk_ids: list[str] | None = None,
+) -> list[Question]:
+    knowledge_base = get_knowledge_base(owner_id, knowledge_base_id)
+    capacity = max(
+        0,
+        min(knowledge_base.maxQuestions, MAX_QUESTIONS_PER_KNOWLEDGE_BASE)
+        - len(knowledge_base.questions),
+    )
+    if capacity == 0:
+        return []
+
+    fingerprints = {
+        question_fingerprint(question) for question in knowledge_base.questions
+    }
+    question_ids = {question.id for question in knowledge_base.questions}
+    accepted: list[Question] = []
+    for question in questions:
+        fingerprint = question_fingerprint(question)
+        if fingerprint in fingerprints:
+            continue
+
+        stored_question = question.model_copy(deep=True)
+        stored_question.id = f"kbq-{uuid.uuid4().hex[:16]}"
+        if source_chunk_ids and not stored_question.sourceChunkIds:
+            stored_question.sourceChunkIds = list(dict.fromkeys(source_chunk_ids))
+
+        accepted.append(stored_question)
+        fingerprints.add(fingerprint)
+        question_ids.add(stored_question.id)
+        if len(accepted) >= capacity:
+            break
+
+    if accepted:
+        knowledge_base.questions.extend(accepted)
+        knowledge_base.updatedAt = now_iso()
+        store.save_knowledge_base(owner_id, knowledge_base)
+    return accepted
+
+
+def mark_question_completed(
+    owner_id: str,
+    knowledge_base_id: str,
+    question_id: str,
+) -> bool:
+    knowledge_base = store.get_knowledge_base(owner_id, knowledge_base_id)
+    if knowledge_base is None:
+        return False
+    if not any(question.id == question_id for question in knowledge_base.questions):
+        return False
+    if question_id in knowledge_base.completedQuestionIds:
+        return False
+
+    knowledge_base.completedQuestionIds.append(question_id)
+    knowledge_base.updatedAt = now_iso()
+    store.save_knowledge_base(owner_id, knowledge_base)
+    return True
+
+
+def fill_quiz_from_pool(
+    accepted_questions: list[Question],
+    pool: list[Question],
+    requested_count: int,
+) -> list[Question]:
+    selected = list(accepted_questions)
+    selected_ids = {question.id for question in selected}
+    for question in pool:
+        if len(selected) >= requested_count:
+            break
+        if question.id not in selected_ids:
+            selected.append(question.model_copy(deep=True))
+            selected_ids.add(question.id)
+    return selected
+
+
+def question_fingerprint(question: Question) -> str:
+    normalized_stem = re.sub(r"\s+", " ", question.stem).strip().lower()
+    return hash_content(f"{question.type}:{normalized_stem}")
+
+
 def to_summary(knowledge_base: KnowledgeBase) -> KnowledgeBaseSummary:
     return KnowledgeBaseSummary(
         id=knowledge_base.id,
@@ -165,6 +264,9 @@ def to_summary(knowledge_base: KnowledgeBase) -> KnowledgeBaseSummary:
         materialCount=len(knowledge_base.materials),
         sourceCount=knowledge_base.sourceMeta.sourceCount if knowledge_base.sourceMeta else 0,
         quizCount=len(knowledge_base.quizIds),
+        questionCount=len(knowledge_base.questions),
+        completedQuestionCount=len(knowledge_base.completedQuestionIds),
+        maxQuestions=knowledge_base.maxQuestions,
         updatedAt=knowledge_base.updatedAt,
     )
 

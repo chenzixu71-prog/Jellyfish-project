@@ -2,7 +2,6 @@ import Taro from '@tarojs/taro'
 import { requireApiBaseUrls } from '../config/api'
 import {
   getOrCreateSessionId,
-  Quiz,
   request,
   SourceMeta
 } from './quizService'
@@ -42,6 +41,9 @@ export interface KnowledgeBaseSummary {
   materialCount: number
   sourceCount: number
   quizCount: number
+  questionCount: number
+  completedQuestionCount: number
+  maxQuestions: number
   updatedAt: string
 }
 
@@ -53,6 +55,9 @@ export interface KnowledgeBase {
   materials: KnowledgeBaseMaterial[]
   sourceMeta?: SourceMeta
   quizIds: string[]
+  questionCount: number
+  completedQuestionCount: number
+  maxQuestions: number
   createdAt: string
   updatedAt: string
 }
