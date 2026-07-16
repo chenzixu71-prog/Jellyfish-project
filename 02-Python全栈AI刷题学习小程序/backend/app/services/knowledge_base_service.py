@@ -11,8 +11,10 @@ from app.schemas import (
     KnowledgeBaseMaterial,
     KnowledgeBaseSummary,
     Question,
+    Quiz,
 )
-from app.services.quiz_service import build_source_meta, create_quiz
+from app.services.ai_service import generate_quiz
+from app.services.quiz_service import build_source_meta
 from app.services.search_service import SourceContext, SourceProvider, build_source_context
 from app.storage.memory_store import store
 
@@ -23,6 +25,8 @@ MAX_KNOWLEDGE_CONTENT_CHARS = 12000
 CHUNK_WORD_SIZE = 180
 CHUNK_WORD_OVERLAP = 35
 MAX_RETRIEVED_CHUNKS = 5
+QUESTION_BATCH_SIZE = 20
+CHALLENGE_QUESTION_COUNT = 10
 
 
 def create_knowledge_base(
@@ -134,6 +138,9 @@ def start_quiz_from_knowledge_base(owner_id: str, knowledge_base_id: str):
         f"{knowledge_base.title}\n{knowledge_base.summary}",
     )
     retrieved_context = format_retrieved_chunks(retrieved_chunks)
+    existing_stems = "\n".join(
+        f"- {question.stem}" for question in knowledge_base.questions[-40:]
+    ) or "- None yet"
     quiz_content = (
         "Generate quiz questions from this knowledge base only.\n"
         "Hard constraints:\n"
@@ -146,31 +153,60 @@ def start_quiz_from_knowledge_base(owner_id: str, knowledge_base_id: str):
         f"Knowledge base title: {knowledge_base.title}\n"
         f"Knowledge base summary: {knowledge_base.summary}\n"
         f"Most relevant knowledge chunks:\n{retrieved_context}\n\n"
-        f"Full knowledge base fallback:\n{knowledge_base.content[:3500]}"
+        f"Full knowledge base fallback:\n{knowledge_base.content[:3500]}\n\n"
+        "Existing question stems that must not be repeated:\n"
+        f"{existing_stems}"
     )
-    quiz = create_quiz(owner_id, quiz_content, web_search_enabled=False)
-    requested_count = len(quiz.questions)
-    accepted_questions = add_questions_to_knowledge_base(
-        owner_id,
-        knowledge_base_id,
-        quiz.questions,
-        source_chunk_ids=[chunk.id for chunk in retrieved_chunks],
-    )
+
+    uncompleted_questions = get_uncompleted_questions(knowledge_base)
+    remaining_capacity = min(
+        knowledge_base.maxQuestions,
+        MAX_QUESTIONS_PER_KNOWLEDGE_BASE,
+    ) - len(knowledge_base.questions)
+    if len(uncompleted_questions) < CHALLENGE_QUESTION_COUNT and remaining_capacity > 0:
+        batch_size = min(QUESTION_BATCH_SIZE, remaining_capacity)
+        generated_quiz = generate_quiz(
+            quiz_content,
+            question_count=batch_size,
+        )
+        add_questions_to_knowledge_base(
+            owner_id,
+            knowledge_base_id,
+            generated_quiz.questions,
+            source_chunk_ids=[chunk.id for chunk in retrieved_chunks],
+        )
+
     knowledge_base = get_knowledge_base(owner_id, knowledge_base_id)
-    quiz.questions = fill_quiz_from_pool(
-        accepted_questions,
-        knowledge_base.questions,
-        requested_count,
+    uncompleted_questions = get_uncompleted_questions(knowledge_base)
+    selected_questions = (
+        uncompleted_questions[:CHALLENGE_QUESTION_COUNT]
+        if uncompleted_questions
+        else knowledge_base.questions[:CHALLENGE_QUESTION_COUNT]
     )
-    quiz.knowledgeBaseId = knowledge_base_id
-    quiz.title = knowledge_base.title
-    quiz.summary = f'Generated from knowledge base "{knowledge_base.title}".'
-    quiz.sourceMeta = knowledge_base.sourceMeta
+    if not selected_questions:
+        raise HTTPException(status_code=502, detail="No usable questions were generated.")
+
+    quiz = Quiz(
+        title=knowledge_base.title,
+        summary=f'Challenge from knowledge base "{knowledge_base.title}".',
+        questions=[question.model_copy(deep=True) for question in selected_questions],
+        knowledgeBaseId=knowledge_base_id,
+        sourceMeta=knowledge_base.sourceMeta,
+    )
     store.save_quiz(owner_id, quiz)
     knowledge_base.quizIds.insert(0, quiz.quizId)
     knowledge_base.updatedAt = now_iso()
     store.save_knowledge_base(owner_id, knowledge_base)
     return quiz
+
+
+def get_uncompleted_questions(knowledge_base: KnowledgeBase) -> list[Question]:
+    completed_ids = set(knowledge_base.completedQuestionIds)
+    return [
+        question
+        for question in knowledge_base.questions
+        if question.id not in completed_ids
+    ]
 
 
 def add_questions_to_knowledge_base(

@@ -556,7 +556,7 @@ def test_create_list_supplement_and_quiz_from_knowledge_base():
     ).json()["data"]
     assert quiz["quizId"]
     assert quiz["title"] == "英语知识库"
-    assert len(quiz["questions"]) == 5
+    assert len(quiz["questions"]) == 10
     assert all("answer" not in question for question in quiz["questions"])
     assert all("explanation" not in question for question in quiz["questions"])
 
@@ -564,7 +564,7 @@ def test_create_list_supplement_and_quiz_from_knowledge_base():
         f"/api/knowledge-bases/{created['id']}",
         params={"sessionId": session_id},
     ).json()["data"]
-    assert after_quiz["questionCount"] == 5
+    assert after_quiz["questionCount"] == 20
     assert after_quiz["completedQuestionCount"] == 0
     assert after_quiz["maxQuestions"] == 200
     assert "questions" not in after_quiz
@@ -615,6 +615,76 @@ def test_knowledge_base_limit_is_five_per_owner():
 
     assert rejected.status_code == 400
     assert "5" in rejected.json()["detail"]
+
+
+def test_knowledge_base_refills_only_after_fewer_than_ten_questions_remain():
+    session_id = "kb-refill-session"
+    created = client.post(
+        "/api/knowledge-bases",
+        json={
+            "sessionId": session_id,
+            "title": "Redis persistence",
+            "content": "Redis supports RDB snapshots and AOF logs.",
+            "webSearchEnabled": False,
+        },
+    ).json()["data"]
+
+    first_quiz = client.post(
+        f"/api/knowledge-bases/{created['id']}/quiz",
+        json={"sessionId": session_id},
+    ).json()["data"]
+    assert len(first_quiz["questions"]) == 10
+
+    for question in first_quiz["questions"]:
+        response = client.post(
+            "/api/submit-answer",
+            json={
+                "sessionId": session_id,
+                "quizId": first_quiz["quizId"],
+                "questionId": question["id"],
+                "answer": stored_answer(first_quiz["quizId"], question["id"]),
+            },
+        )
+        assert response.status_code == 200
+
+    second_quiz = client.post(
+        f"/api/knowledge-bases/{created['id']}/quiz",
+        json={"sessionId": session_id},
+    ).json()["data"]
+    assert len(second_quiz["questions"]) == 10
+    assert {
+        question["id"] for question in first_quiz["questions"]
+    }.isdisjoint({question["id"] for question in second_quiz["questions"]})
+
+    after_second_start = client.get(
+        f"/api/knowledge-bases/{created['id']}",
+        params={"sessionId": session_id},
+    ).json()["data"]
+    assert after_second_start["questionCount"] == 20
+
+    for question in second_quiz["questions"]:
+        client.post(
+            "/api/submit-answer",
+            json={
+                "sessionId": session_id,
+                "quizId": second_quiz["quizId"],
+                "questionId": question["id"],
+                "answer": stored_answer(second_quiz["quizId"], question["id"]),
+            },
+        )
+
+    third_quiz = client.post(
+        f"/api/knowledge-bases/{created['id']}/quiz",
+        json={"sessionId": session_id},
+    ).json()["data"]
+    assert len(third_quiz["questions"]) == 10
+
+    after_refill = client.get(
+        f"/api/knowledge-bases/{created['id']}",
+        params={"sessionId": session_id},
+    ).json()["data"]
+    assert after_refill["questionCount"] == 40
+    assert after_refill["completedQuestionCount"] == 20
 
 
 def test_knowledge_base_from_assets_accepts_text_file():

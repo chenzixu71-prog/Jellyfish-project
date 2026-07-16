@@ -15,8 +15,8 @@ Generate a mini-program quiz from the learner's content.
 
 Output rules:
 1. Output valid JSON only. Do not output any text outside JSON.
-2. Generate exactly 5 questions.
-3. Include 3 single-choice questions, 1 multiple-choice question, and 1 true/false question.
+2. Generate exactly {question_count} questions.
+3. Include {single_count} single-choice questions, {multiple_count} multiple-choice questions, and {judge_count} true/false questions.
 4. Every question must include: id, type, stem, options, answer, explanation, knowledge_point, difficulty.
 5. Explanations must be beginner-friendly.
 6. If reference sources are provided, prioritize them over your training data. Do not invent facts that conflict with the sources.
@@ -77,6 +77,7 @@ class DeepSeekClient:
         self,
         content: str,
         source_context: SourceContext | None = None,
+        question_count: int = 5,
     ) -> Quiz:
         if not self.api_key:
             raise ValueError("DEEPSEEK_API_KEY is required when AI_PROVIDER=deepseek")
@@ -93,7 +94,11 @@ class DeepSeekClient:
                     "messages": [
                         {
                             "role": "user",
-                            "content": build_quiz_prompt(content, source_context),
+                            "content": build_quiz_prompt(
+                                content,
+                                source_context,
+                                question_count=question_count,
+                            ),
                         }
                     ],
                     "temperature": 0.4,
@@ -125,14 +130,32 @@ class DeepSeekClient:
 def build_quiz_prompt(
     content: str,
     source_context: SourceContext | None = None,
+    question_count: int = 5,
 ) -> str:
+    single_count, multiple_count, judge_count = question_type_counts(question_count)
     formatted_context = format_source_context(source_context or SourceContext())
     if not formatted_context:
         formatted_context = "No external sources provided."
     return QUIZ_SYSTEM_PROMPT.format(
         user_input=content,
         source_context=formatted_context,
+        question_count=question_count,
+        single_count=single_count,
+        multiple_count=multiple_count,
+        judge_count=judge_count,
     )
+
+
+def question_type_counts(question_count: int) -> tuple[int, int, int]:
+    if not 1 <= question_count <= 200:
+        raise ValueError("question_count must be between 1 and 200")
+    if question_count == 1:
+        return 1, 0, 0
+
+    multiple_count = max(1, round(question_count * 0.2))
+    judge_count = max(1, round(question_count * 0.2))
+    single_count = question_count - multiple_count - judge_count
+    return single_count, multiple_count, judge_count
 
 
 def parse_json_object(raw_content: str) -> dict:
@@ -157,13 +180,21 @@ def normalize_quiz_payload(payload: dict) -> dict:
 
 
 
-def generate_quiz(content: str, source_context: SourceContext | None = None) -> Quiz:
+def generate_quiz(
+    content: str,
+    source_context: SourceContext | None = None,
+    question_count: int = 5,
+) -> Quiz:
     if config.AI_PROVIDER != "deepseek":
-        return generate_mock_quiz(content)
+        return generate_mock_quiz(content, question_count=question_count)
 
     client = DeepSeekClient(
         api_key=config.DEEPSEEK_API_KEY,
         base_url=config.DEEPSEEK_BASE_URL,
         model=config.AI_MODEL,
     )
-    return client.generate_quiz(content, source_context)
+    return client.generate_quiz(
+        content,
+        source_context,
+        question_count=question_count,
+    )

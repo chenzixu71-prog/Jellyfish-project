@@ -24,12 +24,13 @@ def create_quiz(
     content: str,
     web_search_enabled: bool = False,
     source_provider: SourceProvider | None = None,
+    question_count: int = 5,
 ) -> Quiz:
     if not content.strip():
         raise HTTPException(status_code=422, detail="content is required")
 
     source_context = build_source_context(content, web_search_enabled, source_provider)
-    quiz = generate_quiz(content, source_context)
+    quiz = generate_quiz(content, source_context, question_count=question_count)
     quiz.sourceMeta = build_source_meta(web_search_enabled, source_context)
     store.save_quiz(session_id, quiz)
     return quiz

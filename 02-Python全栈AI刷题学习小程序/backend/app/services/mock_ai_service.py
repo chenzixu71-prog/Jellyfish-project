@@ -1,89 +1,74 @@
+import hashlib
+
 from app.schemas import Option, Question, Quiz
 
 
-def generate_mock_quiz(content: str) -> Quiz:
+def generate_mock_quiz(content: str, question_count: int = 5) -> Quiz:
     topic = content.strip()
-    safe_topic = topic[:40] if topic else "自定义知识"
-
+    safe_topic = topic[:40] if topic else "Custom topic"
+    batch_seed = hashlib.sha256(topic.encode("utf-8")).hexdigest()[:6]
+    single_count, multiple_count, judge_count = question_type_counts(question_count)
+    question_types = (
+        ["single"] * single_count
+        + ["multiple"] * multiple_count
+        + ["judge"] * judge_count
+    )
     questions = [
-        Question(
-            id="q1",
-            type="single",
-            stem=f"学习“{safe_topic}”时，第一步最应该做什么？",
-            options=[
-                Option(key="A", text="先理解核心概念"),
-                Option(key="B", text="直接背所有细节"),
-                Option(key="C", text="跳过基础只看难题"),
-                Option(key="D", text="完全依赖猜测"),
-            ],
-            answer=["A"],
-            explanation="初学一个知识点时，先理解核心概念能降低后续学习难度。",
-            knowledge_point="学习起点",
-            difficulty="easy",
-        ),
-        Question(
-            id="q2",
-            type="single",
-            stem="为什么答题后要立刻看讲解？",
-            options=[
-                Option(key="A", text="可以马上纠正理解偏差"),
-                Option(key="B", text="只是为了增加页面数量"),
-                Option(key="C", text="可以跳过知识点"),
-                Option(key="D", text="与学习效果无关"),
-            ],
-            answer=["A"],
-            explanation="即时反馈能帮助你在记忆还新鲜时修正错误。",
-            knowledge_point="即时反馈",
-            difficulty="easy",
-        ),
-        Question(
-            id="q3",
-            type="single",
-            stem=f"围绕“{safe_topic}”复盘时，最有价值的信息是什么？",
-            options=[
-                Option(key="A", text="错题和薄弱知识点"),
-                Option(key="B", text="按钮颜色"),
-                Option(key="C", text="页面滚动距离"),
-                Option(key="D", text="无关话题"),
-            ],
-            answer=["A"],
-            explanation="复盘的重点是找出还没掌握的地方，并形成下一步计划。",
-            knowledge_point="学习复盘",
-            difficulty="medium",
-        ),
-        Question(
-            id="q4",
-            type="multiple",
-            stem="一套有效的闯关题通常应该包含哪些内容？",
-            options=[
-                Option(key="A", text="题干"),
-                Option(key="B", text="选项"),
-                Option(key="C", text="正确答案"),
-                Option(key="D", text="详细讲解"),
-            ],
-            answer=["A", "B", "C", "D"],
-            explanation="题干、选项、答案和讲解共同构成完整的练习体验。",
-            knowledge_point="题目结构",
-            difficulty="medium",
-        ),
-        Question(
-            id="q5",
+        build_mock_question(index + 1, question_type, safe_topic, batch_seed)
+        for index, question_type in enumerate(question_types)
+    ]
+    return Quiz(
+        title=safe_topic,
+        summary=f"A {question_count}-question development quiz about {safe_topic}.",
+        questions=questions,
+    )
+
+
+def question_type_counts(question_count: int) -> tuple[int, int, int]:
+    if not 1 <= question_count <= 200:
+        raise ValueError("question_count must be between 1 and 200")
+    if question_count == 1:
+        return 1, 0, 0
+
+    multiple_count = max(1, round(question_count * 0.2))
+    judge_count = max(1, round(question_count * 0.2))
+    single_count = question_count - multiple_count - judge_count
+    return single_count, multiple_count, judge_count
+
+def build_mock_question(
+    index: int,
+    question_type: str,
+    topic: str,
+    batch_seed: str,
+) -> Question:
+    if question_type == "judge":
+        return Question(
+            id=f"q{index}",
             type="judge",
-            stem="判断：用户输入内容太短时，AI 可以合理补充常识，但不能偏离主题。",
+            stem=f"Mock statement {batch_seed}-{index} about {topic} is marked as correct.",
             options=[
-                Option(key="true", text="正确"),
-                Option(key="false", text="错误"),
+                Option(key="true", text="Correct"),
+                Option(key="false", text="Incorrect"),
             ],
             answer=["true"],
-            explanation="合理补充能帮助生成题目，但必须围绕用户原始主题。",
-            knowledge_point="内容边界",
+            explanation=f"Development-mode explanation {index} for {topic}.",
+            knowledge_point=f"{topic} point {index}",
             difficulty="easy",
-        ),
-    ]
+        )
 
-    return Quiz(
-        quizId="quiz-" + str(abs(hash(topic)) % 1_000_000),
-        title=safe_topic,
-        summary=f"围绕“{safe_topic}”生成的 5 题闯关练习。",
-        questions=questions,
+    answer = ["A", "B"] if question_type == "multiple" else ["A"]
+    return Question(
+        id=f"q{index}",
+        type=question_type,
+        stem=f"Development question {batch_seed}-{index}: which option describes {topic} point {index}?",
+        options=[
+            Option(key="A", text=f"Correct detail {index}A"),
+            Option(key="B", text=f"Related detail {index}B"),
+            Option(key="C", text=f"Misconception {index}C"),
+            Option(key="D", text=f"Misconception {index}D"),
+        ],
+        answer=answer,
+        explanation=f"Development-mode explanation {index} for {topic}.",
+        knowledge_point=f"{topic} point {index}",
+        difficulty="medium" if question_type == "multiple" else "easy",
     )
